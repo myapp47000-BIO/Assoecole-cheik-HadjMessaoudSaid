@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const splash = document.getElementById('splash-screen');
             const mainApp = document.getElementById('main-app');
-            const welcomePage = document.getElementById('welcome-page');
+            const loginPage = document.getElementById('login-page');
             
             if (splash) {
                 splash.style.opacity = '0';
@@ -45,15 +45,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isLoggedIn && parentData.name) {
                 if (mainApp) mainApp.classList.remove('hidden');
             } else {
-                if (welcomePage) welcomePage.classList.remove('hidden');
+                if (loginPage) loginPage.classList.remove('hidden');
             }
         } catch(e) {
             console.error('Splash error:', e);
             // Last resort - just hide splash
             const splash = document.getElementById('splash-screen');
-            const welcomePage = document.getElementById('welcome-page');
+            const loginPage = document.getElementById('login-page');
             if (splash) splash.remove();
-            if (welcomePage) welcomePage.classList.remove('hidden');
+            if (loginPage) loginPage.classList.remove('hidden');
         }
     }, 2500);
 });
@@ -168,262 +168,175 @@ function updateProfileCard() {
     }
 }
 
-// Auth Mode: 'login' or 'register'
+// Auth
 let authMode = '';
+let verificationCode = '';
+let verificationTimer = null;
+let verificationTimeLeft = 120;
+let pendingRegistration = null;
 
-// Navigation functions for auth pages
-function showWelcomePage() {
-    document.getElementById('login-page').classList.add('hidden');
-    document.getElementById('register-page').classList.add('hidden');
-    document.getElementById('verification-page').classList.add('hidden');
-    document.getElementById('welcome-page').classList.remove('hidden');
-}
+const EMAILJS_SERVICE_ID = 'service_boaxpbc';
+const EMAILJS_TEMPLATE_ID = 'template_urkxh1k';
+const EMAILJS_PUBLIC_KEY = 'vY7pOpm0ruXKciqkY';
 
-function showLoginPage() {
-    authMode = 'login';
-    document.getElementById('welcome-page').classList.add('hidden');
-    document.getElementById('register-page').classList.add('hidden');
-    document.getElementById('verification-page').classList.add('hidden');
-    document.getElementById('login-page').classList.remove('hidden');
-}
-
-function showRegisterPage() {
-    authMode = 'register';
-    document.getElementById('welcome-page').classList.add('hidden');
-    document.getElementById('login-page').classList.add('hidden');
-    document.getElementById('verification-page').classList.add('hidden');
-    document.getElementById('register-page').classList.remove('hidden');
-}
-
-function backToAuth() {
-    clearInterval(verificationTimer);
-    document.getElementById('verification-page').classList.add('hidden');
-    for (let i = 1; i <= 6; i++) {
-        const el = document.getElementById('code-' + i);
-        if (el) el.value = '';
-    }
-    if (authMode === 'register') {
-        document.getElementById('register-page').classList.remove('hidden');
-    } else {
-        document.getElementById('login-page').classList.remove('hidden');
-    }
-}
-
-// Login handler (registered users - email only)
-function handleLoginEmail(e) {
+function handleLogin(e) {
     e.preventDefault();
-    const email = document.getElementById('login-email').value.trim();
-    if (!email) {
-        showToast('أدخل بريدك الإلكتروني', 'error');
-        return;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        showToast('بريد إلكتروني غير صحيح', 'error');
-        return;
-    }
-    
-    // Check if user exists
-    const existingUser = parentsDatabase.find(p => p.email && p.email.toLowerCase() === email.toLowerCase());
-    if (!existingUser) {
-        showToast('لم نجد حساباً بهذا البريد. سجّل أولاً', 'error');
-        return;
-    }
-    
-    authMode = 'login';
-    pendingRegistration = existingUser;
-    verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    sendVerificationCode(email, existingUser.name);
-}
+    var email = document.getElementById('login-email').value.trim();
+    if (!email) { showToast('أدخل بريدك الإلكتروني', 'error'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('بريد غير صحيح', 'error'); return; }
 
-// Register handler (new users)
-function handleRegister(e) {
-    e.preventDefault();
-    const name = document.getElementById('reg-parent-name').value.trim();
-    const studentName = document.getElementById('reg-student-name').value.trim();
-    const studentLevel = document.getElementById('reg-student-level').value;
-    const phone = document.getElementById('reg-phone').value.trim();
-    const email = document.getElementById('reg-email').value.trim();
-    
-    if (!name || !studentName || !studentLevel || !phone || !email) {
-        showToast('يرجى ملء جميع الحقول', 'error');
-        return;
+    var existingUser = null;
+    for (var i = 0; i < parentsDatabase.length; i++) {
+        if (parentsDatabase[i].email && parentsDatabase[i].email.toLowerCase() === email.toLowerCase()) {
+            existingUser = parentsDatabase[i];
+            break;
+        }
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        showToast('بريد إلكتروني غير صحيح', 'error');
-        return;
-    }
-    
-    // Check if email already exists
-    const existingUser = parentsDatabase.find(p => p.email && p.email.toLowerCase() === email.toLowerCase());
+
     if (existingUser) {
-        showToast('هذا البريد مسجل بالفعل. سجّل الدخول', 'error');
-        return;
+        authMode = 'login';
+        pendingRegistration = existingUser;
+        verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        sendVerificationCode(email, existingUser.name);
+    } else {
+        authMode = 'register';
+        document.getElementById('login-name-group').style.display = '';
+        document.getElementById('login-student-group').style.display = '';
+        document.getElementById('login-level-group').style.display = '';
+        document.getElementById('login-phone-group').style.display = '';
+        document.getElementById('login-btn-text').textContent = 'التسجيل وإرسال الكود';
+        document.getElementById('login-submit-btn').onclick = function(ev) { ev.preventDefault(); handleRegister(); };
+        document.getElementById('login-name').focus();
+        showToast('حساب جديد - أكمل التسجيل', 'normal');
     }
-    
-    // Build students array
-    const students = [{ name: studentName, level: studentLevel, levelName: STUDENT_LEVELS[studentLevel] }];
-    const s2Name = document.getElementById('reg-student2-name').value.trim();
-    const s2Level = document.getElementById('reg-student2-level').value;
-    if (s2Name && s2Level) students.push({ name: s2Name, level: s2Level, levelName: STUDENT_LEVELS[s2Level] });
-    const s3Name = document.getElementById('reg-student3-name').value.trim();
-    const s3Level = document.getElementById('reg-student3-level').value;
-    if (s3Name && s3Level) students.push({ name: s3Name, level: s3Level, levelName: STUDENT_LEVELS[s3Level] });
-    
-    const userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    const isAdmin = email.toLowerCase() === DB_KEYS.ADMIN_EMAIL.toLowerCase();
-    
+}
+
+function handleRegister() {
+    var name = document.getElementById('login-name').value.trim();
+    var student = document.getElementById('login-student').value.trim();
+    var level = document.getElementById('login-level').value;
+    var phone = document.getElementById('login-phone').value.trim();
+    var email = document.getElementById('login-email').value.trim();
+
+    if (!name || !student || !level || !phone) { showToast('أكمل جميع الحقول', 'error'); return; }
+
+    var students = [{ name: student, level: level, levelName: STUDENT_LEVELS[level] }];
+    var userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    var isAdmin = email.toLowerCase() === DB_KEYS.ADMIN_EMAIL.toLowerCase();
+
     pendingRegistration = {
-        id: userId, name, students, phone, email, isAdmin,
+        id: userId, name: name, students: students, phone: phone,
+        email: email, isAdmin: isAdmin,
         loginDate: new Date().toISOString(), lastLogin: new Date().toISOString()
     };
-    
-    authMode = 'register';
+
     verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
     sendVerificationCode(email, name);
 }
 
 async function sendVerificationCode(email, name) {
     try {
-        // Check if EmailJS is loaded
         if (typeof emailjs === 'undefined') {
             showToast('جاري تحميل الخدمة... حاول مرة أخرى', 'error');
             return;
         }
-        
-        // Initialize EmailJS
         emailjs.init(EMAILJS_PUBLIC_KEY);
-        
-        // Send email
         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-            to_name: name,
-            to_email: email,
-            verification_code: verificationCode
+            to_name: name, to_email: email, verification_code: verificationCode
         });
-        
-        // Show verification page
+
         document.getElementById('login-page').classList.add('hidden');
-        document.getElementById('register-page').classList.add('hidden');
         document.getElementById('verification-page').classList.remove('hidden');
         document.getElementById('verification-email-display').textContent = 'تم إرسال كود التحقق إلى ' + email;
-        
-        // Start timer
         startVerificationTimer();
-        
-        // Focus first code input
         document.getElementById('code-1').focus();
-        
-        showToast('تم إرسال كود التحقق إلى بريدك الإلكتروني', 'success');
+        showToast('تم إرسال كود التحقق', 'success');
     } catch (e) {
-        console.error('Email send error:', e);
-        showToast('خطأ في إرسال البريد. حاول مرة أخرى', 'error');
+        console.error('Email error:', e);
+        showToast('خطأ في إرسال البريد', 'error');
     }
 }
 
 function handleCodeInput(current, nextId) {
-    const value = current.value;
-    if (value && nextId) {
-        document.getElementById(nextId).focus();
-    }
+    if (current.value && nextId) document.getElementById(nextId).focus();
 }
 
 function handleCodeKeydown(e, current, prevId) {
-    if (e.key === 'Backspace' && !current.value && prevId) {
-        document.getElementById(prevId).focus();
-    }
+    if (e.key === 'Backspace' && !current.value && prevId) document.getElementById(prevId).focus();
 }
 
 function startVerificationTimer() {
     verificationTimeLeft = 120;
     updateTimerDisplay();
-    
-    verificationTimer = setInterval(() => {
+    document.getElementById('resend-btn').disabled = true;
+    document.getElementById('verification-timer').style.display = '';
+    verificationTimer = setInterval(function() {
         verificationTimeLeft--;
         updateTimerDisplay();
-        
         if (verificationTimeLeft <= 0) {
             clearInterval(verificationTimer);
             document.getElementById('resend-btn').disabled = false;
-            document.getElementById('verification-timer').classList.add('hidden');
+            document.getElementById('verification-timer').style.display = 'none';
         }
     }, 1000);
 }
 
 function updateTimerDisplay() {
-    const minutes = Math.floor(verificationTimeLeft / 60);
-    const seconds = verificationTimeLeft % 60;
-    document.getElementById('timer-count').textContent = 
-        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    var m = Math.floor(verificationTimeLeft / 60);
+    var s = verificationTimeLeft % 60;
+    document.getElementById('timer-count').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
 }
 
 function resendCode() {
     if (!pendingRegistration) return;
-    
     verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
     sendVerificationCode(pendingRegistration.email, pendingRegistration.name);
-    
-    document.getElementById('resend-btn').disabled = true;
-    document.getElementById('verification-timer').classList.remove('hidden');
+}
+
+function backToLogin() {
+    clearInterval(verificationTimer);
+    document.getElementById('verification-page').classList.add('hidden');
+    document.getElementById('login-page').classList.remove('hidden');
+    for (var i = 1; i <= 6; i++) {
+        var el = document.getElementById('code-' + i);
+        if (el) el.value = '';
+    }
 }
 
 async function handleVerification(e) {
     e.preventDefault();
-    
-    let enteredCode = '';
-    for (let i = 1; i <= 6; i++) {
+    var enteredCode = '';
+    for (var i = 1; i <= 6; i++) {
         enteredCode += document.getElementById('code-' + i).value;
     }
-    
-    if (enteredCode.length !== 6) {
-        showToast('أدخل كود التحقق كاملاً', 'error');
-        return;
-    }
-    
-    if (enteredCode !== verificationCode) {
-        showToast('كود التحقق غير صحيح', 'error');
-        return;
-    }
-    
-    if (!pendingRegistration) {
-        showToast('خطأ في التسجيل', 'error');
-        return;
-    }
-    
-    const userData = pendingRegistration;
-    
+    if (enteredCode.length !== 6) { showToast('أدخل كود التحقق كاملاً', 'error'); return; }
+    if (enteredCode !== verificationCode) { showToast('كود التحقق غير صحيح', 'error'); return; }
+    if (!pendingRegistration) { showToast('خطأ', 'error'); return; }
+
+    var userData = pendingRegistration;
+
     if (authMode === 'register') {
-        // New registration - save to database
         parentsDatabase.push(userData);
         localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
-        CLOUD_DB.addParent(userData).then(r => { if (r) console.log('Synced to cloud'); }).catch(e => console.log('Cloud sync failed'));
+        CLOUD_DB.addParent(userData).catch(function() {});
     }
-    // For login, user already exists in database
-    
+
     localStorage.setItem(DB_KEYS.CURRENT_USER, userData.id);
-    
-    if (userData.isAdmin) {
-        localStorage.setItem(ADMIN_KEY, 'true');
-        isAdminLoggedIn = true;
-    }
-    
+    if (userData.isAdmin) { localStorage.setItem(ADMIN_KEY, 'true'); isAdminLoggedIn = true; }
+
     isLoggedIn = true;
     parentData = userData;
-    
     clearInterval(verificationTimer);
     pendingRegistration = null;
-    
+
     document.getElementById('verification-page').classList.add('hidden');
     document.getElementById('main-app').classList.remove('hidden');
-    
     updateProfileCard();
-    
-    const adminCard = document.getElementById('admin-home-card');
-    if (adminCard && userData.isAdmin) {
-        adminCard.style.display = '';
-    }
-    
-    showToast('مرحباً بكم ' + userData.name + (userData.isAdmin ? ' (مدير)' : ''), 'success');
+
+    var adminCard = document.getElementById('admin-home-card');
+    if (adminCard && userData.isAdmin) adminCard.style.display = '';
+
+    showToast('مرحباً بكم ' + userData.name, 'success');
 }
 
 function handleLogout() {
@@ -437,7 +350,7 @@ function handleLogout() {
     document.getElementById('login-page').classList.add('hidden');
     document.getElementById('register-page').classList.add('hidden');
     document.getElementById('verification-page').classList.add('hidden');
-    document.getElementById('welcome-page').classList.remove('hidden');
+    document.getElementById('login-page').classList.remove('hidden');
     
     // Reset form
     const loginForm = document.getElementById('login-form');
