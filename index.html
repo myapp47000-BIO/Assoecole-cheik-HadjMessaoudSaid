@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a5276">
+    <meta name="description" content="تطبيق جمعية أولياء التلاميذ إبتدائية الشيخ حاج مسعود سعيد - بلدية العطف - تجنينت - ولاية غرداية">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="جمعية أولياء التلاميذ إبتدائية الشيخ حاج مسعود سعيد">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="icons/icon.svg">
+    <title>جمعية أولياء التلاميذ إبتدائية الشيخ حاج مسعود سعيد</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" async defer></script>
+    <script>
+        // FORCE: Kill splash after 3s no matter what
+        setTimeout(function() {
+            var s = document.getElementById('splash-screen');
+            var lp = document.getElementById('welcome-page');
+            var ma = document.getElementById('main-app');
+            if (s) { s.style.opacity = '0'; s.style.visibility = 'hidden'; s.style.display = 'none'; }
+            if (ma && !ma.classList.contains('hidden')) { /* user is logged in, app visible */ }
+            else if (lp) { lp.classList.remove('hidden'); }
+        }, 3000);
+        // Force unregister old service workers
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(regs) {
+                regs.forEach(function(r) { r.unregister(); });
+            });
+        }
+        // Force clear old caches
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                names.forEach(function(n) { caches.delete(n); });
+            });
+        }
+    </script>
+</head>
+<body>
+    <div id="app">
+        <!-- Splash Screen -->
+        <div id="splash-screen" class="splash-screen">
+            <div class="splash-content">
+                <div class="splash-icon">
+                    <svg viewBox="0 0 120 120" class="school-emblem">
+                        <defs>
+                            <linearGradient id="emblemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#f1c40f"/>
+                                <stop offset="100%" style="stop-color:#e67e22"/>
+                            </linearGradient>
+                        </defs>
+                        <circle cx="60" cy="60" r="55" fill="none" stroke="url(#emblemGrad)" stroke-width="3"/>
+                        <circle cx="60" cy="60" r="48" fill="none" stroke="url(#emblemGrad)" stroke-width="1.5"/>
+                        <text x="60" y="40" text-anchor="middle" fill="#f1c40f" font-size="14" font-weight="bold" font-family="Noto Kufi Arabic">جمعية</text>
+                        <text x="60" y="58" text-anchor="middle" fill="#f1c40f" font-size="11" font-weight="bold" font-family="Noto Kufi Arabic">أولياء التلاميذ</text>
+                        <text x="60" y="74" text-anchor="middle" fill="#ecf0f1" font-size="9" font-family="Noto Kufi Arabic">إبتدائية الشيخ حاج مسعود سعيد</text>
+                        <text x="60" y="88" text-anchor="middle" fill="#95a5a6" font-size="7" font-family="Noto Kufi Arabic">بلدية العطف - تجنينت - غرداية</text>
+                        <path d="M30 95 Q60 105 90 95" fill="none" stroke="url(#emblemGrad)" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <h2 class="splash-title">جمعية أولياء التلاميذ إبتدائية الشيخ حاج مسعود سعيد</h2>
+                <p class="splash-subtitle">إبتدائية الشيخ حاج مسعود سعيد</p>
+                <p class="splash-location">بلدية العطف - تجنينت - ولاية غرداية</p>
+                <div class="splash-loader">
+                    <div class="loader-bar"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Permission Modal -->
+        <div id="notif-permission-modal" class="notif-modal hidden">
+            <div class="notif-modal-overlay" onclick="closeNotifModal()"></div>
+            <div class="notif-modal-content">
+                <div class="notif-modal-icon">
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#f1c40f" stroke-width="1.5">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                </div>
+                <h3>فعّل الإشعارات</h3>
+                <p>لتصلك أحدث المستجدات والإعلانات فور نشرها</p>
+                <div class="notif-modal-features">
+                    <div class="notif-feature">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#27ae60" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        <span>إشعارات فورية للإعلانات المهمة</span>
+                    </div>
+                    <div class="notif-feature">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#27ae60" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        <span>تنبيهات المواعيد المدرسية</span>
+                    </div>
+                    <div class="notif-feature">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#27ae60" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        <span>أخبار الجمعية والأنشطة</span>
+                    </div>
+                </div>
+                <div class="notif-modal-buttons">
+                    <button class="notif-btn-enable" onclick="enableNotifications()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        تفعيل الإشعارات
+                    </button>
+                    <button class="notif-btn-later" onclick="closeNotifModal()">لاحقاً</button>
+                </div>
+            </div>
+        </div>
+
+                <!-- Welcome Page -->
+        <div id="welcome-page" class="login-page hidden">
+            <div class="login-content">
+                <div class="login-header">
+                    <div class="login-emblem">
+                        <svg viewBox="0 0 120 120" class="login-logo">
+                            <defs>
+                                <linearGradient id="loginEmblemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#f1c40f"/>
+                                    <stop offset="100%" style="stop-color:#e67e22"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="60" cy="60" r="55" fill="none" stroke="url(#loginEmblemGrad)" stroke-width="3"/>
+                            <circle cx="60" cy="60" r="48" fill="none" stroke="url(#loginEmblemGrad)" stroke-width="1.5"/>
+                            <text x="60" y="40" text-anchor="middle" fill="#f1c40f" font-size="14" font-weight="bold" font-family="Noto Kufi Arabic">Ø¬Ù…Ø¹ÙŠØ©</text>
+                            <text x="60" y="58" text-anchor="middle" fill="#f1c40f" font-size="11" font-weight="bold" font-family="Noto Kufi Arabic">Ø£ÙˆÙ„ÙŠØ§Ø¡ Ø§Ù„ØªÙ„Ø§Ù…ÙŠØ°</text>
+                            <text x="60" y="74" text-anchor="middle" fill="#ecf0f1" font-size="9" font-family="Noto Kufi Arabic">Ø¥Ø¨ØªØ¯Ø§Ø¦ÙŠØ© Ø§Ù„Ø´ÙŠØ® Ø­Ø§Ø¬ Ù…Ø³Ø¹ÙˆØ¯ Ø³Ø¹ÙŠØ¯</text>
+                            <text x="60" y="88" text-anchor="middle" fill="#95a5a6" font-size="7" font-family="Noto Kufi Arabic">Ø¨Ù„Ø¯ÙŠØ© Ø§Ù„Ø¹Ø·Ù - ØªØ¬Ù†ÙŠÙ†Øª - ØºØ±Ø¯Ø§ÙŠØ©</text>
+                            <path d="M30 95 Q60 105 90 95" fill="none" stroke="url(#loginEmblemGrad)" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <h1 class="login-title">Ù…Ø±Ø­Ø¨Ø§Ù‹ Ø¨ÙƒÙ…</h1>
+                    <p class="login-subtitle">ØªØ·Ø¨ÙŠÙ‚ Ø¬Ù…Ø¹ÙŠØ© Ø£ÙˆÙ„ÙŠØ§Ø¡ Ø§Ù„ØªÙ„Ø§Ù…ÙŠØ°</p>
+                </div>
+                <div class="welcome-buttons">
+                    <button class="welcome-btn login-choice-btn" onclick="showLoginPage()">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                            <polyline points="10 17 15 12 10 7"/>
+                            <line x1="15" y1="12" x2="3" y2="12"/>
+                        </svg>
+                        <span class="welcome-btn-text">Ù„Ø¯ÙŠ Ø­Ø³Ø§Ø¨ - Ø§Ù„Ø¯Ø®ÙˆÙ„</span>
+                        <span class="welcome-btn-sub">Ø³Ø¬Ù„ Ø¯Ø®ÙˆÙ„Ùƒ Ø¨Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ</span>
+                    </button>
+                    <div class="welcome-divider"><span>Ø£Ùˆ</span></div>
+                    <button class="welcome-btn register-choice-btn" onclick="showRegisterPage()">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="8.5" cy="7" r="4"/>
+                            <line x1="20" y1="8" x2="20" y2="14"/>
+                            <line x1="23" y1="11" x2="17" y2="11"/>
+                        </svg>
+                        <span class="welcome-btn-text">Ù…Ø³ØªØ®Ø¯Ù… Ø¬Ø¯ÙŠØ¯ - Ø§Ù„ØªØ³Ø¬ÙŠÙ„</span>
+                        <span class="welcome-btn-sub">Ø£Ù†Ø´Ø¦ Ø­Ø³Ø§Ø¨Ùƒ Ù„Ù„Ù…Ø±Ø© Ø§Ù„Ø£ÙˆÙ„Ù‰</span>
+                    </button>
+                </div>
+                <div class="login-footer">
+                    <p>Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ù…Ø­ÙÙˆØ¸Ø© Ù„Ø¯Ù‰ Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ø¬Ù…Ø¹ÙŠØ©</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Page (for registered users) -->
+        <div id="login-page" class="login-page hidden">
+            <div class="login-content">
+                <div class="login-header">
+                    <div class="login-emblem">
+                        <svg viewBox="0 0 120 120" class="login-logo">
+                            <defs>
+                                <linearGradient id="loginEmblemGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#f1c40f"/>
+                                    <stop offset="100%" style="stop-color:#e67e22"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="60" cy="60" r="55" fill="none" stroke="url(#loginEmblemGrad2)" stroke-width="3"/>
+                            <circle cx="60" cy="60" r="48" fill="none" stroke="url(#loginEmblemGrad2)" stroke-width="1.5"/>
+                            <text x="60" y="40" text-anchor="middle" fill="#f1c40f" font-size="14" font-weight="bold" font-family="Noto Kufi Arabic">Ø¬Ù…Ø¹ÙŠØ©</text>
+                            <text x="60" y="58" text-anchor="middle" fill="#f1c40f" font-size="11" font-weight="bold" font-family="Noto Kufi Arabic">Ø£ÙˆÙ„ÙŠØ§Ø¡ Ø§Ù„ØªÙ„Ø§Ù…ÙŠØ°</text>
+                            <text x="60" y="74" text-anchor="middle" fill="#ecf0f1" font-size="9" font-family="Noto Kufi Arabic">Ø¥Ø¨ØªØ¯Ø§Ø¦ÙŠØ© Ø§Ù„Ø´ÙŠØ® Ø­Ø§Ø¬ Ù…Ø³Ø¹ÙˆØ¯ Ø³Ø¹ÙŠØ¯</text>
+                            <text x="60" y="88" text-anchor="middle" fill="#95a5a6" font-size="7" font-family="Noto Kufi Arabic">Ø¨Ù„Ø¯ÙŠØ© Ø§Ù„Ø¹Ø·Ù - ØªØ¬Ù†ÙŠÙ†Øª - ØºØ±Ø¯Ø§ÙŠØ©</text>
+                            <path d="M30 95 Q60 105 90 95" fill="none" stroke="url(#loginEmblemGrad2)" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <h1 class="login-title">ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„</h1>
+                    <p class="login-subtitle">Ø£Ø¯Ø®Ù„ Ø¨Ø±ÙŠØ¯Ùƒ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ Ù„Ø§Ø³ØªÙ„Ø§Ù… ÙƒÙˆØ¯ Ø§Ù„ØªØ­Ù‚Ù‚</p>
+                </div>
+                <form id="login-form" class="login-form" onsubmit="handleLoginEmail(event)">
+                    <div class="form-group">
+                        <label for="login-email">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                            Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ
+                        </label>
+                        <input type="email" id="login-email" placeholder="example@email.com" required>
+                    </div>
+                    <button type="submit" class="login-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        Ø¥Ø±Ø³Ø§Ù„ ÙƒÙˆØ¯ Ø§Ù„ØªØ­Ù‚Ù‚
+                    </button>
+                </form>
+                <div class="login-footer">
+                    <button class="back-to-login" onclick="showWelcomePage()">â† Ø§Ù„Ø¹ÙˆØ¯Ø©</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Page (new users) -->
+        <div id="register-page" class="login-page hidden">
+            <div class="login-content">
+                <div class="login-header">
+                    <div class="login-emblem">
+                        <svg viewBox="0 0 120 120" class="login-logo">
+                            <defs>
+                                <linearGradient id="loginEmblemGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#f1c40f"/>
+                                    <stop offset="100%" style="stop-color:#e67e22"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="60" cy="60" r="55" fill="none" stroke="url(#loginEmblemGrad3)" stroke-width="3"/>
+                            <circle cx="60" cy="60" r="48" fill="none" stroke="url(#loginEmblemGrad3)" stroke-width="1.5"/>
+                            <text x="60" y="40" text-anchor="middle" fill="#f1c40f" font-size="14" font-weight="bold" font-family="Noto Kufi Arabic">Ø¬Ù…Ø¹ÙŠØ©</text>
+                            <text x="60" y="58" text-anchor="middle" fill="#f1c40f" font-size="11" font-weight="bold" font-family="Noto Kufi Arabic">Ø£ÙˆÙ„ÙŠØ§Ø¡ Ø§Ù„ØªÙ„Ø§Ù…ÙŠØ°</text>
+                            <text x="60" y="74" text-anchor="middle" fill="#ecf0f1" font-size="9" font-family="Noto Kufi Arabic">Ø¥Ø¨ØªØ¯Ø§Ø¦ÙŠØ© Ø§Ù„Ø´ÙŠØ® Ø­Ø§Ø¬ Ù…Ø³Ø¹ÙˆØ¯ Ø³Ø¹ÙŠØ¯</text>
+                            <text x="60" y="88" text-anchor="middle" fill="#95a5a6" font-size="7" font-family="Noto Kufi Arabic">Ø¨Ù„Ø¯ÙŠØ© Ø§Ù„Ø¹Ø·Ù - ØªØ¬Ù†ÙŠÙ†Øª - ØºØ±Ø¯Ø§ÙŠØ©</text>
+                            <path d="M30 95 Q60 105 90 95" fill="none" stroke="url(#loginEmblemGrad3)" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <h1 class="login-title">ØªØ³Ø¬ÙŠÙ„ Ø¬Ø¯ÙŠØ¯</h1>
+                    <p class="login-subtitle">Ø£Ù†Ø´Ø¦ Ø­Ø³Ø§Ø¨Ùƒ Ù„Ø£ÙˆÙ„ Ù…Ø±Ø©</p>
+                </div>
+                <form id="register-form" class="login-form" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label for="reg-parent-name">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            Ø§Ø³Ù… Ùˆ Ù„Ù‚Ø¨ Ø§Ù„ÙˆÙ„ÙŠ
+                        </label>
+                        <input type="text" id="reg-parent-name" placeholder="Ù…Ø«Ø§Ù„: Ù…Ø­Ù…Ø¯ Ø¨Ù† Ø£Ø­Ù…Ø¯" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-student-name">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                            </svg>
+                            Ø§Ø³Ù… Ø§Ù„ØªÙ„Ù…ÙŠØ° (Ø§Ù„Ø·Ø§Ù„Ø¨ Ø§Ù„Ø£ÙˆÙ„)
+                        </label>
+                        <input type="text" id="reg-student-name" placeholder="Ù…Ø«Ø§Ù„: Ø£Ø­Ù…Ø¯ Ù…Ø­Ù…Ø¯" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-student-level">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                                <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
+                            </svg>
+                            Ø§Ù„Ù…Ø³ØªÙˆÙ‰ Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠ
+                        </label>
+                        <select id="reg-student-level" required>
+                            <option value="">Ø§Ø®ØªØ± Ø§Ù„Ù…Ø³ØªÙˆÙ‰</option>
+                            <option value="preparatory">Ø§Ù„ØªØ­Ø¶ÙŠØ±ÙŠØ±ÙŠ</option>
+                            <option value="1">Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø£ÙˆÙ„Ù‰ Ø§Ø¨ØªØ¯Ø§Ø¦ÙŠ</option>
+                            <option value="2">Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø«Ø§Ù†ÙŠØ© Ø§Ø¨ØªØ¯Ø§Ø¦ÙŠ</option>
+                            <option value="3">Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø«Ø§Ù„Ø«Ø© Ø§Ø¨ØªØ¯Ø§Ø¦ÙŠ</option>
+                            <option value="4">Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø±Ø§Ø¨Ø¹Ø© Ø§Ø¨ØªØ¯Ø§Ø¦ÙŠ</option>
+                            <option value="5">Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø®Ø§Ù…Ø³Ø© Ø§Ø¨ØªØ¯Ø§Ø¦ÙŠ</option>
+                        </select>
+                    </div>
+                    <div class="form-group additional-students">
+                        <label>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                            ØªÙ„Ø§Ù…ÙŠØ° Ø¥Ø¶Ø§ÙÙŠÙˆÙ† (Ø§Ø®ØªÙŠØ§Ø±ÙŠ)
+                        </label>
+                        <div class="additional-student-row">
+                            <input type="text" id="reg-student2-name" placeholder="Ø§Ø³Ù… Ø§Ù„ØªÙ„Ù…ÙŠØ° Ø§Ù„Ø«Ø§Ù†ÙŠ">
+                            <select id="reg-student2-level">
+                                <option value="">Ø§Ù„Ù…Ø³ØªÙˆÙ‰</option>
+                                <option value="preparatory">Ø§Ù„ØªØ­Ø¶ÙŠØ±ÙŠØ±ÙŠ</option>
+                                <option value="1">Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø£ÙˆÙ„Ù‰</option>
+                                <option value="2">Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø«Ø§Ù†ÙŠØ©</option>
+                                <option value="3">Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø«Ø§Ù„Ø«Ø©</option>
+                                <option value="4">Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø±Ø§Ø¨Ø¹Ø©</option>
+                                <option value="5">Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø®Ø§Ù…Ø³Ø©</option>
+                            </select>
+                        </div>
+                        <div class="additional-student-row">
+                            <input type="text" id="reg-student3-name" placeholder="Ø§Ø³Ù… Ø§Ù„ØªÙ„Ù…ÙŠØ° Ø§Ù„Ø«Ø§Ù„Ø«">
+                            <select id="reg-student3-level">
+                                <option value="">Ø§Ù„Ù…Ø³ØªÙˆÙ‰</option>
+                                <option value="preparatory">Ø§Ù„ØªØ­Ø¶ÙŠØ±ÙŠØ±ÙŠ</option>
+                                <option value="1">Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø£ÙˆÙ„Ù‰</option>
+                                <option value="2">Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø«Ø§Ù†ÙŠØ©</option>
+                                <option value="3">Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø«Ø§Ù„Ø«Ø©</option>
+                                <option value="4">Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø±Ø§Ø¨Ø¹Ø©</option>
+                                <option value="5">Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø®Ø§Ù…Ø³Ø©</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-phone">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                            Ø±Ù‚Ù… Ø§Ù„Ù‡Ø§ØªÙ
+                        </label>
+                        <input type="tel" id="reg-phone" placeholder="0XXX XX XX XX" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                            Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ
+                        </label>
+                        <input type="email" id="reg-email" placeholder="example@email.com" required>
+                    </div>
+                    <button type="submit" class="login-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="8.5" cy="7" r="4"/>
+                            <line x1="20" y1="8" x2="20" y2="14"/>
+                            <line x1="23" y1="11" x2="17" y2="11"/>
+                        </svg>
+                        Ø§Ù„ØªØ³Ø¬ÙŠÙ„ ÙˆØ¥Ø±Ø³Ø§Ù„ ÙƒÙˆØ¯ Ø§Ù„ØªØ­Ù‚Ù‚
+                    </button>
+                </form>
+                <div class="login-footer">
+                    <button class="back-to-login" onclick="showWelcomePage()">â† Ø§Ù„Ø¹ÙˆØ¯Ø©</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Verification Code Page -->
+        <div id="verification-page" class="login-page hidden">
+            <div class="login-content">
+                <div class="login-header">
+                    <div class="verification-icon">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#f1c40f" stroke-width="1.5">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                    </div>
+                    <h1 class="login-title">ØªØ­Ù‚Ù‚ Ù…Ù† Ø¨Ø±ÙŠØ¯Ùƒ</h1>
+                    <p class="login-subtitle" id="verification-email-display">ØªÙ… Ø¥Ø±Ø³Ø§Ù„ ÙƒÙˆØ¯ Ø§Ù„ØªØ­Ù‚Ù‚ Ø¥Ù„Ù‰</p>
+                </div>
+                <form id="verification-form" class="login-form" onsubmit="handleVerification(event)">
+                    <div class="verification-code-inputs">
+                        <input type="text" class="code-input" id="code-1" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="handleCodeInput(this, 'code-2')" onkeydown="handleCodeKeydown(event, this, null)">
+                        <input type="text" class="code-input" id="code-2" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="handleCodeInput(this, 'code-3')" onkeydown="handleCodeKeydown(event, this, 'code-1')">
+                        <input type="text" class="code-input" id="code-3" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="handleCodeInput(this, 'code-4')" onkeydown="handleCodeKeydown(event, this, 'code-2')">
+                        <input type="text" class="code-input" id="code-4" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="handleCodeInput(this, 'code-5')" onkeydown="handleCodeKeydown(event, this, 'code-3')">
+                        <input type="text" class="code-input" id="code-5" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="handleCodeInput(this, 'code-6')" onkeydown="handleCodeKeydown(event, this, 'code-4')">
+                        <input type="text" class="code-input" id="code-6" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="handleCodeInput(this, null)" onkeydown="handleCodeKeydown(event, this, 'code-5')">
+                    </div>
+                    <div class="verification-timer" id="verification-timer">
+                        Ø¥Ø¹Ø§Ø¯Ø© Ø§Ù„Ø¥Ø±Ø³Ø§Ù„ Ø®Ù„Ø§Ù„ <span id="timer-count">02:00</span>
+                    </div>
+                    <button type="submit" class="login-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        ØªØ£ÙƒÙŠØ¯
+                    </button>
+                    <button type="button" class="resend-btn" id="resend-btn" onclick="resendCode()" disabled>
+                        Ø¥Ø¹Ø§Ø¯Ø© Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„ÙƒÙˆØ¯
+                    </button>
+                </form>
+                <div class="login-footer">
+                    <button class="back-to-login" onclick="backToAuth()">â† Ø§Ù„Ø¹ÙˆØ¯Ø©</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App -->
+        <div id="main-app" class="hidden">
+            <!-- Top Header -->
+            <header class="app-header">
+                <div class="header-content">
+                    <div class="header-emblem">
+                        <svg viewBox="0 0 50 50" class="header-logo">
+                            <circle cx="25" cy="25" r="23" fill="none" stroke="#f1c40f" stroke-width="1.5"/>
+                            <circle cx="25" cy="25" r="20" fill="none" stroke="#f1c40f" stroke-width="0.5" opacity="0.5"/>
+                            <text x="25" y="18" text-anchor="middle" fill="#f1c40f" font-size="6" font-weight="bold" font-family="Noto Kufi Arabic">جمعية</text>
+                            <text x="25" y="24" text-anchor="middle" fill="#f1c40f" font-size="4.5" font-family="Noto Kufi Arabic">أولياء التلاميذ</text>
+                            <text x="25" y="30" text-anchor="middle" fill="#ecf0f1" font-size="3.5" font-family="Noto Kufi Arabic">إبتدائية الشيخ</text>
+                            <text x="25" y="35" text-anchor="middle" fill="#ecf0f1" font-size="3.5" font-family="Noto Kufi Arabic">حاج مسعود سعيد</text>
+                            <path d="M10 40 Q25 46 40 40" fill="none" stroke="#f1c40f" stroke-width="1" opacity="0.7"/>
+                        </svg>
+                    </div>
+                    <div class="header-text">
+                        <h1 class="header-title">جمعية أولياء التلاميذ إبتدائية الشيخ حاج مسعود سعيد</h1>
+                        <p class="header-subtitle">إبتدائية الشيخ حاج مسعود سعيد - بلدية العطف</p>
+                    </div>
+                    <button id="notifications-btn" class="header-icon-btn" title="الإشعارات">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        <span id="notification-badge" class="notification-badge hidden">0</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main id="page-content" class="page-content">
+                <!-- Home Page -->
+                <section id="page-home" class="page active">
+                    <div class="home-hero">
+                        <div class="hero-overlay"></div>
+                        <div class="hero-content">
+                            <div class="hero-emblem">
+                                <svg viewBox="0 0 140 140" class="hero-logo">
+                                    <defs>
+                                        <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#f1c40f"/>
+                                            <stop offset="100%" style="stop-color:#e67e22"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <circle cx="70" cy="70" r="65" fill="none" stroke="url(#heroGrad)" stroke-width="2.5"/>
+                                    <circle cx="70" cy="70" r="58" fill="none" stroke="url(#heroGrad)" stroke-width="1" opacity="0.5"/>
+                                    <text x="70" y="42" text-anchor="middle" fill="#f1c40f" font-size="18" font-weight="bold" font-family="Noto Kufi Arabic">جمعية</text>
+                                    <text x="70" y="60" text-anchor="middle" fill="#f1c40f" font-size="14" font-weight="bold" font-family="Noto Kufi Arabic">أولياء التلاميذ</text>
+                                    <text x="70" y="78" text-anchor="middle" fill="#ecf0f1" font-size="11" font-family="Noto Kufi Arabic">إبتدائية الشيخ</text>
+                                    <text x="70" y="92" text-anchor="middle" fill="#ecf0f1" font-size="11" font-family="Noto Kufi Arabic">حاج مسعود سعيد</text>
+                                    <text x="70" y="106" text-anchor="middle" fill="#95a5a6" font-size="8" font-family="Noto Kufi Arabic">بلدية العطف - تجنينت - غرداية</text>
+                                    <path d="M35 115 Q70 125 105 115" fill="none" stroke="url(#heroGrad)" stroke-width="1.5"/>
+                                </svg>
+                            </div>
+                            <h2 class="hero-title">مرحباً بكم في المنصة الرقمية للجمعية</h2>
+                            <p class="hero-desc">نرحب بك أيها الولي في البوابة الرقمية لمتابعة المستجدات والشؤون المدرسية لتعزيز التواصل و المتابعة من أجل مرافقة واعية لأبنائنا</p>
+                            <p class="hero-year">الموسم الدراسي 2026/2027</p>
+                        </div>
+                    </div>
+
+                    <div class="home-grid">
+                        <div class="home-card" onclick="navigateTo('books')">
+                            <div class="card-icon books-icon">
+                                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                    <path d="M28 19.5A2.5 2.5 0 0 1 30.5 17H44"/>
+                                    <path d="M30.5 2H44v20H30.5A2.5 2.5 0 0 1 28 19.5v-15A2.5 2.5 0 0 1 30.5 2z"/>
+                                </svg>
+                            </div>
+                            <h3>حاسبة الكتب</h3>
+                            <p>أسعار الكتب الرسمية</p>
+                            <span class="card-year">الديوان الوطني</span>
+                        </div>
+
+                        <div class="home-card" onclick="navigateTo('fawziya')">
+                            <div class="card-icon fawziya-icon">
+                                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="4" y="8" width="40" height="32" rx="4"/>
+                                    <circle cx="24" cy="22" r="8"/>
+                                    <path d="M12 38c0-6.627 5.373-12 12-12s12 5.373 12 12"/>
+                                    <path d="M32 14l4 4-4 4" stroke-width="2.5"/>
+                                </svg>
+                            </div>
+                            <h3>فضاء الأولياء</h3>
+                            <p>المنصة الرقمية الرسمية</p>
+                            <span class="card-year">2026</span>
+                        </div>
+
+                        <div class="home-card" onclick="navigateTo('facebook')">
+                            <div class="card-icon facebook-icon">
+                                <svg viewBox="0 0 48 48" fill="currentColor">
+                                    <path d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm3.5 21.5h-3v11h-4v-11h-2.5v-3.5H20.5v-2.5c0-2.5 1-4 4-4h2.5v3.5h-1.5c-1 0-1.5.5-1.5 1.5v2.5h3l-.5 3.5z"/>
+                                </svg>
+                            </div>
+                            <h3>منشورات الفايسبوك</h3>
+                            <p>آخر منشورات الجمعية</p>
+                        </div>
+
+                        <div class="home-card" onclick="navigateTo('archive')">
+                            <div class="card-icon archive-icon">
+                                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="6" y="8" width="36" height="8" rx="2"/>
+                                    <path d="M10 16v20a2 2 0 002 2h24a2 2 0 002-2V16"/>
+                                    <line x1="18" y1="24" x2="30" y2="24"/>
+                                </svg>
+                            </div>
+                            <h3>أرشيف الجمعية</h3>
+                            <p>نشاطات المواسم السابقة</p>
+                        </div>
+
+                        <div class="home-card" onclick="navigateTo('notifications')">
+                            <div class="card-icon notif-icon">
+                                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M24 6a12 12 0 0112 12c0 8 4 10 4 10H8s4-2 4-10a12 12 0 0112-12z"/>
+                                    <path d="M20 38a4 4 0 008 0"/>
+                                </svg>
+                                <span class="notif-count hidden" id="home-notif-count">0</span>
+                            </div>
+                            <h3>إشعارات المدرسة</h3>
+                            <p>إعلانات وتنبيهات</p>
+                        </div>
+
+                        <div class="home-card" onclick="navigateTo('education')">
+                            <div class="card-icon education-icon">
+                                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 20l18-10 18 10-18 10z"/>
+                                    <path d="M14 24v12c0 2 4 6 10 6s10-4 10-6V24"/>
+                                    <line x1="42" y1="20" x2="42" y2="36"/>
+                                </svg>
+                            </div>
+                            <h3>المواقع التربوية</h3>
+                            <p>مواقع وفيديوهات رسمية</p>
+                        </div>
+
+                        <div class="home-card" onclick="navigateTo('calculator')">
+                            <div class="card-icon calculator-icon">
+                                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="8" y="4" width="32" height="40" rx="4"/>
+                                    <rect x="12" y="8" width="24" height="10" rx="2"/>
+                                    <circle cx="16" cy="26" r="2"/>
+                                    <circle cx="24" cy="26" r="2"/>
+                                    <circle cx="32" cy="26" r="2"/>
+                                    <circle cx="16" cy="34" r="2"/>
+                                    <circle cx="24" cy="34" r="2"/>
+                                    <circle cx="32" cy="34" r="2"/>
+                                    <circle cx="16" cy="42" r="2"/>
+                                    <circle cx="24" cy="42" r="2"/>
+                                    <circle cx="32" cy="42" r="2"/>
+                                </svg>
+                            </div>
+                            <h3>حاسبة الأدوات المدرسية</h3>
+                            <p>حساب إجمالي الكراريس والأدوات</p>
+                        </div>
+
+                        <div class="home-card" onclick="navigateTo('admin')" id="admin-home-card">
+                            <div class="card-icon admin-icon">
+                                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="24" cy="16" r="8"/>
+                                    <path d="M8 42c0-8.84 7.16-16 16-16s16 7.16 16 16"/>
+                                    <path d="M32 10l4 4-4 4" stroke-width="2.5"/>
+                                </svg>
+                            </div>
+                            <h3>لوحة التحكم</h3>
+                            <p>إدارة الإشعارات والمنشورات</p>
+                        </div>
+
+                        <div class="home-card profile-card" id="parent-profile-card">
+                            <div class="card-icon profile-icon">
+                                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="24" cy="16" r="8"/>
+                                    <path d="M8 42c0-8.84 7.16-16 16-16s16 7.16 16 16"/>
+                                </svg>
+                            </div>
+                            <h3 id="parent-name-display">حسابي</h3>
+                            <p id="parent-students-display">management des eleves</p>
+                            <button class="logout-btn" onclick="event.stopPropagation(); handleLogout()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                    <polyline points="16 17 21 12 16 7"/>
+                                    <line x1="21" y1="12" x2="9" y2="12"/>
+                                </svg>
+                                خروج
+                            </button>
+                        </div>
+
+                        <div class="home-card install-card" id="install-app-btn" onclick="installApp()" style="display: none;">
+                            <div class="card-icon install-icon">
+                                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M24 32V16M16 24l8 8 8-8"/>
+                                    <path d="M40 32v6a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-6"/>
+                                </svg>
+                            </div>
+                            <h3>تثبيت التطبيق</h3>
+                            <p>تنزيل التطبيق على الهاتف</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Facebook Page -->
+                <section id="page-facebook" class="page">
+                    <div class="page-header">
+                        <button class="back-btn" onclick="navigateTo('home')">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </button>
+                        <h2>منشورات الفايسبوك</h2>
+                    </div>
+                    
+                    <div class="fb-page-container">
+                        <div class="fb-page-header">
+                            <div class="fb-page-info">
+                                <div class="fb-page-avatar">
+                                    <svg viewBox="0 0 50 50" width="50" height="50">
+                                        <circle cx="25" cy="25" r="23" fill="#1a5276" stroke="#f1c40f" stroke-width="2"/>
+                                        <text x="25" y="18" text-anchor="middle" fill="#f1c40f" font-size="6" font-weight="bold" font-family="Noto Kufi Arabic">جمعية</text>
+                                        <text x="25" y="24" text-anchor="middle" fill="#f1c40f" font-size="4.5" font-family="Noto Kufi Arabic">أولياء التلاميذ</text>
+                                        <text x="25" y="30" text-anchor="middle" fill="#ecf0f1" font-size="3.5" font-family="Noto Kufi Arabic">إبتدائية الشيخ</text>
+                                        <text x="25" y="34" text-anchor="middle" fill="#ecf0f1" font-size="3.5" font-family="Noto Kufi Arabic">حاج مسعود سعيد</text>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="fb-page-name">جمعية أولياء التلاميذ إبتدائية الشيخ حاج مسعود سعيد</h3>
+                                    <p class="fb-page-followers">صفحة رسمية</p>
+                                </div>
+                            </div>
+                            <div class="fb-page-actions">
+                                <a href="https://www.facebook.com/Association.Ecole.AmiHamou" target="_blank" class="fb-follow-btn">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                    </svg>
+                                    متابعة
+                                </a>
+                                <a href="https://www.facebook.com/Association.Ecole.AmiHamou" target="_blank" class="fb-details-btn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <line x1="12" y1="16" x2="12" y2="12"/>
+                                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                                    </svg>
+                                    تفاصيل
+                                </a>
+                            </div>
+                        </div>
+                        <div class="fb-feed-header">
+                            <h3>آخر المنشورات</h3>
+                            <button class="fb-refresh-btn" onclick="loadFacebookFeed()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M23 4v6h-6"/>
+                                    <path d="M1 20v-6h6"/>
+                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                                </svg>
+                                تحيين
+                            </button>
+                        </div>
+                        <div id="fb-feed" class="fb-feed">
+                            <div class="fb-loading">
+                                <div class="spinner"></div>
+                                <p>جاري تحميل المنشورات...</p>
+                            </div>
+                        </div>
+                        <div class="fb-embed-note">
+                            <p>⚠️ لعرض جميع المنشورات، يرجى زيارة صفحتنا الرسمية على الفايسبوك</p>
+                            <div class="fb-link-section">
+                                <div class="fb-link-box">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877f2">
+                                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                    </svg>
+                                    <span>facebook.com/Association.Ecole.AmiHamou</span>
+                                </div>
+                                <a href="https://www.facebook.com/Association.Ecole.AmiHamou" target="_blank" class="fb-copy-link" onclick="copyFacebookLink(event)">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                    </svg>
+                                    نسخ
+                                </a>
+                            </div>
+                            <a href="https://www.facebook.com/Association.Ecole.AmiHamou" target="_blank" class="fb-visit-btn">زيارة الصفحة</a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Archive Page -->
+                <section id="page-archive" class="page">
+                    <div class="page-header">
+                        <button class="back-btn" onclick="navigateTo('home')">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </button>
+                        <h2>أرشيف الجمعية</h2>
+                    </div>
+
+                    <div class="archive-list" id="archive-list">
+                        <!-- Filled by JS -->
+                    </div>
+                </section>
+
+                <!-- Notifications Page -->
+                <section id="page-notifications" class="page">
+                    <div class="page-header">
+                        <button class="back-btn" onclick="navigateTo('home')">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </button>
+                        <h2>إشعارات المدرسة</h2>
+                    </div>
+
+                    <div class="notif-enable-section">
+                        <div class="notif-enable-card">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f1c40f" stroke-width="2">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                            </svg>
+                            <div>
+                                <h3>تفعيل الإشعارات</h3>
+                                <p>استلم إشعارات فورية عند نشر إعلان جديد</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="notif-toggle" onchange="toggleNotifications()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="notifications-list" class="notifications-list">
+                        <!-- Filled by JS -->
+                    </div>
+                </section>
+
+                <!-- Education Resources Page -->
+                <section id="page-education" class="page">
+                    <div class="page-header">
+                        <button class="back-btn" onclick="navigateTo('home')">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </button>
+                        <h2>المواقع التربوية الرسمية</h2>
+                    </div>
+
+                    <div class="edu-section">
+                        <h3 class="edu-section-title">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="2" y1="12" x2="22" y2="12"/>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                            </svg>
+                            المواقع التربوية الرسمية
+                        </h3>
+                        <div id="edu-sites" class="edu-grid">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+
+                    <div class="edu-section">
+                        <h3 class="edu-section-title">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="23 7 16 12 23 17 23 7"/>
+                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                            </svg>
+                            فيديوهات تعليمية رسمية
+                        </h3>
+                        <div id="edu-videos" class="edu-videos-grid">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Calculator Page -->
+                <section id="page-calculator" class="page">
+                    <div class="page-header">
+                        <button class="back-btn" onclick="navigateTo('home')">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </button>
+                        <h2>حاسبة الأدوات المدرسية</h2>
+                    </div>
+
+                    <div class="calc-intro">
+                        <p>أدخل عدد التلاميذ لكل مستوى لحساب إجمالي الكراريس المطلوبة</p>
+                    </div>
+
+                    <div class="calc-inputs">
+                        <div class="calc-input-row">
+                            <div class="calc-grade-info">
+                                <span class="calc-grade-dot" style="background: #e74c3c"></span>
+                                <span>السنة الأولى ابتدائي</span>
+                            </div>
+                            <div class="calc-input-wrapper">
+                                <button class="calc-btn minus" onclick="updateCalc('grade1', -1)">-</button>
+                                <input type="number" id="calc-grade1" value="0" min="0" onchange="calculateTotal()">
+                                <button class="calc-btn plus" onclick="updateCalc('grade1', 1)">+</button>
+                            </div>
+                        </div>
+
+                        <div class="calc-input-row">
+                            <div class="calc-grade-info">
+                                <span class="calc-grade-dot" style="background: #e67e22"></span>
+                                <span>السنة الثانية ابتدائي</span>
+                            </div>
+                            <div class="calc-input-wrapper">
+                                <button class="calc-btn minus" onclick="updateCalc('grade2', -1)">-</button>
+                                <input type="number" id="calc-grade2" value="0" min="0" onchange="calculateTotal()">
+                                <button class="calc-btn plus" onclick="updateCalc('grade2', 1)">+</button>
+                            </div>
+                        </div>
+
+                        <div class="calc-input-row">
+                            <div class="calc-grade-info">
+                                <span class="calc-grade-dot" style="background: #f1c40f"></span>
+                                <span>السنة الثالثة ابتدائي</span>
+                            </div>
+                            <div class="calc-input-wrapper">
+                                <button class="calc-btn minus" onclick="updateCalc('grade3', -1)">-</button>
+                                <input type="number" id="calc-grade3" value="0" min="0" onchange="calculateTotal()">
+                                <button class="calc-btn plus" onclick="updateCalc('grade3', 1)">+</button>
+                            </div>
+                        </div>
+
+                        <div class="calc-input-row">
+                            <div class="calc-grade-info">
+                                <span class="calc-grade-dot" style="background: #27ae60"></span>
+                                <span>السنة الرابعة ابتدائي</span>
+                            </div>
+                            <div class="calc-input-wrapper">
+                                <button class="calc-btn minus" onclick="updateCalc('grade4', -1)">-</button>
+                                <input type="number" id="calc-grade4" value="0" min="0" onchange="calculateTotal()">
+                                <button class="calc-btn plus" onclick="updateCalc('grade4', 1)">+</button>
+                            </div>
+                        </div>
+
+                        <div class="calc-input-row">
+                            <div class="calc-grade-info">
+                                <span class="calc-grade-dot" style="background: #9b59b6"></span>
+                                <span>السنة الخامسة ابتدائي</span>
+                            </div>
+                            <div class="calc-input-wrapper">
+                                <button class="calc-btn minus" onclick="updateCalc('grade5', -1)">-</button>
+                                <input type="number" id="calc-grade5" value="0" min="0" onchange="calculateTotal()">
+                                <button class="calc-btn plus" onclick="updateCalc('grade5', 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="calc-total-section">
+                        <div class="calc-total-card">
+                            <div class="calc-total-row">
+                                <span>إجمالي التلاميذ</span>
+                                <span id="calc-total-students">0</span>
+                            </div>
+                        </div>
+                        <div class="calc-totals-grid">
+                            <div class="calc-total-item notebooks">
+                                <div class="calc-total-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="calc-total-info">
+                                    <span class="calc-total-label">الكراريس</span>
+                                    <span class="calc-total-value" id="calc-total-notebooks">0</span>
+                                </div>
+                            </div>
+                            <div class="calc-total-item supplies">
+                                <div class="calc-total-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                                    </svg>
+                                </div>
+                                <div class="calc-total-info">
+                                    <span class="calc-total-label">الأدوات الأخرى</span>
+                                    <span class="calc-total-value" id="calc-total-supplies">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="calc-results" id="calc-results">
+                        <!-- Results will be filled by JS -->
+                    </div>
+
+                    <div class="calc-actions">
+                        <button class="calc-action-btn" onclick="resetCalculator()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                                <path d="M3 3v5h5"/>
+                            </svg>
+                            إعادة تعيين
+                        </button>
+                        <button class="calc-action-btn primary" onclick="printCalculator()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 6 2 18 2 18 9"/>
+                                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                                <rect x="6" y="14" width="12" height="8"/>
+                            </svg>
+                            طباعة
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Books Calculator Page -->
+                <section id="page-books" class="page">
+                    <div class="page-header">
+                        <button class="back-btn" onclick="navigateTo('home')">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </button>
+                        <h2>حاسبة الكتب المدرسية</h2>
+                    </div>
+
+                    <div class="books-intro">
+                        <p>حساب تكلفة الكتب المدرسية حسب المستوى - الديوان الوطني للمطبوعات المدرسية</p>
+                    </div>
+
+                    <div class="books-grade-select">
+                        <h4>اختر المستوى:</h4>
+                        <div class="books-grade-grid">
+                            <button class="books-grade-btn active" onclick="selectBooksGrade('preparatory', this)">
+                                <span class="books-grade-num">تحضيري</span>
+                                <span class="books-grade-price">360 د.ج</span>
+                            </button>
+                            <button class="books-grade-btn" onclick="selectBooksGrade('grade1', this)">
+                                <span class="books-grade-num">الأولى</span>
+                                <span class="books-grade-price">910 د.ج</span>
+                            </button>
+                            <button class="books-grade-btn" onclick="selectBooksGrade('grade2', this)">
+                                <span class="books-grade-num">الثانية</span>
+                                <span class="books-grade-price">1,000 د.ج</span>
+                            </button>
+                            <button class="books-grade-btn" onclick="selectBooksGrade('grade3', this)">
+                                <span class="books-grade-num">الثالثة</span>
+                                <span class="books-grade-price">1,910 د.ج</span>
+                            </button>
+                            <button class="books-grade-btn" onclick="selectBooksGrade('grade4', this)">
+                                <span class="books-grade-num">الرابعة</span>
+                                <span class="books-grade-price">2,300 د.ج</span>
+                            </button>
+                            <button class="books-grade-btn" onclick="selectBooksGrade('grade5', this)">
+                                <span class="books-grade-num">الخامسة</span>
+                                <span class="books-grade-price">2,800 د.ج</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="books-list" id="books-list">
+                        <!-- Filled by JS -->
+                    </div>
+
+                    <div class="books-total-section">
+                        <div class="books-total-card">
+                            <div class="books-total-row">
+                                <span>إجمالي الكتب المحددة</span>
+                                <span id="books-total-items">0</span>
+                            </div>
+                            <div class="books-total-row">
+                                <span>المجموع الكلي</span>
+                                <span id="books-total-price">0 د.ج</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="books-students-section">
+                        <div class="books-students-card">
+                            <h4>حساب حسب عدد التلاميذ</h4>
+                            <div class="books-students-input">
+                                <label>عدد التلاميذ:</label>
+                                <input type="number" id="books-students-count" value="1" min="1" onchange="calculateBooksTotal()">
+                            </div>
+                            <div class="books-students-result">
+                                <span>المجموع الكلي:</span>
+                                <span id="books-grand-total">0 د.ج</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="calc-actions">
+                        <button class="calc-action-btn" onclick="resetBooksCalculator()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                                <path d="M3 3v5h5"/>
+                            </svg>
+                            إعادة تعيين
+                        </button>
+                        <button class="calc-action-btn primary" onclick="printBooksCalculator()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 6 2 18 2 18 9"/>
+                                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                                <rect x="6" y="14" width="12" height="8"/>
+                            </svg>
+                            طباعة
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Fawziya Page -->
+                <section id="page-fawziya" class="page">
+                    <div class="page-header">
+                        <button class="back-btn" onclick="navigateTo('home')">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </button>
+                        <h2>فضاء الأولياء 2026</h2>
+                    </div>
+
+                    <div class="fawziya-hero">
+                        <div class="fawziya-hero-icon">
+                            <svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="#f1c40f" stroke-width="1.5">
+                                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                <circle cx="12" cy="10" r="4"/>
+                                <path d="M6 18c0-3.314 2.686-6 6-6s6 2.686 6 6"/>
+                                <path d="M16 6l3 3-3 3" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <h3>فضاء الأولياء 2026</h3>
+                        <p>المنصة الرقمية الرسمية لوزارة التربية الوطنية</p>
+                        <a href="https://awlyaa.education.gov.dz" target="_blank" class="fawziya-main-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                <polyline points="15 3 21 3 21 9"/>
+                                <line x1="10" y1="14" x2="21" y2="3"/>
+                            </svg>
+                            الولوج للموقع الرسمي
+                        </a>
+                    </div>
+
+                    <div class="fawziya-about">
+                        <h4>ما هو فضاء الأولياء؟</h4>
+                        <p>فضاء الأولياء هو منصة رقمية رسمية أطلقتها وزارة التربية الوطنية الجزائرية بهدف تسهيل التواصل بين الأولياء والمؤسسات التعليمية. يُعد خطوة مهمة لتعزيز الشفافية وبناء علاقة تواصل فعّالة بين المدرسة وولي التلميذ.</p>
+                    </div>
+
+                    <div class="fawziya-features">
+                        <h4>خدمات المنصة:</h4>
+                        
+                        <div class="fawziya-feature">
+                            <div class="fawziya-feature-icon" style="background: rgba(52, 152, 219, 0.2); color: #3498db;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                                </svg>
+                            </div>
+                            <div class="fawziya-feature-info">
+                                <h5>متابعة الأداء الأكاديمي</h5>
+                                <p>متابعة الأداء الأكاديمي للتلاميذ بشكل مستمر</p>
+                            </div>
+                        </div>
+
+                        <div class="fawziya-feature">
+                            <div class="fawziya-feature-icon" style="background: rgba(39, 174, 96, 0.2); color: #27ae60;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                    <line x1="16" y1="13" x2="8" y2="13"/>
+                                    <line x1="16" y1="17" x2="8" y2="17"/>
+                                    <polyline points="10 9 9 9 8 9"/>
+                                </svg>
+                            </div>
+                            <div class="fawziya-feature-info">
+                                <h5>كشف النقاط ونتائج الامتحانات</h5>
+                                <p>الاطلاع على كشف النقاط ونتائج الامتحانات بكل سهولة</p>
+                            </div>
+                        </div>
+
+                        <div class="fawziya-feature">
+                            <div class="fawziya-feature-icon" style="background: rgba(155, 89, 182, 0.2); color: #9b59b6;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                            </div>
+                            <div class="fawziya-feature-info">
+                                <h5>تحميل كشوف النقاط</h5>
+                                <p>تحميل وعرض كشوف النقاط عبر الإنترنت دون عناء</p>
+                            </div>
+                        </div>
+
+                        <div class="fawziya-feature">
+                            <div class="fawziya-feature-icon" style="background: rgba(241, 196, 15, 0.2); color: #f1c40f;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </div>
+                            <div class="fawziya-feature-info">
+                                <h5>نتائج الامتحانات الرسمية</h5>
+                                <p>معرفة نتائج الامتحانات الرسمية فور نشرها</p>
+                            </div>
+                        </div>
+
+                        <div class="fawziya-feature">
+                            <div class="fawziya-feature-icon" style="background: rgba(230, 126, 34, 0.2); color: #e67e22;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                            </div>
+                            <div class="fawziya-feature-info">
+                                <h5>طلب تحويل التلاميذ</h5>
+                                <p>طلب تحويل التلاميذ من مؤسسة إلى أخرى وفق الإجراءات المعتمدة</p>
+                            </div>
+                        </div>
+
+                        <div class="fawziya-feature">
+                            <div class="fawziya-feature-icon" style="background: rgba(231, 76, 60, 0.2); color: #e74c3c;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                    <polyline points="16 17 21 12 16 7"/>
+                                    <line x1="21" y1="12" x2="9" y2="12"/>
+                                </svg>
+                            </div>
+                            <div class="fawziya-feature-info">
+                                <h5>طلب إعادة الإدماج</h5>
+                                <p>تقديم طلب إعادة إدماج التلاميذ عند الحاجة</p>
+                            </div>
+                        </div>
+
+                        <div class="fawziya-feature">
+                            <div class="fawziya-feature-icon" style="background: rgba(26, 82, 118, 0.2); color: #1a5276;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                                </svg>
+                            </div>
+                            <div class="fawziya-feature-info">
+                                <h5>الإعلانات التربوية</h5>
+                                <p>متابعة الإعلانات التربوية والمستجدات التعليمية أولًا بأول</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fawziya-link-section">
+                        <div class="fawziya-link-card">
+                            <div class="fawziya-link-info">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a5276" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="2" y1="12" x2="22" y2="12"/>
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                                </svg>
+                                <div>
+                                    <span class="fawziya-url">awlyaa.education.gov.dz</span>
+                                    <span class="fawziya-url-label">الموقع الرسمي</span>
+                                </div>
+                            </div>
+                            <a href="https://awlyaa.education.gov.dz" target="_blank" class="fawziya-visit-btn">
+                                زيارة الموقع
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Admin Panel -->
+                <section id="page-admin" class="page">
+                    <div class="page-header">
+                        <button class="back-btn" onclick="navigateTo('home')">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </button>
+                        <h2>لوحة التحكم</h2>
+                    </div>
+
+                    <div class="admin-login" id="admin-login">
+                        <div class="admin-login-card">
+                            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#1a5276" stroke-width="1.5">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0110 0v4"/>
+                            </svg>
+                            <h3>دخول لوحة التحكم</h3>
+                            <p>يجب تسجيل الدخول للوصول لإدارة الإشعارات</p>
+                            <div class="admin-form">
+                                <input type="text" id="admin-username" placeholder="اسم المستخدم" autocomplete="username">
+                                <input type="password" id="admin-password" placeholder="كلمة المرور" autocomplete="current-password">
+                                <button class="admin-login-btn" onclick="adminLogin()">تسجيل الدخول</button>
+                            </div>
+                            <p id="admin-error" class="admin-error hidden">بيانات الدخول غير صحيحة</p>
+                        </div>
+                    </div>
+
+                    <div class="admin-panel hidden" id="admin-panel">
+                        <div class="admin-welcome">
+                            <h3>مرحباً بك في لوحة التحكم</h3>
+                            <button class="admin-logout-btn" onclick="adminLogout()">تسجيل الخروج</button>
+                        </div>
+
+                        <div class="admin-tabs">
+                            <button class="admin-tab active" onclick="showAdminTab('add-notif')">إضافة إشعار</button>
+                            <button class="admin-tab" onclick="showAdminTab('manage-notifs')">إدارة الإشعارات</button>
+                            <button class="admin-tab" onclick="showAdminTab('manage-supplies')">إدارة الأدوات</button>
+                            <button class="admin-tab" onclick="showAdminTab('stats')">إحصائيات</button>
+                        </div>
+
+                        <div id="admin-add-notif" class="admin-section active">
+                            <div class="admin-form-card">
+                                <h4>إضافة إشعار جديد</h4>
+                                <input type="text" id="notif-title" placeholder="عنوان الإشعار">
+                                <textarea id="notif-body" placeholder="محتوى الإشعار" rows="4"></textarea>
+                                <select id="notif-priority">
+                                    <option value="normal">إشعار عادي</option>
+                                    <option value="important">مهم</option>
+                                    <option value="urgent">عاجل</option>
+                                </select>
+                                <div class="notif-time-section">
+                                    <h5>توقيت الإشعار</h5>
+                                    <div class="notif-time-row">
+                                        <div class="notif-time-field">
+                                            <label>تاريخ ووقت البداية</label>
+                                            <input type="datetime-local" id="notif-start" value="">
+                                        </div>
+                                        <div class="notif-time-field">
+                                            <label>تاريخ ووقت النهاية</label>
+                                            <input type="datetime-local" id="notif-end" value="">
+                                        </div>
+                                    </div>
+                                    <p class="notif-time-note">* الإشعار سيظهر فقط خلال الفترة المحددة</p>
+                                </div>
+                                <button class="admin-submit-btn" onclick="addNotification()">نشر الإشعار</button>
+                            </div>
+                        </div>
+
+                        <div id="admin-manage-notifs" class="admin-section">
+                            <div id="admin-notifs-list" class="admin-notifs-list">
+                                <!-- Filled by JS -->
+                            </div>
+                        </div>
+
+                        <div id="admin-manage-supplies" class="admin-section">
+                            <div class="admin-form-card">
+                                <h4>تحديث قائمة الأدوات المدرسية</h4>
+                                <p class="admin-note">يمكنك تحديث قائمة الأدوات لكل مستوى من هنا</p>
+                                <select id="supplies-grade-select">
+                                    <option value="grade1">السنة الأولى</option>
+                                    <option value="grade2">السنة الثانية</option>
+                                    <option value="grade3">السنة الثالثة</option>
+                                    <option value="grade4">السنة الرابعة</option>
+                                    <option value="grade5">السنة الخامسة</option>
+                                </select>
+                                <textarea id="supplies-text" placeholder="قائمة الأدوات (سطر لكل أداة)" rows="10"></textarea>
+                                <button class="admin-submit-btn" onclick="updateSupplies()">تحديث القائمة</button>
+                            </div>
+                        </div>
+
+                        <div id="admin-stats" class="admin-section">
+                            <div class="admin-form-card">
+                                <h4>إحصائيات المستخدمين</h4>
+                                <div id="stats-loading" class="stats-loading">جاري التحميل...</div>
+                                <div id="stats-content" class="hidden">
+                                    <div class="stats-grid">
+                                        <div class="stat-card">
+                                            <div class="stat-number" id="stat-parents">0</div>
+                                            <div class="stat-label">ولي الأمر</div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-number" id="stat-students">0</div>
+                                            <div class="stat-label">تلميذ</div>
+                                        </div>
+                                    </div>
+                                    <div class="stats-section">
+                                        <h5>التوزيع حسب المستوى</h5>
+                                        <div id="stats-levels" class="stats-levels"></div>
+                                    </div>
+                                    <div class="stats-section">
+                                        <h5>آخر المستخدمين</h5>
+                                        <div id="stats-recent" class="stats-recent"></div>
+                                    </div>
+                                    <div class="stats-actions">
+                                        <button class="admin-submit-btn" onclick="refreshStats()">🔄 تحديث</button>
+                                        <button class="admin-submit-btn export-btn" onclick="exportCSV()">📥 تصدير CSV</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <!-- Bottom Navigation -->
+            <nav class="bottom-nav">
+                <button class="nav-item active" onclick="navigateTo('home')" data-page="home">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                    <span>الرئيسية</span>
+                </button>
+                <button class="nav-item" onclick="navigateTo('facebook')" data-page="facebook">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                    <span>الفايسبوك</span>
+                </button>
+                <button class="nav-item" onclick="navigateTo('notifications')" data-page="notifications">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    <span>إشعارات</span>
+                </button>
+                <button class="nav-item" onclick="navigateTo('education')" data-page="education">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                    </svg>
+                    <span>تربية</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="database.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

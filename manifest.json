@@ -1,0 +1,23 @@
+{
+    "name": "جمعية أولياء التلاميذ إبتدائية الشيخ حاج مسعود سعيد",
+    "short_name": "جمعية الأولياء",
+    "description": "تطبيق جمعية أولياء التلاميذ إبتدائية الشيخ حاج مسعود سعيد - بلدية العطف - تجنينت - ولاية غرداية",
+    "start_url": "./",
+    "display": "standalone",
+    "background_color": "#0a1628",
+    "theme_color": "#1a5276",
+    "orientation": "portrait-primary",
+    "lang": "ar",
+    "dir": "rtl",
+    "scope": "./",
+    "categories": ["education", "social"],
+    "icons": [
+        {
+            "src": "icons/icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        }
+    ],
+    "prefer_related_applications": false
+}
