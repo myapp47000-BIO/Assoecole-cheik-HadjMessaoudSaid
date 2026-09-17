@@ -1,4 +1,4 @@
-﻿// Database Keys
+// Database Keys
 const DB_KEYS = {
     PARENTS: 'PARENTS_DATABASE',
     CURRENT_USER: 'CURRENT_USER_ID',
