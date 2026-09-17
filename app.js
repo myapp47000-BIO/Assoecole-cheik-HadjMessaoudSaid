@@ -472,9 +472,6 @@ function resendCode() {
 }
 
 function backToLogin() { backToAuth(); }
-    
-    pendingRegistration = null;
-}
 
 function backToAuth() {
     clearInterval(verificationTimer);
@@ -565,30 +562,6 @@ async function handleVerification(e) {
     }
     
     showToast('مرحباً بكم ' + userData.name + (userData.isAdmin ? ' (مدير)' : ''), 'success');
-}
-    
-    // If admin, set admin status
-    if (isAdmin) {
-        localStorage.setItem(ADMIN_KEY, 'true');
-        isAdminLoggedIn = true;
-    }
-    
-    isLoggedIn = true;
-    parentData = userData;
-    
-    // Hide login page and show main app
-    document.getElementById('login-page').classList.add('hidden');
-    document.getElementById('main-app').classList.remove('hidden');
-    
-    // Update profile card
-    updateProfileCard();
-    
-    // Update admin card visibility
-    if (isAdmin) {
-        document.getElementById('admin-home-card').style.display = '';
-    }
-    
-    showToast('مرحباً بكم ' + parentName + (isAdmin ? ' (مدير)' : ''), 'success');
 }
 
 function handleLogout() {
