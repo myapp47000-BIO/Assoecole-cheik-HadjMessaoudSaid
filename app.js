@@ -284,110 +284,6 @@ function handleRegister(e) {
     sendVerificationCode(email, name);
 }
 
-// Login with email only (for registered users)
-function handleLoginEmail(e) {
-    e.preventDefault();
-    
-    const email = document.getElementById('login-email').value.trim();
-    
-    if (!email) {
-        showToast('يرجى إدخال البريد الإلكتروني', 'error');
-        return;
-    }
-    
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        showToast('يرجى إدخال بريد إلكتروني صحيح', 'error');
-        return;
-    }
-    
-    // Check if user exists in database
-    const existingUser = parentsDatabase.find(p => p.email && p.email.toLowerCase() === email.toLowerCase());
-    
-    if (existingUser) {
-        // User exists - send verification code for login
-        verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-        pendingRegistration = existingUser;
-        pendingRegistration.isLogin = true;
-        sendVerificationCode(email, existingUser.name);
-    } else {
-        // User not found - suggest registration
-        showToast('لم يتم العثور على حساب بهذا البريد. سجّل كمستخدم جديد', 'error');
-    }
-}
-
-// Register new user
-function handleRegister(e) {
-    e.preventDefault();
-    
-    const parentName = document.getElementById('reg-parent-name').value.trim();
-    const studentName = document.getElementById('reg-student-name').value.trim();
-    const studentLevel = document.getElementById('reg-student-level').value;
-    const phoneNumber = document.getElementById('reg-phone').value.trim();
-    const email = document.getElementById('reg-email').value.trim();
-    
-    if (!parentName || !studentName || !studentLevel || !phoneNumber || !email) {
-        showToast('يرجى ملء جميع الحقول المطلوبة', 'error');
-        return;
-    }
-    
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        showToast('يرجى إدخال بريد إلكتروني صحيح', 'error');
-        return;
-    }
-    
-    // Check if email already exists
-    const existingUser = parentsDatabase.find(p => p.email && p.email.toLowerCase() === email.toLowerCase());
-    if (existingUser) {
-        showToast('هذا البريد الإلكتروني مسجّل بالفعل. سجّل دخولك', 'error');
-        return;
-    }
-    
-    // Get additional students if any
-    const students = [
-        { name: studentName, level: studentLevel, levelName: STUDENT_LEVELS[studentLevel] }
-    ];
-    
-    const student2Name = document.getElementById('reg-student2-name').value.trim();
-    const student2Level = document.getElementById('reg-student2-level').value;
-    if (student2Name && student2Level) {
-        students.push({ name: student2Name, level: student2Level, levelName: STUDENT_LEVELS[student2Level] });
-    }
-    
-    const student3Name = document.getElementById('reg-student3-name').value.trim();
-    const student3Level = document.getElementById('reg-student3-level').value;
-    if (student3Name && student3Level) {
-        students.push({ name: student3Name, level: student3Level, levelName: STUDENT_LEVELS[student3Level] });
-    }
-    
-    // Generate unique ID
-    const userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    
-    // Check if this is admin
-    const isAdmin = email.toLowerCase() === DB_KEYS.ADMIN_EMAIL.toLowerCase();
-    
-    // Generate verification code
-    verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    // Store pending registration data
-    pendingRegistration = {
-        id: userId,
-        name: parentName,
-        students: students,
-        phone: phoneNumber,
-        email: email,
-        isAdmin: isAdmin,
-        loginDate: new Date().toISOString(),
-        lastLogin: new Date().toISOString()
-    };
-    
-    // Send verification code via EmailJS
-    sendVerificationCode(email, parentName);
-}
-
 async function sendVerificationCode(email, name) {
     try {
         // Check if EmailJS is loaded
@@ -469,40 +365,6 @@ function resendCode() {
     
     document.getElementById('resend-btn').disabled = true;
     document.getElementById('verification-timer').classList.remove('hidden');
-}
-
-function backToLogin() { backToAuth(); }
-
-function backToAuth() {
-    clearInterval(verificationTimer);
-    document.getElementById('verification-page').classList.add('hidden');
-    document.getElementById('welcome-page').classList.remove('hidden');
-    
-    // Clear code inputs
-    for (let i = 1; i <= 6; i++) {
-        document.getElementById('code-' + i).value = '';
-    }
-    
-    pendingRegistration = null;
-}
-
-function showWelcomePage() {
-    document.getElementById('login-page').classList.add('hidden');
-    document.getElementById('register-page').classList.add('hidden');
-    document.getElementById('verification-page').classList.add('hidden');
-    document.getElementById('welcome-page').classList.remove('hidden');
-}
-
-function showLoginPage() {
-    document.getElementById('welcome-page').classList.add('hidden');
-    document.getElementById('register-page').classList.add('hidden');
-    document.getElementById('login-page').classList.remove('hidden');
-}
-
-function showRegisterPage() {
-    document.getElementById('welcome-page').classList.add('hidden');
-    document.getElementById('login-page').classList.add('hidden');
-    document.getElementById('register-page').classList.remove('hidden');
 }
 
 async function handleVerification(e) {
@@ -1949,15 +1811,6 @@ function enableNotifications() {
 
 function closeNotifModal() {
     document.getElementById('notif-permission-modal').classList.add('hidden');
-}
-
-function toggleNotifications(enabled) {
-    if (enabled) {
-        enableNotifications();
-    } else {
-        notificationsEnabled = false;
-        showToast('تم إيقاف الإشعارات', 'normal');
-    }
 }
 
 // PWA Install Feature
