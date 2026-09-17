@@ -22,7 +22,7 @@
         // FORCE: Kill splash after 3s no matter what
         setTimeout(function() {
             var s = document.getElementById('splash-screen');
-            var lp = document.getElementById('welcome-page');
+            var lp = document.getElementById('login-page');
             var ma = document.getElementById('main-app');
             if (s) { s.style.opacity = '0'; s.style.visibility = 'hidden'; s.style.display = 'none'; }
             if (ma && !ma.classList.contains('hidden')) { /* user is logged in, app visible */ }
@@ -121,83 +121,32 @@
             </div>
         </div>
 
-                        <!-- Welcome Page -->
-        <div id="welcome-page" class="login-page hidden">
-            <div class="login-content">
-                <div class="login-header">
-                    <div class="login-emblem">
-                        <svg viewBox="0 0 120 120" class="login-logo">
-                            <defs>
-                                <linearGradient id="loginEmblemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#f1c40f"/>
-                                    <stop offset="100%" style="stop-color:#e67e22"/>
-                                </linearGradient>
-                            </defs>
-                            <circle cx="60" cy="60" r="55" fill="none" stroke="url(#loginEmblemGrad)" stroke-width="3"/>
-                            <circle cx="60" cy="60" r="48" fill="none" stroke="url(#loginEmblemGrad)" stroke-width="1.5"/>
-                            <text x="60" y="40" text-anchor="middle" fill="#f1c40f" font-size="14" font-weight="bold" font-family="Noto Kufi Arabic">جمعية</text>
-                            <text x="60" y="58" text-anchor="middle" fill="#f1c40f" font-size="11" font-weight="bold" font-family="Noto Kufi Arabic">أولياء التلاميذ</text>
-                            <text x="60" y="74" text-anchor="middle" fill="#ecf0f1" font-size="9" font-family="Noto Kufi Arabic">إبتدائية الشيخ حاج مسعود سعيد</text>
-                            <text x="60" y="88" text-anchor="middle" fill="#95a5a6" font-size="7" font-family="Noto Kufi Arabic">بلدية العطف - تجنينت - غرداية</text>
-                            <path d="M30 95 Q60 105 90 95" fill="none" stroke="url(#loginEmblemGrad)" stroke-width="1.5"/>
-                        </svg>
-                    </div>
-                    <h1 class="login-title">مرحباً بكم</h1>
-                    <p class="login-subtitle">تطبيق جمعية أولياء التلاميذ</p>
-                </div>
-                <div class="welcome-buttons">
-                    <button class="welcome-btn login-choice-btn" onclick="showLoginPage()">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-                            <polyline points="10 17 15 12 10 7"/>
-                            <line x1="15" y1="12" x2="3" y2="12"/>
-                        </svg>
-                        <span class="welcome-btn-text">لدي حساب - الدخول</span>
-                        <span class="welcome-btn-sub">سجل دخولك بالبريد الإلكتروني</span>
-                    </button>
-                    <div class="welcome-divider"><span>أو</span></div>
-                    <button class="welcome-btn register-choice-btn" onclick="showRegisterPage()">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="8.5" cy="7" r="4"/>
-                            <line x1="20" y1="8" x2="20" y2="14"/>
-                            <line x1="23" y1="11" x2="17" y2="11"/>
-                        </svg>
-                        <span class="welcome-btn-text">مستخدم جديد - التسجيل</span>
-                        <span class="welcome-btn-sub">أنشئ حسابك للمرة الأولى</span>
-                    </button>
-                </div>
-                <div class="login-footer">
-                    <p>جميع البيانات محفوظة لدى إدارة الجمعية</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Login Page -->
+                                <!-- Login Page -->
         <div id="login-page" class="login-page hidden">
             <div class="login-content">
                 <div class="login-header">
                     <div class="login-emblem">
                         <svg viewBox="0 0 120 120" class="login-logo">
                             <defs>
-                                <linearGradient id="loginEmblemGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <linearGradient id="loginGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                                     <stop offset="0%" style="stop-color:#f1c40f"/>
                                     <stop offset="100%" style="stop-color:#e67e22"/>
                                 </linearGradient>
                             </defs>
-                            <circle cx="60" cy="60" r="55" fill="none" stroke="url(#loginEmblemGrad2)" stroke-width="3"/>
-                            <circle cx="60" cy="60" r="48" fill="none" stroke="url(#loginEmblemGrad2)" stroke-width="1.5"/>
+                            <circle cx="60" cy="60" r="55" fill="none" stroke="url(#loginGrad)" stroke-width="3"/>
+                            <circle cx="60" cy="60" r="48" fill="none" stroke="url(#loginGrad)" stroke-width="1.5"/>
                             <text x="60" y="40" text-anchor="middle" fill="#f1c40f" font-size="14" font-weight="bold" font-family="Noto Kufi Arabic">جمعية</text>
                             <text x="60" y="58" text-anchor="middle" fill="#f1c40f" font-size="11" font-weight="bold" font-family="Noto Kufi Arabic">أولياء التلاميذ</text>
                             <text x="60" y="74" text-anchor="middle" fill="#ecf0f1" font-size="9" font-family="Noto Kufi Arabic">إبتدائية الشيخ حاج مسعود سعيد</text>
                             <text x="60" y="88" text-anchor="middle" fill="#95a5a6" font-size="7" font-family="Noto Kufi Arabic">بلدية العطف - تجنينت - غرداية</text>
-                            <path d="M30 95 Q60 105 90 95" fill="none" stroke="url(#loginEmblemGrad2)" stroke-width="1.5"/>
+                            <path d="M30 95 Q60 105 90 95" fill="none" stroke="url(#loginGrad)" stroke-width="1.5"/>
                         </svg>
                     </div>
-                    <h1 class="login-title">تسجيل الدخول</h1>
-                    <p class="login-subtitle">أدخل بريدك الإلكتروني لاستلام كود التحقق</p>
+                    <h1 class="login-title">مرحباً بكم</h1>
+                    <p class="login-subtitle">سجّلوا دخولكم للوصول إلى التطبيق</p>
                 </div>
-                <form id="login-form" class="login-form" onsubmit="handleLoginEmail(event)">
+
+                <form id="login-form" class="login-form" onsubmit="handleLogin(event)">
                     <div class="form-group">
                         <label for="login-email">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -208,74 +157,38 @@
                         </label>
                         <input type="email" id="login-email" placeholder="example@email.com" required>
                     </div>
-                    <button type="submit" class="login-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                            <polyline points="22,6 12,13 2,6"/>
-                        </svg>
-                        إرسال كود التحقق
-                    </button>
-                </form>
-                <div class="login-footer">
-                    <button class="back-to-login" onclick="showWelcomePage()">← العودة</button>
-                </div>
-            </div>
-        </div>
 
-        <!-- Register Page -->
-        <div id="register-page" class="login-page hidden">
-            <div class="login-content">
-                <div class="login-header">
-                    <div class="login-emblem">
-                        <svg viewBox="0 0 120 120" class="login-logo">
-                            <defs>
-                                <linearGradient id="loginEmblemGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#f1c40f"/>
-                                    <stop offset="100%" style="stop-color:#e67e22"/>
-                                </linearGradient>
-                            </defs>
-                            <circle cx="60" cy="60" r="55" fill="none" stroke="url(#loginEmblemGrad3)" stroke-width="3"/>
-                            <circle cx="60" cy="60" r="48" fill="none" stroke="url(#loginEmblemGrad3)" stroke-width="1.5"/>
-                            <text x="60" y="40" text-anchor="middle" fill="#f1c40f" font-size="14" font-weight="bold" font-family="Noto Kufi Arabic">جمعية</text>
-                            <text x="60" y="58" text-anchor="middle" fill="#f1c40f" font-size="11" font-weight="bold" font-family="Noto Kufi Arabic">أولياء التلاميذ</text>
-                            <text x="60" y="74" text-anchor="middle" fill="#ecf0f1" font-size="9" font-family="Noto Kufi Arabic">إبتدائية الشيخ حاج مسعود سعيد</text>
-                            <text x="60" y="88" text-anchor="middle" fill="#95a5a6" font-size="7" font-family="Noto Kufi Arabic">بلدية العطف - تجنينت - غرداية</text>
-                            <path d="M30 95 Q60 105 90 95" fill="none" stroke="url(#loginEmblemGrad3)" stroke-width="1.5"/>
-                        </svg>
-                    </div>
-                    <h1 class="login-title">تسجيل جديد</h1>
-                    <p class="login-subtitle">أنشئ حسابك لأول مرة</p>
-                </div>
-                <form id="register-form" class="login-form" onsubmit="handleRegister(event)">
-                    <div class="form-group">
-                        <label for="reg-parent-name">
+                    <div class="form-group" id="login-name-group" style="display:none">
+                        <label for="login-name">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                                 <circle cx="12" cy="7" r="4"/>
                             </svg>
                             اسم و لقب الولي
                         </label>
-                        <input type="text" id="reg-parent-name" placeholder="مثال: محمد بن أحمد" required>
+                        <input type="text" id="login-name" placeholder="مثال: محمد بن أحمد">
                     </div>
-                    <div class="form-group">
-                        <label for="reg-student-name">
+
+                    <div class="form-group" id="login-student-group" style="display:none">
+                        <label for="login-student">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                                 <circle cx="9" cy="7" r="4"/>
                             </svg>
-                            اسم التلميذ (الطالب الأول)
+                            اسم التلميذ
                         </label>
-                        <input type="text" id="reg-student-name" placeholder="مثال: أحمد محمد" required>
+                        <input type="text" id="login-student" placeholder="مثال: أحمد محمد">
                     </div>
-                    <div class="form-group">
-                        <label for="reg-student-level">
+
+                    <div class="form-group" id="login-level-group" style="display:none">
+                        <label for="login-level">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
                                 <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
                             </svg>
                             المستوى الدراسي
                         </label>
-                        <select id="reg-student-level" required>
+                        <select id="login-level">
                             <option value="">اختر المستوى</option>
                             <option value="preparatory">التحضيريري</option>
                             <option value="1">السنة الأولى ابتدائي</option>
@@ -285,71 +198,28 @@
                             <option value="5">السنة الخامسة ابتدائي</option>
                         </select>
                     </div>
-                    <div class="form-group additional-students">
-                        <label>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="9" cy="7" r="4"/>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                            </svg>
-                            تلاميذ إضافيون (اختياري)
-                        </label>
-                        <div class="additional-student-row">
-                            <input type="text" id="reg-student2-name" placeholder="اسم التلميذ الثاني">
-                            <select id="reg-student2-level">
-                                <option value="">المستوى</option>
-                                <option value="preparatory">التحضيريري</option>
-                                <option value="1">السنة الأولى</option>
-                                <option value="2">السنة الثانية</option>
-                                <option value="3">السنة الثالثة</option>
-                                <option value="4">السنة الرابعة</option>
-                                <option value="5">السنة الخامسة</option>
-                            </select>
-                        </div>
-                        <div class="additional-student-row">
-                            <input type="text" id="reg-student3-name" placeholder="اسم التلميذ الثالث">
-                            <select id="reg-student3-level">
-                                <option value="">المستوى</option>
-                                <option value="preparatory">التحضيريري</option>
-                                <option value="1">السنة الأولى</option>
-                                <option value="2">السنة الثانية</option>
-                                <option value="3">السنة الثالثة</option>
-                                <option value="4">السنة الرابعة</option>
-                                <option value="5">السنة الخامسة</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="reg-phone">
+
+                    <div class="form-group" id="login-phone-group" style="display:none">
+                        <label for="login-phone">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                             </svg>
                             رقم الهاتف
                         </label>
-                        <input type="tel" id="reg-phone" placeholder="0XXX XX XX XX" required>
+                        <input type="tel" id="login-phone" placeholder="0XXX XX XX XX">
                     </div>
-                    <div class="form-group">
-                        <label for="reg-email">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                <polyline points="22,6 12,13 2,6"/>
-                            </svg>
-                            البريد الإلكتروني
-                        </label>
-                        <input type="email" id="reg-email" placeholder="example@email.com" required>
-                    </div>
-                    <button type="submit" class="login-btn">
+
+                    <button type="submit" class="login-btn" id="login-submit-btn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="8.5" cy="7" r="4"/>
-                            <line x1="20" y1="8" x2="20" y2="14"/>
-                            <line x1="23" y1="11" x2="17" y2="11"/>
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
                         </svg>
-                        التسجيل وإرسال كود التحقق
+                        <span id="login-btn-text">إرسال كود التحقق</span>
                     </button>
                 </form>
+
                 <div class="login-footer">
-                    <button class="back-to-login" onclick="showWelcomePage()">← العودة</button>
+                    <p>جميع البيانات محفوظة لدى إدارة الجمعية</p>
                 </div>
             </div>
         </div>
@@ -365,20 +235,23 @@
                         </svg>
                     </div>
                     <h1 class="login-title">تحقق من بريدك</h1>
-                    <p class="login-subtitle" id="verification-email-display">تم إرسال كود التحقق إلى</p>
+                    <p class="login-subtitle" id="verification-email-display"></p>
                 </div>
+
                 <form id="verification-form" class="login-form" onsubmit="handleVerification(event)">
                     <div class="verification-code-inputs">
-                        <input type="text" class="code-input" id="code-1" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="handleCodeInput(this, 'code-2')" onkeydown="handleCodeKeydown(event, this, null)">
-                        <input type="text" class="code-input" id="code-2" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="handleCodeInput(this, 'code-3')" onkeydown="handleCodeKeydown(event, this, 'code-1')">
-                        <input type="text" class="code-input" id="code-3" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="handleCodeInput(this, 'code-4')" onkeydown="handleCodeKeydown(event, this, 'code-2')">
-                        <input type="text" class="code-input" id="code-4" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="handleCodeInput(this, 'code-5')" onkeydown="handleCodeKeydown(event, this, 'code-3')">
-                        <input type="text" class="code-input" id="code-5" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="handleCodeInput(this, 'code-6')" onkeydown="handleCodeKeydown(event, this, 'code-4')">
-                        <input type="text" class="code-input" id="code-6" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="handleCodeInput(this, null)" onkeydown="handleCodeKeydown(event, this, 'code-5')">
+                        <input type="text" class="code-input" id="code-1" maxlength="1" inputmode="numeric" oninput="handleCodeInput(this, 'code-2')" onkeydown="handleCodeKeydown(event, this, null)">
+                        <input type="text" class="code-input" id="code-2" maxlength="1" inputmode="numeric" oninput="handleCodeInput(this, 'code-3')" onkeydown="handleCodeKeydown(event, this, 'code-1')">
+                        <input type="text" class="code-input" id="code-3" maxlength="1" inputmode="numeric" oninput="handleCodeInput(this, 'code-4')" onkeydown="handleCodeKeydown(event, this, 'code-2')">
+                        <input type="text" class="code-input" id="code-4" maxlength="1" inputmode="numeric" oninput="handleCodeInput(this, 'code-5')" onkeydown="handleCodeKeydown(event, this, 'code-3')">
+                        <input type="text" class="code-input" id="code-5" maxlength="1" inputmode="numeric" oninput="handleCodeInput(this, 'code-6')" onkeydown="handleCodeKeydown(event, this, 'code-4')">
+                        <input type="text" class="code-input" id="code-6" maxlength="1" inputmode="numeric" oninput="handleCodeInput(this, null)" onkeydown="handleCodeKeydown(event, this, 'code-5')">
                     </div>
+
                     <div class="verification-timer" id="verification-timer">
                         إعادة الإرسال خلال <span id="timer-count">02:00</span>
                     </div>
+
                     <button type="submit" class="login-btn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
@@ -386,12 +259,14 @@
                         </svg>
                         تأكيد
                     </button>
+
                     <button type="button" class="resend-btn" id="resend-btn" onclick="resendCode()" disabled>
                         إعادة إرسال الكود
                     </button>
                 </form>
+
                 <div class="login-footer">
-                    <button class="back-to-login" onclick="backToAuth()">← العودة</button>
+                    <button class="back-to-login" onclick="backToLogin()">← العودة</button>
                 </div>
             </div>
         </div>
