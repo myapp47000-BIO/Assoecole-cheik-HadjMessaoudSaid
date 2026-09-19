@@ -11,6 +11,7 @@ let parentData = {};
 let parentsDatabase = [];
 
 // Email Verification State
+let authMode = '';
 let verificationCode = '';
 let verificationTimer = null;
 let verificationTimeLeft = 120;
@@ -35,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const splash = document.getElementById('splash-screen');
             const mainApp = document.getElementById('main-app');
             const loginPage = document.getElementById('login-page');
+            const registerPage = document.getElementById('register-page');
             
             if (splash) {
                 splash.style.opacity = '0';
@@ -46,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (mainApp) mainApp.classList.remove('hidden');
             } else {
                 if (loginPage) loginPage.classList.remove('hidden');
+                if (registerPage) registerPage.classList.add('hidden');
             }
         } catch(e) {
             console.error('Splash error:', e);
@@ -125,6 +128,9 @@ function initApp() {
     try { renderSupplies(); } catch(e) { console.error(e); }
     try { loadFacebookFeed(); } catch(e) { console.error(e); }
 
+    // Initialize children count display
+    updateChildrenCountDisplay(1);
+
     // Update notification toggle state
     const notifToggle = document.getElementById('notif-toggle');
     if (notifToggle) notifToggle.checked = notificationsEnabled;
@@ -163,28 +169,57 @@ function updateProfileCard() {
     if (isLoggedIn && parentData.name) {
         document.getElementById('parent-name-display').textContent = parentData.name;
         const studentsCount = parentData.students ? parentData.students.length : 0;
+        const childrenInfo = parentData.students 
+            ? parentData.students.map(s => s.levelName || s.level).join('، ')
+            : '';
         document.getElementById('parent-students-display').textContent = 
-            studentsCount + ' ' + (studentsCount === 1 ? 'تلميذ' : 'تلاميذ') + ' - ' + parentData.phone;
+            studentsCount + ' ' + (studentsCount === 1 ? 'تلميذ' : 'تلاميذ') + (childrenInfo ? ' - ' + childrenInfo : '') + (parentData.phone ? ' | ' + parentData.phone : '');
     }
 }
 
-// Auth
-let authMode = '';
-let verificationCode = '';
-let verificationTimer = null;
-let verificationTimeLeft = 120;
-let pendingRegistration = null;
+// Show/Hide Pages
+function showLoginPage() {
+    document.getElementById('register-page').classList.add('hidden');
+    document.getElementById('login-page').classList.remove('hidden');
+    document.getElementById('verification-page').classList.add('hidden');
+    // Reset forms
+    document.getElementById('login-form').reset();
+}
 
-const EMAILJS_SERVICE_ID = 'service_boaxpbc';
-const EMAILJS_TEMPLATE_ID = 'template_urkxh1k';
-const EMAILJS_PUBLIC_KEY = 'vY7pOpm0ruXKciqkY';
+function showRegisterPage() {
+    document.getElementById('login-page').classList.add('hidden');
+    document.getElementById('register-page').classList.remove('hidden');
+    document.getElementById('verification-page').classList.add('hidden');
+    // Reset form
+    document.getElementById('register-form').reset();
+    updateChildrenCountDisplay(1);
+}
+
+function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const isPassword = input.type === 'password';
+    input.type = isPassword ? 'text' : 'password';
+    btn.innerHTML = isPassword
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+}
 
 function handleLogin(e) {
     e.preventDefault();
     var email = document.getElementById('login-email').value.trim();
-    if (!email) { showToast('أدخل بريدك الإلكتروني', 'error'); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('بريد غير صحيح', 'error'); return; }
+    var password = document.getElementById('login-password').value;
 
+    if (!email || !password) {
+        showToast('أدخل البريد الإلكتروني وكلمة المرور', 'error');
+        return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showToast('البريد الإلكتروني غير صحيح', 'error');
+        return;
+    }
+
+    // Find user in database
     var existingUser = null;
     for (var i = 0; i < parentsDatabase.length; i++) {
         if (parentsDatabase[i].email && parentsDatabase[i].email.toLowerCase() === email.toLowerCase()) {
@@ -193,45 +228,169 @@ function handleLogin(e) {
         }
     }
 
-    if (existingUser) {
-        authMode = 'login';
+    if (!existingUser) {
+        showToast('الحساب غير موجود. سجّل حساب جديد', 'error');
+        return;
+    }
+
+    // Check password
+    if (existingUser.password !== password) {
+        showToast('كلمة المرور غير صحيحة', 'error');
+        return;
+    }
+
+    // Check if email is verified
+    if (!existingUser.verified) {
+        // Resend verification code
+        authMode = 'verify-existing';
         pendingRegistration = existingUser;
         verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
         sendVerificationCode(email, existingUser.name);
-    } else {
-        authMode = 'register';
-        document.getElementById('login-name-group').style.display = '';
-        document.getElementById('login-student-group').style.display = '';
-        document.getElementById('login-level-group').style.display = '';
-        document.getElementById('login-phone-group').style.display = '';
-        document.getElementById('login-btn-text').textContent = 'التسجيل وإرسال الكود';
-        document.getElementById('login-submit-btn').onclick = function(ev) { ev.preventDefault(); handleRegister(); };
-        document.getElementById('login-name').focus();
-        showToast('حساب جديد - أكمل التسجيل', 'normal');
+        showToast('يجب تفعيل الحساب أولاً. تم إرسال كود جديد', 'normal');
+        return;
     }
+
+    // Login successful
+    localStorage.setItem(DB_KEYS.CURRENT_USER, existingUser.id);
+    if (existingUser.isAdmin) {
+        localStorage.setItem(ADMIN_KEY, 'true');
+        isAdminLoggedIn = true;
+    }
+
+    isLoggedIn = true;
+    parentData = existingUser;
+
+    document.getElementById('login-page').classList.add('hidden');
+    document.getElementById('main-app').classList.remove('hidden');
+    updateProfileCard();
+
+    var adminCard = document.getElementById('admin-home-card');
+    if (adminCard && existingUser.isAdmin) adminCard.style.display = '';
+
+    showToast('مرحباً بكم ' + existingUser.name, 'success');
 }
 
-function handleRegister() {
-    var name = document.getElementById('login-name').value.trim();
-    var student = document.getElementById('login-student').value.trim();
-    var level = document.getElementById('login-level').value;
-    var phone = document.getElementById('login-phone').value.trim();
-    var email = document.getElementById('login-email').value.trim();
+function handleRegister(e) {
+    e.preventDefault();
 
-    if (!name || !student || !level || !phone) { showToast('أكمل جميع الحقول', 'error'); return; }
+    var name = document.getElementById('reg-name').value.trim();
+    var phone = document.getElementById('reg-phone').value.trim();
+    var email = document.getElementById('reg-email').value.trim();
+    var password = document.getElementById('reg-password').value;
+    var passwordConfirm = document.getElementById('reg-password-confirm').value;
+    var childrenCount = parseInt(document.getElementById('reg-children-count').value) || 1;
 
-    var students = [{ name: student, level: level, levelName: STUDENT_LEVELS[level] }];
+    // Validation
+    if (!name || !phone || !email || !password || !passwordConfirm) {
+        showToast('أكمل جميع الحقول المطلوبة', 'error');
+        return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showToast('البريد الإلكتروني غير صحيح', 'error');
+        return;
+    }
+
+    if (password.length < 6) {
+        showToast('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+        return;
+    }
+
+    if (password !== passwordConfirm) {
+        document.getElementById('password-match-error').classList.remove('hidden');
+        showToast('كلمتا المرور غير متطابقتين', 'error');
+        return;
+    }
+    document.getElementById('password-match-error').classList.add('hidden');
+
+    // Check if email already exists
+    for (var i = 0; i < parentsDatabase.length; i++) {
+        if (parentsDatabase[i].email && parentsDatabase[i].email.toLowerCase() === email.toLowerCase()) {
+            showToast('البريد الإلكتروني مسجل بالفعل', 'error');
+            return;
+        }
+    }
+
+    // Collect children data
+    var children = [];
+    var childGroups = document.querySelectorAll('.child-field-group');
+    for (var j = 0; j < childGroups.length; j++) {
+        var nameInput = childGroups[j].querySelector('.child-name-input');
+        var levelSelect = childGroups[j].querySelector('.child-level-select');
+        if (nameInput && levelSelect && nameInput.value.trim() && levelSelect.value) {
+            children.push({
+                name: nameInput.value.trim(),
+                level: levelSelect.value,
+                levelName: STUDENT_LEVELS[levelSelect.value]
+            });
+        }
+    }
+
+    if (children.length === 0) {
+        showToast('أدخل معلومات التلميذ على الأقل', 'error');
+        return;
+    }
+
     var userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     var isAdmin = email.toLowerCase() === DB_KEYS.ADMIN_EMAIL.toLowerCase();
 
     pendingRegistration = {
-        id: userId, name: name, students: students, phone: phone,
-        email: email, isAdmin: isAdmin,
-        loginDate: new Date().toISOString(), lastLogin: new Date().toISOString()
+        id: userId,
+        name: name,
+        phone: phone,
+        email: email,
+        password: password,
+        students: children,
+        isAdmin: isAdmin,
+        verified: false,
+        loginDate: new Date().toISOString(),
+        lastLogin: new Date().toISOString()
     };
 
     verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    authMode = 'register';
     sendVerificationCode(email, name);
+}
+
+function updateChildrenCount(delta) {
+    var count = parseInt(document.getElementById('reg-children-count').value) || 1;
+    count = Math.max(1, Math.min(3, count + delta));
+    document.getElementById('reg-children-count').value = count;
+    updateChildrenCountDisplay(count);
+}
+
+function updateChildrenCountDisplay(count) {
+    document.getElementById('children-count-display').textContent = count;
+    renderChildrenFields(count);
+}
+
+function renderChildrenFields(count) {
+    var container = document.getElementById('children-fields-container');
+    var html = '';
+    var childNames = ['الأول', 'الثاني', 'الثالث'];
+
+    for (var i = 0; i < count; i++) {
+        html += '<div class="child-field-group" data-index="' + i + '">' +
+            '<div class="child-field-header">' +
+                '<span class="child-number">' + (i + 1) + '</span>' +
+                '<span class="child-label">التلميذ ' + childNames[i] + '</span>' +
+            '</div>' +
+            '<div class="child-fields-row">' +
+                '<input type="text" class="child-name-input" placeholder="اسم التلميذ" required>' +
+                '<select class="child-level-select" required>' +
+                    '<option value="">المستوى</option>' +
+                    '<option value="preparatory">التحضيريري</option>' +
+                    '<option value="1">الأولى ابتدائي</option>' +
+                    '<option value="2">الثانية ابتدائي</option>' +
+                    '<option value="3">الثالثة ابتدائي</option>' +
+                    '<option value="4">الرابعة ابتدائي</option>' +
+                    '<option value="5">الخامسة ابتدائي</option>' +
+                '</select>' +
+            '</div>' +
+        '</div>';
+    }
+
+    container.innerHTML = html;
 }
 
 async function sendVerificationCode(email, name) {
@@ -296,11 +455,14 @@ function resendCode() {
 function backToLogin() {
     clearInterval(verificationTimer);
     document.getElementById('verification-page').classList.add('hidden');
+    document.getElementById('register-page').classList.add('hidden');
     document.getElementById('login-page').classList.remove('hidden');
     for (var i = 1; i <= 6; i++) {
         var el = document.getElementById('code-' + i);
         if (el) el.value = '';
     }
+    pendingRegistration = null;
+    authMode = '';
 }
 
 async function handleVerification(e) {
@@ -309,34 +471,63 @@ async function handleVerification(e) {
     for (var i = 1; i <= 6; i++) {
         enteredCode += document.getElementById('code-' + i).value;
     }
-    if (enteredCode.length !== 6) { showToast('أدخل كود التحقق كاملاً', 'error'); return; }
-    if (enteredCode !== verificationCode) { showToast('كود التحقق غير صحيح', 'error'); return; }
-    if (!pendingRegistration) { showToast('خطأ', 'error'); return; }
+    if (enteredCode.length !== 6) {
+        showToast('أدخل كود التحقق كاملاً', 'error');
+        return;
+    }
+    if (enteredCode !== verificationCode) {
+        showToast('كود التحقق غير صحيح', 'error');
+        return;
+    }
+    if (!pendingRegistration) {
+        showToast('خطأ', 'error');
+        return;
+    }
 
     var userData = pendingRegistration;
 
     if (authMode === 'register') {
+        // New registration - mark as verified
+        userData.verified = true;
+        userData.loginDate = new Date().toISOString();
         parentsDatabase.push(userData);
         localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
         CLOUD_DB.addParent(userData).catch(function() {});
+    } else if (authMode === 'verify-existing') {
+        // Existing user verifying email
+        userData.verified = true;
+        // Update in database
+        for (var j = 0; j < parentsDatabase.length; j++) {
+            if (parentsDatabase[j].id === userData.id) {
+                parentsDatabase[j].verified = true;
+                break;
+            }
+        }
+        localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
     }
 
     localStorage.setItem(DB_KEYS.CURRENT_USER, userData.id);
-    if (userData.isAdmin) { localStorage.setItem(ADMIN_KEY, 'true'); isAdminLoggedIn = true; }
+    if (userData.isAdmin) {
+        localStorage.setItem(ADMIN_KEY, 'true');
+        isAdminLoggedIn = true;
+    }
 
     isLoggedIn = true;
     parentData = userData;
     clearInterval(verificationTimer);
     pendingRegistration = null;
+    authMode = '';
 
     document.getElementById('verification-page').classList.add('hidden');
+    document.getElementById('login-page').classList.add('hidden');
+    document.getElementById('register-page').classList.add('hidden');
     document.getElementById('main-app').classList.remove('hidden');
     updateProfileCard();
 
     var adminCard = document.getElementById('admin-home-card');
     if (adminCard && userData.isAdmin) adminCard.style.display = '';
 
-    showToast('مرحباً بكم ' + userData.name, 'success');
+    showToast('مرحباً بكم ' + userData.name + '! تم تفعيل حسابك بنجاح', 'success');
 }
 
 function handleLogout() {
@@ -345,16 +536,18 @@ function handleLogout() {
     isLoggedIn = false;
     parentData = {};
     
-    // Hide main app and show welcome page
+    // Hide main app and show login page
     document.getElementById('main-app').classList.add('hidden');
     document.getElementById('login-page').classList.add('hidden');
     document.getElementById('register-page').classList.add('hidden');
     document.getElementById('verification-page').classList.add('hidden');
     document.getElementById('login-page').classList.remove('hidden');
     
-    // Reset form
+    // Reset forms
     const loginForm = document.getElementById('login-form');
     if (loginForm) loginForm.reset();
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) registerForm.reset();
     
     showToast('تم تسجيل الخروج بنجاح', 'normal');
 }
