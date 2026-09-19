@@ -47,16 +47,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isLoggedIn && parentData.name) {
                 if (mainApp) mainApp.classList.remove('hidden');
             } else {
-                if (loginPage) loginPage.classList.remove('hidden');
-                if (registerPage) registerPage.classList.add('hidden');
+                if (registerPage) registerPage.classList.remove('hidden');
+                if (loginPage) loginPage.classList.add('hidden');
             }
         } catch(e) {
             console.error('Splash error:', e);
             // Last resort - just hide splash
             const splash = document.getElementById('splash-screen');
-            const loginPage = document.getElementById('login-page');
+            const registerPage = document.getElementById('register-page');
             if (splash) splash.remove();
-            if (loginPage) loginPage.classList.remove('hidden');
+            if (registerPage) registerPage.classList.remove('hidden');
         }
     }, 2500);
 });
@@ -536,12 +536,12 @@ function handleLogout() {
     isLoggedIn = false;
     parentData = {};
     
-    // Hide main app and show login page
+    // Hide main app and show register page
     document.getElementById('main-app').classList.add('hidden');
     document.getElementById('login-page').classList.add('hidden');
     document.getElementById('register-page').classList.add('hidden');
     document.getElementById('verification-page').classList.add('hidden');
-    document.getElementById('login-page').classList.remove('hidden');
+    document.getElementById('register-page').classList.remove('hidden');
     
     // Reset forms
     const loginForm = document.getElementById('login-form');
