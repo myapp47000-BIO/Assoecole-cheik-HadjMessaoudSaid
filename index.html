@@ -22,11 +22,11 @@
         // FORCE: Kill splash after 3s no matter what
         setTimeout(function() {
             var s = document.getElementById('splash-screen');
-            var lp = document.getElementById('login-page');
+            var rp = document.getElementById('register-page');
             var ma = document.getElementById('main-app');
             if (s) { s.style.opacity = '0'; s.style.visibility = 'hidden'; s.style.display = 'none'; }
             if (ma && !ma.classList.contains('hidden')) { /* user is logged in, app visible */ }
-            else if (lp) { lp.classList.remove('hidden'); }
+            else if (rp) { rp.classList.remove('hidden'); }
         }, 3000);
         // Force unregister old service workers
         if ('serviceWorker' in navigator) {
