@@ -21,6 +21,10 @@ let pendingRegistration = null;
 const EMAILJS_SERVICE_ID = 'service_boaxpbc';
 const EMAILJS_TEMPLATE_ID = 'template_urkxh1k';
 const EMAILJS_PUBLIC_KEY = 'vY7pOpm0ruXKciqkY';
+// Google Client ID - Replace with your own from Google Cloud Console
+const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+
+
 
 // DOM Ready
 document.addEventListener('DOMContentLoaded', () => {
@@ -172,6 +176,139 @@ function updateProfileCard() {
             : '';
         document.getElementById('parent-students-display').textContent = 
             studentsCount + ' ' + (studentsCount === 1 ? 'تلميذ' : 'تلاميذ') + (childrenInfo ? ' - ' + childrenInfo : '') + (parentData.phone ? ' | ' + parentData.phone : '');
+    }
+}
+
+// Google Sign-In
+function handleGoogleLogin() {
+    if (typeof google === 'undefined' || !google.accounts) {
+        showToast('جاري تحميل خدمة Google... حاول مرة أخرى', 'error');
+        return;
+    }
+    try {
+        google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: onGoogleSignIn,
+            auto_select: true,
+            cancel_on_tap_outside: false
+        });
+        google.accounts.id.prompt(function(notification) {
+            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                // Fallback: show One Tap UI manually
+                google.accounts.id.prompt();
+            }
+        });
+    } catch(e) {
+        console.error('Google init error:', e);
+        showToast('خطأ في تهيئة تسجيل Google', 'error');
+    }
+}
+
+function onGoogleSignIn(response) {
+    try {
+        var payload = parseJwt(response.credential);
+        if (!payload || !payload.email) {
+            showToast('لم يتم الحصول على بيانات من Google', 'error');
+            return;
+        }
+        processGoogleUser({
+            email: payload.email,
+            name: payload.name || payload.given_name || '',
+            picture: payload.picture || '',
+            googleId: payload.sub
+        });
+    } catch(e) {
+        console.error('Google sign-in parse error:', e);
+        showToast('خطأ في معالجة بيانات Google', 'error');
+    }
+}
+
+function parseJwt(token) {
+    try {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch(e) {
+        return null;
+    }
+}
+
+function processGoogleUser(googleUser) {
+    var email = googleUser.email;
+    var name = googleUser.name;
+
+    // Check if user already exists
+    var existingUser = null;
+    for (var i = 0; i < parentsDatabase.length; i++) {
+        if (parentsDatabase[i].email && parentsDatabase[i].email.toLowerCase() === email.toLowerCase()) {
+            existingUser = parentsDatabase[i];
+            break;
+        }
+    }
+
+    if (existingUser) {
+        // User exists - log them in
+        existingUser.lastLogin = new Date().toISOString();
+        existingUser.googleId = googleUser.googleId;
+        existingUser.picture = googleUser.picture;
+        localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
+        CLOUD_DB.updateParent(existingUser.id, { lastLogin: existingUser.lastLogin, googleId: googleUser.googleId }).catch(function() {});
+
+        localStorage.setItem(DB_KEYS.CURRENT_USER, existingUser.id);
+        if (existingUser.isAdmin) {
+            localStorage.setItem(ADMIN_KEY, 'true');
+            isAdminLoggedIn = true;
+        }
+        isLoggedIn = true;
+        parentData = existingUser;
+
+        document.getElementById('login-page').classList.add('hidden');
+        document.getElementById('main-app').classList.remove('hidden');
+        updateProfileCard();
+        var adminCard = document.getElementById('admin-home-card');
+        if (adminCard) adminCard.style.display = existingUser.isAdmin ? '' : 'none';
+        showToast('مرحباً بكم ' + existingUser.name, 'success');
+    } else {
+        // New user - auto register
+        var userId = 'guser_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        var isAdmin = email.toLowerCase() === DB_KEYS.ADMIN_EMAIL.toLowerCase();
+
+        var newUserData = {
+            id: userId,
+            name: name,
+            email: email,
+            phone: '',
+            password: '',
+            students: [],
+            isAdmin: isAdmin,
+            verified: true,
+            googleId: googleUser.googleId,
+            picture: googleUser.picture,
+            loginDate: new Date().toISOString(),
+            lastLogin: new Date().toISOString()
+        };
+
+        parentsDatabase.push(newUserData);
+        localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
+        CLOUD_DB.addParent(newUserData).catch(function() {});
+
+        localStorage.setItem(DB_KEYS.CURRENT_USER, userId);
+        if (isAdmin) {
+            localStorage.setItem(ADMIN_KEY, 'true');
+            isAdminLoggedIn = true;
+        }
+        isLoggedIn = true;
+        parentData = newUserData;
+
+        document.getElementById('login-page').classList.add('hidden');
+        document.getElementById('main-app').classList.remove('hidden');
+        updateProfileCard();
+        var adminCard2 = document.getElementById('admin-home-card');
+        if (adminCard2) adminCard2.style.display = isAdmin ? '' : 'none';
+        showToast('مرحباً بكم ' + name + '! تم إنشاء حسابك تلقائياً', 'success');
     }
 }
 
