@@ -377,6 +377,13 @@ function renderChildrenFields(count) {
 }
 
 async function sendActivationEmail(email, name, token) {
+    // Wait for emailjs to load (up to 5 seconds)
+    var attempts = 0;
+    while (typeof emailjs === 'undefined' && attempts < 50) {
+        await new Promise(r => setTimeout(r, 100));
+        attempts++;
+    }
+    
     try {
         if (typeof emailjs === 'undefined') {
             showToast('جاري تحميل الخدمة... حاول مرة أخرى', 'error');
