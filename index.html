@@ -238,16 +238,6 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="reg-phone">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-                            </svg>
-                            رقم الهاتف
-                        </label>
-                        <input type="tel" id="reg-phone" placeholder="0XXX XX XX XX" required>
-                    </div>
-
-                    <div class="form-group">
                         <label for="reg-email">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
@@ -256,6 +246,16 @@
                             البريد الإلكتروني
                         </label>
                         <input type="email" id="reg-email" placeholder="example@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-phone">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                            رقم الهاتف
+                        </label>
+                        <input type="tel" id="reg-phone" placeholder="0XXX XX XX XX" required>
                     </div>
 
                     <div class="form-group">
@@ -280,41 +280,6 @@
                         <div id="password-match-error" class="field-error hidden">كلمتا المرور غير متطابقتين</div>
                     </div>
 
-                    <div class="form-divider">
-                        <span>الأبناء المتمدرسون</span>
-                    </div>
-
-                    <div class="children-count-row">
-                        <span class="count-label">عدد الأبناء المتمدرسين</span>
-                        <div class="children-count-selector">
-                            <button type="button" class="count-btn minus" onclick="updateChildrenCount(-1)">&#x2212;</button>
-                            <span id="children-count-display">1</span>
-                            <button type="button" class="count-btn plus" onclick="updateChildrenCount(1)">+</button>
-                        </div>
-                    </div>
-                    <input type="hidden" id="reg-children-count" value="1">
-
-                    <div id="children-fields-container">
-                        <div class="child-field-group" data-index="0">
-                            <div class="child-field-header">
-                                <span class="child-number">1</span>
-                                <span class="child-label">التلميذ الأول</span>
-                            </div>
-                            <div class="child-fields-row">
-                                <input type="text" class="child-name-input" placeholder="اسم التلميذ" required>
-                                <select class="child-level-select" required>
-                                    <option value="">المستوى الدراسي</option>
-                                    <option value="preparatory">التحضيري</option>
-                                    <option value="1">الأولى ابتدائي</option>
-                                    <option value="2">الثانية ابتدائي</option>
-                                    <option value="3">الثالثة ابتدائي</option>
-                                    <option value="4">الرابعة ابتدائي</option>
-                                    <option value="5">الخامسة ابتدائي</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
                     <button type="submit" class="login-btn register-submit-btn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -322,22 +287,9 @@
                             <line x1="20" y1="8" x2="20" y2="14"/>
                             <line x1="23" y1="11" x2="17" y2="11"/>
                         </svg>
-                        إنشاء الحساب
+                        التسجيل
                     </button>
-
                 </form>
-
-                <div class="login-divider"><span>أو</span></div>
-
-                <button type="button" class="google-btn" onclick="handleGoogleLogin()">
-                    <svg width="20" height="20" viewBox="0 0 48 48">
-                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                    </svg>
-                    الدخول بحساب Google
-                </button>
 
                 <div class="login-footer">
                     <p>لديك حساب بالفعل؟ <button class="link-btn" onclick="showLoginPage()">سجّل الدخول</button></p>
@@ -346,7 +298,7 @@
             </div>
         </div>
 
-        <!-- Verification Code Page -->
+                <!-- Verification Code Page -->
         <div id="verification-page" class="login-page hidden">
             <div class="login-content">
                 <div class="login-header">
@@ -356,38 +308,22 @@
                             <polyline points="22,6 12,13 2,6"/>
                         </svg>
                     </div>
-                    <h1 class="login-title">تحقق من بريدك</h1>
-                    <p class="login-subtitle" id="verification-email-display"></p>
-                    <p class="login-hint">أدخل كود التحقق المكون من 6 أرقام المرسل إلى بريدك الإلكتروني</p>
+                    <h1 class="login-title">تفعيل الحساب</h1>
+                    <p class="login-subtitle" id="verification-email-display">تم إرسال رابط التفعيل إلى بريدك الإلكتروني</p>
+                    <p class="login-hint">اضغط على الرابط في الرسالة لتفعيل حسابك</p>
                 </div>
 
-                <form id="verification-form" class="login-form" onsubmit="handleVerification(event)">
-                    <div class="verification-code-inputs">
-                        <input type="text" class="code-input" id="code-1" maxlength="1" inputmode="numeric" oninput="handleCodeInput(this, 'code-2')" onkeydown="handleCodeKeydown(event, this, null)">
-                        <input type="text" class="code-input" id="code-2" maxlength="1" inputmode="numeric" oninput="handleCodeInput(this, 'code-3')" onkeydown="handleCodeKeydown(event, this, 'code-1')">
-                        <input type="text" class="code-input" id="code-3" maxlength="1" inputmode="numeric" oninput="handleCodeInput(this, 'code-4')" onkeydown="handleCodeKeydown(event, this, 'code-2')">
-                        <input type="text" class="code-input" id="code-4" maxlength="1" inputmode="numeric" oninput="handleCodeInput(this, 'code-5')" onkeydown="handleCodeKeydown(event, this, 'code-3')">
-                        <input type="text" class="code-input" id="code-5" maxlength="1" inputmode="numeric" oninput="handleCodeInput(this, 'code-6')" onkeydown="handleCodeKeydown(event, this, 'code-4')">
-                        <input type="text" class="code-input" id="code-6" maxlength="1" inputmode="numeric" oninput="handleCodeInput(this, null)" onkeydown="handleCodeKeydown(event, this, 'code-5')">
-                    </div>
-
-                    <div class="verification-timer" id="verification-timer">
-                        إعادة الإرسال خلال <span id="timer-count">02:00</span>
-                    </div>
-
-                    <button type="submit" class="login-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                            <polyline points="22 4 12 14.01 9 11.01"/>
+                <form id="verification-form" class="login-form">
+                                        <div class="activation-message">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#27ae60" stroke-width="1.5">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
                         </svg>
-                        تأكيد
-                    </button>
+                        <p class="activation-text">تم إرسال رابط التفعيل إلى بريدك الإلكتروني</p>
+                        <p class="activation-hint">افتح البريد الإلكتروني واضغط على رابط التفعيل</p>
+                    </div>
 
-                    <button type="button" class="resend-btn" id="resend-btn" onclick="resendCode()" disabled>
-                        إعادة إرسال الكود
-                    </button>
-
-                </form>
+</form>
 
                 <div class="login-divider"><span>أو</span></div>
 
