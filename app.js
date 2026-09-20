@@ -133,9 +133,6 @@ function initApp() {
     try { renderSupplies(); } catch(e) { console.error(e); }
     try { loadFacebookFeed(); } catch(e) { console.error(e); }
 
-    // Initialize children count display
-    updateChildrenCountDisplay(1);
-
     // Update notification toggle state
     const notifToggle = document.getElementById('notif-toggle');
     if (notifToggle) notifToggle.checked = notificationsEnabled;
@@ -195,7 +192,6 @@ function showRegisterPage() {
     document.getElementById('verification-page').classList.add('hidden');
     // Reset form
     document.getElementById('register-form').reset();
-    updateChildrenCountDisplay(1);
 }
 
 function togglePasswordVisibility(inputId, btn) {
@@ -389,8 +385,10 @@ function updateChildrenCount(delta) {
 }
 
 function updateChildrenCountDisplay(count) {
-    document.getElementById('children-count-display').textContent = count;
-    renderChildrenFields(count);
+    var display = document.getElementById('children-count-display');
+    if (display) display.textContent = count;
+    var container = document.getElementById('children-fields-container');
+    if (container) renderChildrenFields(count);
 }
 
 function renderChildrenFields(count) {
