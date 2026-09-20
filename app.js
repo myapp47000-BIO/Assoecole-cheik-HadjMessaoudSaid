@@ -10,25 +10,8 @@ let isLoggedIn = false;
 let parentData = {};
 let parentsDatabase = [];
 
-// Email Verification State
-let authMode = '';
-let verificationCode = '';
-let verificationTimer = null;
-let verificationTimeLeft = 120;
-let pendingRegistration = null;
-
-// EmailJS Config
-const EMAILJS_SERVICE_ID = 'service_boaxpbc';
-const EMAILJS_TEMPLATE_ID = 'template_urkxh1k';
-const EMAILJS_PUBLIC_KEY = 'vY7pOpm0ruXKciqkY';
-
-
-
 // DOM Ready
 document.addEventListener('DOMContentLoaded', () => {
-    // Check for activation hash first
-    if (checkActivationHash()) return;
-
     try {
         initApp();
     } catch(e) {
@@ -190,8 +173,16 @@ function showRegisterPage() {
     document.getElementById('login-page').classList.add('hidden');
     document.getElementById('register-page').classList.remove('hidden');
     document.getElementById('verification-page').classList.add('hidden');
-    // Reset form
-    document.getElementById('register-form').reset();
+    var f = document.getElementById('register-form');
+    if (f) f.reset();
+}
+
+function backToLogin() {
+    document.getElementById('verification-page').classList.add('hidden');
+    document.getElementById('register-page').classList.add('hidden');
+    document.getElementById('login-page').classList.remove('hidden');
+    var f = document.getElementById('login-form');
+    if (f) f.reset();
 }
 
 function togglePasswordVisibility(inputId, btn) {
@@ -289,54 +280,67 @@ function completeLogin(user) {
 }
 
 function handleRegister(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    console.log('handleRegister called');
 
-    var name = document.getElementById('reg-name').value.trim();
-    var phone = document.getElementById('reg-phone').value.trim();
-    var email = document.getElementById('reg-email').value.trim();
-    var password = document.getElementById('reg-password').value;
-    var passwordConfirm = document.getElementById('reg-password-confirm').value;
+    var name = document.getElementById('reg-name');
+    var phone = document.getElementById('reg-phone');
+    var email = document.getElementById('reg-email');
+    var password = document.getElementById('reg-password');
+    var passwordConfirm = document.getElementById('reg-password-confirm');
+
+    console.log('Fields:', {name: name, phone: phone, email: email, password: password, passwordConfirm: passwordConfirm});
+
+    var nameVal = name ? name.value.trim() : '';
+    var phoneVal = phone ? phone.value.trim() : '';
+    var emailVal = email ? email.value.trim() : '';
+    var passwordVal = password ? password.value : '';
+    var confirmVal = passwordConfirm ? passwordConfirm.value : '';
+
+    console.log('Values:', {nameVal: nameVal, phoneVal: phoneVal, emailVal: emailVal});
 
     // Validation
-    if (!name || !phone || !email || !password || !passwordConfirm) {
+    if (!nameVal || !phoneVal || !emailVal || !passwordVal || !confirmVal) {
         showToast('أكمل جميع الحقول المطلوبة', 'error');
         return;
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
         showToast('البريد الإلكتروني غير صحيح', 'error');
         return;
     }
 
-    if (password.length < 6) {
+    if (passwordVal.length < 6) {
         showToast('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
         return;
     }
 
-    if (password !== passwordConfirm) {
-        document.getElementById('password-match-error').classList.remove('hidden');
+    if (passwordVal !== confirmVal) {
+        var errEl = document.getElementById('password-match-error');
+        if (errEl) errEl.classList.remove('hidden');
         showToast('كلمتا المرور غير متطابقتين', 'error');
         return;
     }
-    document.getElementById('password-match-error').classList.add('hidden');
+    var errEl = document.getElementById('password-match-error');
+    if (errEl) errEl.classList.add('hidden');
 
     // Check if email already exists in local DB
     for (var i = 0; i < parentsDatabase.length; i++) {
-        if (parentsDatabase[i].email && parentsDatabase[i].email.toLowerCase() === email.toLowerCase()) {
+        if (parentsDatabase[i].email && parentsDatabase[i].email.toLowerCase() === emailVal.toLowerCase()) {
             showToast('البريد الإلكتروني مسجل بالفعل', 'error');
             return;
         }
     }
 
     var userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    var isAdmin = email.toLowerCase() === DB_KEYS.ADMIN_EMAIL.toLowerCase();
+    var isAdmin = emailVal.toLowerCase() === DB_KEYS.ADMIN_EMAIL.toLowerCase();
 
     var newUser = {
         id: userId,
-        name: name,
-        phone: phone,
-        email: email,
-        password: password,
+        name: nameVal,
+        phone: phoneVal,
+        email: emailVal,
+        password: passwordVal,
         students: [],
         isAdmin: isAdmin,
         verified: true,
@@ -374,7 +378,7 @@ function handleRegister(e) {
     var adminCard = document.getElementById('admin-home-card');
     if (adminCard) adminCard.style.display = isAdmin ? '' : 'none';
 
-    showToast('مرحباً بكم ' + name + '! تم إنشاء حسابك بنجاح', 'success');
+    showToast('مرحباً بكم ' + nameVal + '! تم إنشاء حسابك بنجاح', 'success');
 }
 
 function updateChildrenCount(delta) {
@@ -420,139 +424,11 @@ function renderChildrenFields(count) {
     container.innerHTML = html;
 }
 
-async function sendActivationEmail(email, name, token) {
-    // Wait for emailjs to load (up to 5 seconds)
-    var attempts = 0;
-    while (typeof emailjs === 'undefined' && attempts < 50) {
-        await new Promise(r => setTimeout(r, 100));
-        attempts++;
-    }
-    
-    try {
-        if (typeof emailjs === 'undefined') {
-            showToast('جاري تحميل الخدمة... حاول مرة أخرى', 'error');
-            return;
-        }
-
-        var activationUrl = window.location.origin + window.location.pathname + '#activate=' + token;
-
-        emailjs.init(EMAILJS_PUBLIC_KEY);
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-            to_name: name,
-            to_email: email,
-            activation_url: activationUrl,
-            verification_code: token
-        });
-
-        document.getElementById('login-page').classList.add('hidden');
-        document.getElementById('register-page').classList.add('hidden');
-        document.getElementById('verification-page').classList.remove('hidden');
-        document.getElementById('verification-email-display').textContent = 'تم إرسال رابط التفعيل إلى ' + email;
-        showToast('تم إرسال رابط التفعيل', 'success');
-    } catch (e) {
-        console.error('Email error:', e);
-        showToast('خطأ في إرسال البريد', 'error');
-    }
-}
-
-
-function activateAccount(token) {
-    // Search in parents database for matching token
-    var foundUser = null;
-    for (var i = 0; i < parentsDatabase.length; i++) {
-        if (parentsDatabase[i].activationToken === token && !parentsDatabase[i].verified) {
-            foundUser = parentsDatabase[i];
-            break;
-        }
-    }
-
-    if (!foundUser) {
-        // Check pending registration in localStorage
-        var pending = JSON.parse(localStorage.getItem('pendingRegistration') || 'null');
-        if (pending && pending.activationToken === token) {
-            foundUser = pending;
-        }
-    }
-
-    if (!foundUser) {
-        showToast('رابط التفعيل غير صحيح أو منتهي الصلاحية', 'error');
-        return false;
-    }
-
-    // Activate the account
-    foundUser.verified = true;
-    foundUser.activationToken = null;
-
-    // Add to parents database
-    var userExists = false;
-    for (var j = 0; j < parentsDatabase.length; j++) {
-        if (parentsDatabase[j].id === foundUser.id) {
-            parentsDatabase[j].verified = true;
-            parentsDatabase[j].activationToken = null;
-            userExists = true;
-            break;
-        }
-    }
-
-    if (!userExists) {
-        parentsDatabase.push(foundUser);
-    }
-
-    localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
-    localStorage.removeItem('pendingRegistration');
-    try {
-        CLOUD_DB.addParent(foundUser);
-    } catch(err) {}
-
-    // Auto login
-    localStorage.setItem(DB_KEYS.CURRENT_USER, foundUser.id);
-    if (foundUser.isAdmin) {
-        localStorage.setItem(ADMIN_KEY, 'true');
-        isAdminLoggedIn = true;
-    }
-
-    isLoggedIn = true;
-    parentData = foundUser;
-    pendingRegistration = null;
-    authMode = '';
-
-    // Show main app
-    document.getElementById('splash-screen').style.display = 'none';
-    document.getElementById('login-page').classList.add('hidden');
-    document.getElementById('register-page').classList.add('hidden');
-    document.getElementById('verification-page').classList.add('hidden');
-    document.getElementById('main-app').classList.remove('hidden');
-    updateProfileCard();
-
-    var adminCard = document.getElementById('admin-home-card');
-    if (adminCard) adminCard.style.display = foundUser.isAdmin ? '' : 'none';
-
-    showToast('مرحباً بكم ' + foundUser.name + '! تم تفعيل حسابك بنجاح', 'success');
-    return true;
-}
-
-function checkActivationHash() {
-    var hash = window.location.hash;
-    if (hash && hash.indexOf('#activate=') === 0) {
-        var token = hash.substring(10); // Remove '#activate='
-        if (token) {
-            // Clear the hash
-            history.replaceState(null, null, window.location.pathname);
-            return activateAccount(token);
-        }
-    }
-    return false;
-}
-
 function handleLogout() {
     localStorage.removeItem(DB_KEYS.CURRENT_USER);
     
     isLoggedIn = false;
     parentData = {};
-    authMode = '';
-    pendingRegistration = null;
-    verificationCode = '';
-    if (verificationTimer) { clearInterval(verificationTimer); verificationTimer = null; }
     
     // Hide main app and show login page
     document.getElementById('main-app').classList.add('hidden');
