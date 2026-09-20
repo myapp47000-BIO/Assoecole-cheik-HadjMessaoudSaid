@@ -271,6 +271,32 @@ html, body {
 }
 
 
+
+/* Activation Message */
+.activation-message {
+    text-align: center;
+    padding: 24px 16px;
+}
+
+.activation-message svg {
+    margin-bottom: 16px;
+    opacity: 0.9;
+}
+
+.activation-text {
+    font-size: 15px;
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.activation-hint {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
 /* Google Sign-In Button */
 .login-divider {
     text-align: center;
@@ -294,38 +320,6 @@ html, body {
     position: relative;
     font-size: 13px;
     color: var(--text-muted);
-}
-
-.google-btn {
-    width: 100%;
-    padding: 12px 24px;
-    background: #ffffff;
-    border: 1px solid #dadce0;
-    border-radius: var(--radius-sm);
-    color: #3c4043;
-    font-size: 15px;
-    font-weight: 500;
-    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    transition: all 0.2s;
-}
-
-.google-btn:hover {
-    background: #f8f9fa;
-    border-color: #c6c6c6;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.google-btn:active {
-    background: #f1f3f4;
-}
-
-.google-btn svg {
-    flex-shrink: 0;
 }
 
 .login-btn:disabled {

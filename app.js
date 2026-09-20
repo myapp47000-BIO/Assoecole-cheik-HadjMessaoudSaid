@@ -21,13 +21,14 @@ let pendingRegistration = null;
 const EMAILJS_SERVICE_ID = 'service_boaxpbc';
 const EMAILJS_TEMPLATE_ID = 'template_urkxh1k';
 const EMAILJS_PUBLIC_KEY = 'vY7pOpm0ruXKciqkY';
-// Google Client ID - Replace with your own from Google Cloud Console
-const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
 
 
 
 // DOM Ready
 document.addEventListener('DOMContentLoaded', () => {
+    // Check for activation hash first
+    if (checkActivationHash()) return;
+
     try {
         initApp();
     } catch(e) {
@@ -179,139 +180,6 @@ function updateProfileCard() {
     }
 }
 
-// Google Sign-In
-function handleGoogleLogin() {
-    if (typeof google === 'undefined' || !google.accounts) {
-        showToast('جاري تحميل خدمة Google... حاول مرة أخرى', 'error');
-        return;
-    }
-    try {
-        google.accounts.id.initialize({
-            client_id: GOOGLE_CLIENT_ID,
-            callback: onGoogleSignIn,
-            auto_select: true,
-            cancel_on_tap_outside: false
-        });
-        google.accounts.id.prompt(function(notification) {
-            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                // Fallback: show One Tap UI manually
-                google.accounts.id.prompt();
-            }
-        });
-    } catch(e) {
-        console.error('Google init error:', e);
-        showToast('خطأ في تهيئة تسجيل Google', 'error');
-    }
-}
-
-function onGoogleSignIn(response) {
-    try {
-        var payload = parseJwt(response.credential);
-        if (!payload || !payload.email) {
-            showToast('لم يتم الحصول على بيانات من Google', 'error');
-            return;
-        }
-        processGoogleUser({
-            email: payload.email,
-            name: payload.name || payload.given_name || '',
-            picture: payload.picture || '',
-            googleId: payload.sub
-        });
-    } catch(e) {
-        console.error('Google sign-in parse error:', e);
-        showToast('خطأ في معالجة بيانات Google', 'error');
-    }
-}
-
-function parseJwt(token) {
-    try {
-        var base64Url = token.split('.')[1];
-        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
-    } catch(e) {
-        return null;
-    }
-}
-
-function processGoogleUser(googleUser) {
-    var email = googleUser.email;
-    var name = googleUser.name;
-
-    // Check if user already exists
-    var existingUser = null;
-    for (var i = 0; i < parentsDatabase.length; i++) {
-        if (parentsDatabase[i].email && parentsDatabase[i].email.toLowerCase() === email.toLowerCase()) {
-            existingUser = parentsDatabase[i];
-            break;
-        }
-    }
-
-    if (existingUser) {
-        // User exists - log them in
-        existingUser.lastLogin = new Date().toISOString();
-        existingUser.googleId = googleUser.googleId;
-        existingUser.picture = googleUser.picture;
-        localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
-        CLOUD_DB.updateParent(existingUser.id, { lastLogin: existingUser.lastLogin, googleId: googleUser.googleId }).catch(function() {});
-
-        localStorage.setItem(DB_KEYS.CURRENT_USER, existingUser.id);
-        if (existingUser.isAdmin) {
-            localStorage.setItem(ADMIN_KEY, 'true');
-            isAdminLoggedIn = true;
-        }
-        isLoggedIn = true;
-        parentData = existingUser;
-
-        document.getElementById('login-page').classList.add('hidden');
-        document.getElementById('main-app').classList.remove('hidden');
-        updateProfileCard();
-        var adminCard = document.getElementById('admin-home-card');
-        if (adminCard) adminCard.style.display = existingUser.isAdmin ? '' : 'none';
-        showToast('مرحباً بكم ' + existingUser.name, 'success');
-    } else {
-        // New user - auto register
-        var userId = 'guser_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        var isAdmin = email.toLowerCase() === DB_KEYS.ADMIN_EMAIL.toLowerCase();
-
-        var newUserData = {
-            id: userId,
-            name: name,
-            email: email,
-            phone: '',
-            password: '',
-            students: [],
-            isAdmin: isAdmin,
-            verified: true,
-            googleId: googleUser.googleId,
-            picture: googleUser.picture,
-            loginDate: new Date().toISOString(),
-            lastLogin: new Date().toISOString()
-        };
-
-        parentsDatabase.push(newUserData);
-        localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
-        CLOUD_DB.addParent(newUserData).catch(function() {});
-
-        localStorage.setItem(DB_KEYS.CURRENT_USER, userId);
-        if (isAdmin) {
-            localStorage.setItem(ADMIN_KEY, 'true');
-            isAdminLoggedIn = true;
-        }
-        isLoggedIn = true;
-        parentData = newUserData;
-
-        document.getElementById('login-page').classList.add('hidden');
-        document.getElementById('main-app').classList.remove('hidden');
-        updateProfileCard();
-        var adminCard2 = document.getElementById('admin-home-card');
-        if (adminCard2) adminCard2.style.display = isAdmin ? '' : 'none';
-        showToast('مرحباً بكم ' + name + '! تم إنشاء حسابك تلقائياً', 'success');
-    }
-}
-
 // Show/Hide Pages
 function showLoginPage() {
     document.getElementById('register-page').classList.add('hidden');
@@ -376,12 +244,7 @@ function handleLogin(e) {
 
     // Check if email is verified
     if (!existingUser.verified) {
-        // Resend verification code
-        authMode = 'verify-existing';
-        pendingRegistration = existingUser;
-        verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-        sendVerificationCode(email, existingUser.name);
-        showToast('يجب تفعيل الحساب أولاً. تم إرسال كود جديد', 'normal');
+        showToast('يجب تفعيل الحساب أولاً. تحقق من بريدك الإلكتروني', 'error');
         return;
     }
 
@@ -413,7 +276,6 @@ function handleRegister(e) {
     var email = document.getElementById('reg-email').value.trim();
     var password = document.getElementById('reg-password').value;
     var passwordConfirm = document.getElementById('reg-password-confirm').value;
-    var childrenCount = parseInt(document.getElementById('reg-children-count').value) || 1;
 
     // Validation
     if (!name || !phone || !email || !password || !passwordConfirm) {
@@ -446,28 +308,11 @@ function handleRegister(e) {
         }
     }
 
-    // Collect children data
-    var children = [];
-    var childGroups = document.querySelectorAll('.child-field-group');
-    for (var j = 0; j < childGroups.length; j++) {
-        var nameInput = childGroups[j].querySelector('.child-name-input');
-        var levelSelect = childGroups[j].querySelector('.child-level-select');
-        if (nameInput && levelSelect && nameInput.value.trim() && levelSelect.value) {
-            children.push({
-                name: nameInput.value.trim(),
-                level: levelSelect.value,
-                levelName: STUDENT_LEVELS[levelSelect.value]
-            });
-        }
-    }
-
-    if (children.length === 0) {
-        showToast('أدخل معلومات التلميذ على الأقل', 'error');
-        return;
-    }
-
     var userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     var isAdmin = email.toLowerCase() === DB_KEYS.ADMIN_EMAIL.toLowerCase();
+
+    // Generate activation token
+    var activationToken = btoa(userId + ':' + email + ':' + Date.now()).replace(/[^a-zA-Z0-9]/g, '');
 
     pendingRegistration = {
         id: userId,
@@ -475,16 +320,19 @@ function handleRegister(e) {
         phone: phone,
         email: email,
         password: password,
-        students: children,
+        students: [],
         isAdmin: isAdmin,
         verified: false,
+        activationToken: activationToken,
         loginDate: new Date().toISOString(),
         lastLogin: new Date().toISOString()
     };
 
-    verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    // Save pending registration to localStorage for activation
+    localStorage.setItem('pendingRegistration', JSON.stringify(pendingRegistration));
+
     authMode = 'register';
-    sendVerificationCode(email, name);
+    sendActivationEmail(email, name, activationToken);
 }
 
 function updateChildrenCount(delta) {
@@ -528,144 +376,119 @@ function renderChildrenFields(count) {
     container.innerHTML = html;
 }
 
-async function sendVerificationCode(email, name) {
+async function sendActivationEmail(email, name, token) {
     try {
         if (typeof emailjs === 'undefined') {
             showToast('جاري تحميل الخدمة... حاول مرة أخرى', 'error');
             return;
         }
+
+        var activationUrl = window.location.origin + window.location.pathname + '#activate=' + token;
+
         emailjs.init(EMAILJS_PUBLIC_KEY);
         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-            to_name: name, to_email: email, verification_code: verificationCode
+            to_name: name,
+            to_email: email,
+            activation_url: activationUrl,
+            verification_code: token
         });
 
         document.getElementById('login-page').classList.add('hidden');
         document.getElementById('register-page').classList.add('hidden');
         document.getElementById('verification-page').classList.remove('hidden');
-        document.getElementById('verification-email-display').textContent = 'تم إرسال كود التحقق إلى ' + email;
-        startVerificationTimer();
-        for (var ci = 1; ci <= 6; ci++) { var cel = document.getElementById('code-' + ci); if (cel) cel.value = ''; }
-        document.getElementById('code-1').focus();
-        showToast('تم إرسال كود التحقق', 'success');
+        document.getElementById('verification-email-display').textContent = 'تم إرسال رابط التفعيل إلى ' + email;
+        showToast('تم إرسال رابط التفعيل', 'success');
     } catch (e) {
         console.error('Email error:', e);
         showToast('خطأ في إرسال البريد', 'error');
     }
 }
 
-function handleCodeInput(current, nextId) {
-    if (current.value && nextId) document.getElementById(nextId).focus();
-}
 
-function handleCodeKeydown(e, current, prevId) {
-    if (e.key === 'Backspace' && !current.value && prevId) document.getElementById(prevId).focus();
-}
-
-function startVerificationTimer() {
-    if (verificationTimer) clearInterval(verificationTimer);
-    verificationTimeLeft = 120;
-    updateTimerDisplay();
-    document.getElementById('resend-btn').disabled = true;
-    document.getElementById('verification-timer').style.display = '';
-    verificationTimer = setInterval(function() {
-        verificationTimeLeft--;
-        updateTimerDisplay();
-        if (verificationTimeLeft <= 0) {
-            clearInterval(verificationTimer);
-            document.getElementById('resend-btn').disabled = false;
-            document.getElementById('verification-timer').style.display = 'none';
+function activateAccount(token) {
+    // Search in parents database for matching token
+    var foundUser = null;
+    for (var i = 0; i < parentsDatabase.length; i++) {
+        if (parentsDatabase[i].activationToken === token && !parentsDatabase[i].verified) {
+            foundUser = parentsDatabase[i];
+            break;
         }
-    }, 1000);
-}
-
-function updateTimerDisplay() {
-    var m = Math.floor(verificationTimeLeft / 60);
-    var s = verificationTimeLeft % 60;
-    document.getElementById('timer-count').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
-}
-
-function resendCode() {
-    if (!pendingRegistration) return;
-    verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    sendVerificationCode(pendingRegistration.email, pendingRegistration.name);
-}
-
-function backToLogin() {
-    clearInterval(verificationTimer);
-    document.getElementById('verification-page').classList.add('hidden');
-    document.getElementById('register-page').classList.add('hidden');
-    document.getElementById('login-page').classList.remove('hidden');
-    for (var i = 1; i <= 6; i++) {
-        var el = document.getElementById('code-' + i);
-        if (el) el.value = '';
-    }
-    pendingRegistration = null;
-    authMode = '';
-}
-
-async function handleVerification(e) {
-    e.preventDefault();
-    var enteredCode = '';
-    for (var i = 1; i <= 6; i++) {
-        enteredCode += document.getElementById('code-' + i).value;
-    }
-    if (enteredCode.length !== 6) {
-        showToast('أدخل كود التحقق كاملاً', 'error');
-        return;
-    }
-    if (enteredCode !== verificationCode) {
-        showToast('كود التحقق غير صحيح', 'error');
-        return;
-    }
-    if (!pendingRegistration) {
-        showToast('خطأ', 'error');
-        return;
     }
 
-    var userData = pendingRegistration;
-
-    if (authMode === 'register') {
-        // New registration - mark as verified
-        userData.verified = true;
-        userData.loginDate = new Date().toISOString();
-        parentsDatabase.push(userData);
-        localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
-        CLOUD_DB.addParent(userData).catch(function() {});
-    } else if (authMode === 'verify-existing') {
-        // Existing user verifying email
-        userData.verified = true;
-        // Update in database
-        for (var j = 0; j < parentsDatabase.length; j++) {
-            if (parentsDatabase[j].id === userData.id) {
-                parentsDatabase[j].verified = true;
-                break;
-            }
+    if (!foundUser) {
+        // Check pending registration in localStorage
+        var pending = JSON.parse(localStorage.getItem('pendingRegistration') || 'null');
+        if (pending && pending.activationToken === token) {
+            foundUser = pending;
         }
-        localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
     }
 
-    localStorage.setItem(DB_KEYS.CURRENT_USER, userData.id);
-    if (userData.isAdmin) {
+    if (!foundUser) {
+        showToast('رابط التفعيل غير صحيح أو منتهي الصلاحية', 'error');
+        return false;
+    }
+
+    // Activate the account
+    foundUser.verified = true;
+    foundUser.activationToken = null;
+
+    // Add to parents database
+    var userExists = false;
+    for (var j = 0; j < parentsDatabase.length; j++) {
+        if (parentsDatabase[j].id === foundUser.id) {
+            parentsDatabase[j].verified = true;
+            parentsDatabase[j].activationToken = null;
+            userExists = true;
+            break;
+        }
+    }
+
+    if (!userExists) {
+        parentsDatabase.push(foundUser);
+    }
+
+    localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
+    localStorage.removeItem('pendingRegistration');
+    CLOUD_DB.addParent(foundUser).catch(function() {});
+
+    // Auto login
+    localStorage.setItem(DB_KEYS.CURRENT_USER, foundUser.id);
+    if (foundUser.isAdmin) {
         localStorage.setItem(ADMIN_KEY, 'true');
         isAdminLoggedIn = true;
     }
 
     isLoggedIn = true;
-    parentData = userData;
-    clearInterval(verificationTimer);
+    parentData = foundUser;
     pendingRegistration = null;
     authMode = '';
 
-    document.getElementById('verification-page').classList.add('hidden');
+    // Show main app
+    document.getElementById('splash-screen').style.display = 'none';
     document.getElementById('login-page').classList.add('hidden');
     document.getElementById('register-page').classList.add('hidden');
+    document.getElementById('verification-page').classList.add('hidden');
     document.getElementById('main-app').classList.remove('hidden');
     updateProfileCard();
 
     var adminCard = document.getElementById('admin-home-card');
-    if (adminCard) adminCard.style.display = userData.isAdmin ? '' : 'none';
+    if (adminCard) adminCard.style.display = foundUser.isAdmin ? '' : 'none';
 
-    showToast('مرحباً بكم ' + userData.name + '! تم تفعيل حسابك بنجاح', 'success');
+    showToast('مرحباً بكم ' + foundUser.name + '! تم تفعيل حسابك بنجاح', 'success');
+    return true;
+}
+
+function checkActivationHash() {
+    var hash = window.location.hash;
+    if (hash && hash.indexOf('#activate=') === 0) {
+        var token = hash.substring(10); // Remove '#activate='
+        if (token) {
+            // Clear the hash
+            history.replaceState(null, null, window.location.pathname);
+            return activateAccount(token);
+        }
+    }
+    return false;
 }
 
 function handleLogout() {
