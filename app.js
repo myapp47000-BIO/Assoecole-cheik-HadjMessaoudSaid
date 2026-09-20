@@ -222,7 +222,7 @@ function handleLogin(e) {
         return;
     }
 
-    // Find user in database
+    // Find user in local database
     var existingUser = null;
     for (var i = 0; i < parentsDatabase.length; i++) {
         if (parentsDatabase[i].email && parentsDatabase[i].email.toLowerCase() === email.toLowerCase()) {
@@ -231,8 +231,34 @@ function handleLogin(e) {
         }
     }
 
+    // If not found locally, try cloud database
     if (!existingUser) {
-        showToast('الحساب غير موجود. سجّل حساب جديد', 'error');
+        var cloudParents = CLOUD_DB.getAllParents();
+        if (cloudParents && cloudParents.length > 0) {
+            var cloudUser = null;
+            for (var j = 0; j < cloudParents.length; j++) {
+                if (cloudParents[j].email && cloudParents[j].email.toLowerCase() === email.toLowerCase()) {
+                    cloudUser = cloudParents[j];
+                    break;
+                }
+            }
+            if (!cloudUser) {
+                showToast('الحساب غير موجود. سجّل حساب جديد', 'error');
+                return;
+            }
+            // Check password
+            if (cloudUser.password !== password) {
+                showToast('كلمة المرور غير صحيحة', 'error');
+                return;
+            }
+            // Sync to local database
+            parentsDatabase.push(cloudUser);
+            localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
+            // Auto login
+            completeLogin(cloudUser);
+        } else {
+            showToast('الحساب غير موجود. سجّل حساب جديد', 'error');
+        }
         return;
     }
 
@@ -242,30 +268,28 @@ function handleLogin(e) {
         return;
     }
 
-    // Check if email is verified
-    if (!existingUser.verified) {
-        showToast('يجب تفعيل الحساب أولاً. تحقق من بريدك الإلكتروني', 'error');
-        return;
-    }
-
     // Login successful
-    localStorage.setItem(DB_KEYS.CURRENT_USER, existingUser.id);
-    if (existingUser.isAdmin) {
+    completeLogin(existingUser);
+}
+
+function completeLogin(user) {
+    localStorage.setItem(DB_KEYS.CURRENT_USER, user.id);
+    if (user.isAdmin) {
         localStorage.setItem(ADMIN_KEY, 'true');
         isAdminLoggedIn = true;
     }
 
     isLoggedIn = true;
-    parentData = existingUser;
+    parentData = user;
 
     document.getElementById('login-page').classList.add('hidden');
     document.getElementById('main-app').classList.remove('hidden');
     updateProfileCard();
 
     var adminCard = document.getElementById('admin-home-card');
-    if (adminCard) adminCard.style.display = existingUser.isAdmin ? '' : 'none';
+    if (adminCard) adminCard.style.display = user.isAdmin ? '' : 'none';
 
-    showToast('مرحباً بكم ' + existingUser.name, 'success');
+    showToast('مرحباً بكم ' + user.name, 'success');
 }
 
 function handleRegister(e) {
@@ -300,7 +324,7 @@ function handleRegister(e) {
     }
     document.getElementById('password-match-error').classList.add('hidden');
 
-    // Check if email already exists
+    // Check if email already exists in local DB
     for (var i = 0; i < parentsDatabase.length; i++) {
         if (parentsDatabase[i].email && parentsDatabase[i].email.toLowerCase() === email.toLowerCase()) {
             showToast('البريد الإلكتروني مسجل بالفعل', 'error');
@@ -311,10 +335,7 @@ function handleRegister(e) {
     var userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     var isAdmin = email.toLowerCase() === DB_KEYS.ADMIN_EMAIL.toLowerCase();
 
-    // Generate activation token
-    var activationToken = btoa(userId + ':' + email + ':' + Date.now()).replace(/[^a-zA-Z0-9]/g, '');
-
-    pendingRegistration = {
+    var newUser = {
         id: userId,
         name: name,
         phone: phone,
@@ -322,17 +343,42 @@ function handleRegister(e) {
         password: password,
         students: [],
         isAdmin: isAdmin,
-        verified: false,
-        activationToken: activationToken,
+        verified: true,
         loginDate: new Date().toISOString(),
         lastLogin: new Date().toISOString()
     };
 
-    // Save pending registration to localStorage for activation
-    localStorage.setItem('pendingRegistration', JSON.stringify(pendingRegistration));
+    // Add to local database
+    parentsDatabase.push(newUser);
+    localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
 
-    authMode = 'register';
-    sendActivationEmail(email, name, activationToken);
+    // Save to cloud database
+    try {
+        CLOUD_DB.addParent(newUser);
+    } catch(err) {
+        console.error('Cloud save error:', err);
+    }
+
+    // Auto login
+    localStorage.setItem(DB_KEYS.CURRENT_USER, userId);
+    if (isAdmin) {
+        localStorage.setItem(ADMIN_KEY, 'true');
+        isAdminLoggedIn = true;
+    }
+
+    isLoggedIn = true;
+    parentData = newUser;
+
+    // Show main app
+    document.getElementById('login-page').classList.add('hidden');
+    document.getElementById('register-page').classList.add('hidden');
+    document.getElementById('main-app').classList.remove('hidden');
+    updateProfileCard();
+
+    var adminCard = document.getElementById('admin-home-card');
+    if (adminCard) adminCard.style.display = isAdmin ? '' : 'none';
+
+    showToast('مرحباً بكم ' + name + '! تم إنشاء حسابك بنجاح', 'success');
 }
 
 function updateChildrenCount(delta) {
@@ -456,7 +502,9 @@ function activateAccount(token) {
 
     localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
     localStorage.removeItem('pendingRegistration');
-    CLOUD_DB.addParent(foundUser).catch(function() {});
+    try {
+        CLOUD_DB.addParent(foundUser);
+    } catch(err) {}
 
     // Auto login
     localStorage.setItem(DB_KEYS.CURRENT_USER, foundUser.id);
@@ -1938,7 +1986,7 @@ async function refreshStats() {
     if (content) content.classList.add('hidden');
     
     try {
-        const stats = await CLOUD_DB.getStats();
+        const stats = CLOUD_DB.getStats();
         
         if (!stats) {
             if (loading) loading.textContent = 'لا توجد بيانات';
@@ -1980,7 +2028,7 @@ async function refreshStats() {
 
 async function exportCSV() {
     try {
-        const csv = await CLOUD_DB.exportCSV();
+        const csv = CLOUD_DB.exportCSV();
         if (!csv) {
             showToast('لا توجد بيانات للتصدير', 'error');
             return;
