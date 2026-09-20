@@ -150,9 +150,7 @@ function initApp() {
 
     // Update admin card visibility
     const adminCard = document.getElementById('admin-home-card');
-    if (adminCard && !isAdminLoggedIn) {
-        adminCard.style.display = '';
-    }
+    if (adminCard) adminCard.style.display = isAdminLoggedIn ? '' : 'none';
 
     // Update profile card
     updateProfileCard();
@@ -265,7 +263,7 @@ function handleLogin(e) {
     updateProfileCard();
 
     var adminCard = document.getElementById('admin-home-card');
-    if (adminCard && existingUser.isAdmin) adminCard.style.display = '';
+    if (adminCard) adminCard.style.display = existingUser.isAdmin ? '' : 'none';
 
     showToast('مرحباً بكم ' + existingUser.name, 'success');
 }
@@ -405,9 +403,11 @@ async function sendVerificationCode(email, name) {
         });
 
         document.getElementById('login-page').classList.add('hidden');
+        document.getElementById('register-page').classList.add('hidden');
         document.getElementById('verification-page').classList.remove('hidden');
         document.getElementById('verification-email-display').textContent = 'تم إرسال كود التحقق إلى ' + email;
         startVerificationTimer();
+        for (var ci = 1; ci <= 6; ci++) { var cel = document.getElementById('code-' + ci); if (cel) cel.value = ''; }
         document.getElementById('code-1').focus();
         showToast('تم إرسال كود التحقق', 'success');
     } catch (e) {
@@ -425,6 +425,7 @@ function handleCodeKeydown(e, current, prevId) {
 }
 
 function startVerificationTimer() {
+    if (verificationTimer) clearInterval(verificationTimer);
     verificationTimeLeft = 120;
     updateTimerDisplay();
     document.getElementById('resend-btn').disabled = true;
@@ -525,7 +526,7 @@ async function handleVerification(e) {
     updateProfileCard();
 
     var adminCard = document.getElementById('admin-home-card');
-    if (adminCard && userData.isAdmin) adminCard.style.display = '';
+    if (adminCard) adminCard.style.display = userData.isAdmin ? '' : 'none';
 
     showToast('مرحباً بكم ' + userData.name + '! تم تفعيل حسابك بنجاح', 'success');
 }
@@ -535,6 +536,10 @@ function handleLogout() {
     
     isLoggedIn = false;
     parentData = {};
+    authMode = '';
+    pendingRegistration = null;
+    verificationCode = '';
+    if (verificationTimer) { clearInterval(verificationTimer); verificationTimer = null; }
     
     // Hide main app and show register page
     document.getElementById('main-app').classList.add('hidden');
@@ -544,10 +549,11 @@ function handleLogout() {
     document.getElementById('register-page').classList.remove('hidden');
     
     // Reset forms
-    const loginForm = document.getElementById('login-form');
+    var loginForm = document.getElementById('login-form');
     if (loginForm) loginForm.reset();
-    const registerForm = document.getElementById('register-form');
+    var registerForm = document.getElementById('register-form');
     if (registerForm) registerForm.reset();
+    for (var ci = 1; ci <= 6; ci++) { var cel = document.getElementById('code-' + ci); if (cel) cel.value = ''; }
     
     showToast('تم تسجيل الخروج بنجاح', 'normal');
 }
@@ -622,10 +628,10 @@ function navigateTo(page) {
 }
 
 // Supplies
-function showGrade(grade) {
+function showGrade(grade, el) {
     currentGrade = grade;
     document.querySelectorAll('.grade-tab').forEach(tab => tab.classList.remove('active'));
-    event.target.classList.add('active');
+    if (el) el.classList.add('active');
     renderSupplies();
 }
 
@@ -1173,11 +1179,12 @@ function adminLogout() {
     showToast('تم تسجيل الخروج', 'normal');
 }
 
-function showAdminTab(tabName) {
+function showAdminTab(tabName, el) {
     document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
     
-    event.target.classList.add('active');
+    if (el) el.classList.add('active');
+    else event.target.classList.add('active');
     document.getElementById('admin-' + tabName).classList.add('active');
 
     if (tabName === 'manage-notifs') {
@@ -1979,7 +1986,7 @@ async function refreshStats() {
         const levelsHtml = Object.entries(stats.studentsByLevel).map(([level, count]) => 
             `<div class="level-bar">
                 <span class="level-name">${level}</span>
-                <div class="level-bar-fill" style="width: ${Math.min(count / stats.totalStudents * 100, 100)}%"></div>
+                <div class="level-bar-fill" style="width: ${stats.totalStudents > 0 ? Math.min(count / stats.totalStudents * 100, 100) : 0}%"></div>
                 <span class="level-count">${count}</span>
             </div>`
         ).join('');
