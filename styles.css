@@ -271,6 +271,32 @@ html, body {
 }
 
 
+
+/* Activation Message */
+.activation-message {
+    text-align: center;
+    padding: 24px 16px;
+}
+
+.activation-message svg {
+    margin-bottom: 16px;
+    opacity: 0.9;
+}
+
+.activation-text {
+    font-size: 15px;
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.activation-hint {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
 /* Google Sign-In Button */
 .login-divider {
     text-align: center;
