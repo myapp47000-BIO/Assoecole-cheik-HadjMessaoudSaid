@@ -89,6 +89,7 @@ function initApp() {
     try { renderEducationSites(); } catch(e) { console.error(e); }
     try { renderEducationVideos(); } catch(e) { console.error(e); }
     try { renderSupplies(); } catch(e) { console.error(e); }
+    try { renderBooksList(); } catch(e) { console.error(e); }
     try { loadFacebookFeed(); } catch(e) { console.error(e); }
 
     var notifToggle = document.getElementById('notif-toggle');
@@ -1116,6 +1117,7 @@ function navigateTo(page) {
     if (pageContent) pageContent.scrollTop = 0;
     if (page === 'facebook') loadFacebookFeed();
     if (page === 'admin') updateAdminView();
+    if (page === 'books') renderBooksList();
 }
 
 function showGrade(grade, el) {
