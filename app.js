@@ -1033,12 +1033,13 @@ function renderEducationVideos() {
 
 // Admin Panel
 function updateAdminView() {
-    const loginSection = document.getElementById('admin-login');
-    const panelSection = document.getElementById('admin-panel');
+    var loginSection = document.getElementById('admin-login');
+    var panelSection = document.getElementById('admin-panel');
 
     if (isAdminLoggedIn) {
         loginSection.classList.add('hidden');
         panelSection.classList.remove('hidden');
+        renderPendingRegistrations();
     } else {
         loginSection.classList.remove('hidden');
         panelSection.classList.add('hidden');
@@ -1069,19 +1070,16 @@ function adminLogout() {
 }
 
 function showAdminTab(tabName, el) {
-    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.admin-section').forEach(function(s) { s.classList.remove('active'); });
     
     if (el) el.classList.add('active');
-    else event.target.classList.add('active');
-    document.getElementById('admin-' + tabName).classList.add('active');
+    var section = document.getElementById('admin-' + tabName);
+    if (section) section.classList.add('active');
 
-    if (tabName === 'manage-notifs') {
-        renderAdminNotifs();
-    }
-    if (tabName === 'stats') {
-        refreshStats();
-    }
+    if (tabName === 'pending') renderPendingRegistrations();
+    if (tabName === 'manage-notifs') renderAdminNotifs();
+    if (tabName === 'stats') refreshStats();
 }
 
 function addNotification() {
