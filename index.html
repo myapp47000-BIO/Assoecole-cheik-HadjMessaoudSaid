@@ -373,8 +373,78 @@
                         </svg>
                         <span id="notification-badge" class="notification-badge hidden">0</span>
                     </button>
+                    <button id="menu-btn" class="header-icon-btn" title="القائمة" onclick="toggleAppMenu()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="6" x2="21" y2="6"/>
+                            <line x1="3" y1="12" x2="21" y2="12"/>
+                            <line x1="3" y1="18" x2="21" y2="18"/>
+                        </svg>
+                    </button>
                 </div>
             </header>
+
+            <!-- App Menu Overlay -->
+            <div id="app-menu-overlay" class="app-menu-overlay hidden" onclick="toggleAppMenu()"></div>
+            <div id="app-menu" class="app-menu hidden">
+                <div class="app-menu-header">
+                    <div class="app-menu-logo">
+                        <svg viewBox="0 0 50 50" width="45" height="45">
+                            <circle cx="25" cy="25" r="23" fill="none" stroke="#f1c40f" stroke-width="1.5"/>
+                            <text x="25" y="20" text-anchor="middle" fill="#f1c40f" font-size="7" font-weight="bold">جمعية</text>
+                            <text x="25" y="27" text-anchor="middle" fill="#f1c40f" font-size="5">أولياء التلاميذ</text>
+                        </svg>
+                    </div>
+                    <h3>القائمة</h3>
+                    <button class="menu-close-btn" onclick="toggleAppMenu()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+                <div class="app-menu-body">
+                    <button class="app-menu-item" onclick="installApp()">
+                        <div class="menu-item-icon" style="background:rgba(39,174,96,0.15);color:#27ae60;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </div>
+                        <div class="menu-item-text">
+                            <span class="menu-item-title">تثبيت التطبيق</span>
+                            <span class="menu-item-desc">إضافة للشاشة الرئيسية</span>
+                        </div>
+                    </button>
+                    <button class="app-menu-item" onclick="shareAppLink()">
+                        <div class="menu-item-icon" style="background:rgba(52,152,219,0.15);color:#3498db;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                        </div>
+                        <div class="menu-item-text">
+                            <span class="menu-item-title">مشاركة رابط التطبيق</span>
+                            <span class="menu-item-desc">إرسال لولياء الأمور</span>
+                        </div>
+                    </button>
+                    <button class="app-menu-item" onclick="navigateTo('home');toggleAppMenu();">
+                        <div class="menu-item-icon" style="background:rgba(241,196,15,0.15);color:#f1c40f;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                        </div>
+                        <div class="menu-item-text">
+                            <span class="menu-item-title">الرئيسية</span>
+                        </div>
+                    </button>
+                    <button class="app-menu-item" onclick="navigateTo('profile');toggleAppMenu();">
+                        <div class="menu-item-icon" style="background:rgba(155,89,182,0.15);color:#9b59b6;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </div>
+                        <div class="menu-item-text">
+                            <span class="menu-item-title">الملف الشخصي</span>
+                        </div>
+                    </button>
+                    <div class="app-menu-divider"></div>
+                    <button class="app-menu-item" onclick="handleLogout();toggleAppMenu();">
+                        <div class="menu-item-icon" style="background:rgba(231,76,60,0.15);color:#e74c3c;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        </div>
+                        <div class="menu-item-text">
+                            <span class="menu-item-title">تسجيل الخروج</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
 
             <!-- Page Content -->
             <main id="page-content" class="page-content">
