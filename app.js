@@ -192,12 +192,12 @@ function handleRegister(e) {
     var emailVal = emailEl ? emailEl.value.trim() : '';
     var phoneVal = phoneEl ? phoneEl.value.trim() : '';
 
-    if (!nameVal || !levelVal || !phoneVal) {
+    if (!nameVal || !levelVal || !emailVal || !phoneVal) {
         showToast('أكمل جميع الحقول المطلوبة', 'error');
         return;
     }
 
-    if (emailVal && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
         showToast('البريد الإلكتروني غير صحيح', 'error');
         return;
     }
