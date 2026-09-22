@@ -1235,10 +1235,16 @@
                             <div class="admin-form-card">
                                 <div class="admin-card-header">
                                     <h4>قائمة المسجلين</h4>
-                                    <button class="admin-btn" onclick="renderUsersList()" style="font-size:12px;">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-                                        تحديث
-                                    </button>
+                                    <div style="display:flex;gap:6px;">
+                                        <button class="admin-btn" onclick="showShareMenu()" style="font-size:12px;background:rgba(39,174,96,0.15);color:#27ae60;border-color:rgba(39,174,96,0.3);">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                                            مشاركة
+                                        </button>
+                                        <button class="admin-btn" onclick="renderUsersList()" style="font-size:12px;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                                            تحديث
+                                        </button>
+                                    </div>
                                 </div>
                                 <div id="users-list"></div>
                             </div>
