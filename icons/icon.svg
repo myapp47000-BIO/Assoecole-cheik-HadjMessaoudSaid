@@ -19,17 +19,17 @@
   <!-- Inner circle -->
   <circle cx="256" cy="230" r="160" fill="none" stroke="url(#gold)" stroke-width="2" opacity="0.4"/>
   
-  <!-- Text lines -->
-  <text x="256" y="155" text-anchor="middle" fill="#f1c40f" font-size="62" font-weight="bold" font-family="Arial, sans-serif">جمعية</text>
+  <!-- Text lines - correct order top to bottom -->
+  <text x="256" y="155" text-anchor="middle" fill="#f1c40f" font-size="62" font-weight="bold" font-family="Arial, sans-serif" direction="rtl">جمعية</text>
   
-  <text x="256" y="210" text-anchor="middle" fill="#f1c40f" font-size="48" font-weight="bold" font-family="Arial, sans-serif">أولياء التلاميذ</text>
+  <text x="256" y="210" text-anchor="middle" fill="#f1c40f" font-size="48" font-weight="bold" font-family="Arial, sans-serif" direction="rtl">أولياء التلاميذ</text>
   
-  <text x="256" y="260" text-anchor="middle" fill="#ecf0f1" font-size="34" font-family="Arial, sans-serif">إبتدائية الشيخ</text>
+  <text x="256" y="260" text-anchor="middle" fill="#ecf0f1" font-size="34" font-family="Arial, sans-serif" direction="rtl">إبتدائية الشيخ</text>
   
-  <text x="256" y="300" text-anchor="middle" fill="#ecf0f1" font-size="34" font-family="Arial, sans-serif">حاج مسعود سعيد</text>
+  <text x="256" y="300" text-anchor="middle" fill="#ecf0f1" font-size="34" font-family="Arial, sans-serif" direction="rtl">حاج مسعود سعيد</text>
   
   <!-- Location -->
-  <text x="256" y="345" text-anchor="middle" fill="#95a5a6" font-size="24" font-family="Arial, sans-serif">بلدية العطف - تجنينت - غرداية</text>
+  <text x="256" y="345" text-anchor="middle" fill="#95a5a6" font-size="24" font-family="Arial, sans-serif" direction="rtl">بلدية العطف - تجنينت - غرداية</text>
   
   <!-- Decorative arc -->
   <path d="M120 400 Q256 440 392 400" fill="none" stroke="url(#gold)" stroke-width="4"/>
