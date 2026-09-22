@@ -24,7 +24,7 @@
   <line x1="256" y1="155" x2="256" y2="280" stroke="#f1c40f" stroke-width="3"/>
   
   <!-- Main title -->
-  <text x="256" y="370" text-anchor="middle" fill="#f1c40f" font-size="72" font-weight="bold" font-family="Arial, sans-serif">M.E.T</text>
+  <text x="256" y="370" text-anchor="middle" fill="#f1c40f" font-size="72" font-weight="bold" font-family="Arial, sans-serif">ASSO.P.E</text>
   
   <!-- Full name -->
   <text x="256" y="420" text-anchor="middle" fill="#ecf0f1" font-size="36" font-family="Arial, sans-serif">جمعية أولياء التلاميذ</text>
