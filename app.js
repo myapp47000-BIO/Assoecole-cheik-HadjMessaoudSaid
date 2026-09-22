@@ -1446,3 +1446,89 @@ function shareAppLink() {
         showToast('تم نسخ رابط التطبيق', 'success');
     }
 }
+
+// Books Calculator
+var currentBooksGrade = 'preparatory';
+var selectedBooks = {};
+
+function selectBooksGrade(grade, btn) {
+    currentBooksGrade = grade;
+    document.querySelectorAll('.books-grade-btn').forEach(function(b) { b.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+    renderBooksList();
+}
+
+function renderBooksList() {
+    var container = document.getElementById('books-list');
+    if (!container || !BOOKS_DATA[currentBooksGrade]) return;
+    
+    var gradeData = BOOKS_DATA[currentBooksGrade];
+    var html = '<div class="books-list-header"><h4>قائمة الكتب - ' + gradeData.name + '</h4><span class="books-total-hint">المجموع: ' + gradeData.total.toLocaleString('ar-DZ') + ' د.ج</span></div>';
+    
+    gradeData.books.forEach(function(book) {
+        var isChecked = selectedBooks[currentBooksGrade] && selectedBooks[currentBooksGrade][book.code];
+        html += '<div class="book-item">';
+        html += '<label class="book-checkbox">';
+        html += '<input type="checkbox" ' + (isChecked ? 'checked' : '') + ' onchange="toggleBook(\'' + book.code + '\', this.checked)">';
+        html += '<span class="book-checkmark"></span>';
+        html += '</label>';
+        html += '<div class="book-info">';
+        html += '<span class="book-title">' + book.title + '</span>';
+        html += '<span class="book-code">الرمز: ' + book.code + '</span>';
+        html += '</div>';
+        html += '<span class="book-price">' + book.price.toLocaleString('ar-DZ') + ' د.ج</span>';
+        html += '</div>';
+    });
+    
+    container.innerHTML = html;
+    calculateBooksTotal();
+}
+
+function toggleBook(code, checked) {
+    if (!selectedBooks[currentBooksGrade]) selectedBooks[currentBooksGrade] = {};
+    selectedBooks[currentBooksGrade][code] = checked;
+    calculateBooksTotal();
+}
+
+function calculateBooksTotal() {
+    var total = 0;
+    var count = 0;
+    
+    Object.keys(selectedBooks).forEach(function(grade) {
+        Object.keys(selectedBooks[grade]).forEach(function(code) {
+            if (selectedBooks[grade][code]) {
+                var gradeData = BOOKS_DATA[grade];
+                if (gradeData) {
+                    var book = gradeData.books.find(function(b) { return b.code === code; });
+                    if (book) {
+                        total += book.price;
+                        count++;
+                    }
+                }
+            }
+        });
+    });
+    
+    var totalEl = document.getElementById('books-total-items');
+    var priceEl = document.getElementById('books-total-price');
+    if (totalEl) totalEl.textContent = count + ' كتاب';
+    if (priceEl) priceEl.textContent = total.toLocaleString('ar-DZ') + ' د.ج';
+    
+    var studentsCount = parseInt(document.getElementById('books-students-count').value) || 1;
+    var grandTotal = total * studentsCount;
+    var grandEl = document.getElementById('books-grand-total');
+    if (grandEl) grandEl.textContent = grandTotal.toLocaleString('ar-DZ') + ' د.ج';
+}
+
+function resetBooksCalculator() {
+    selectedBooks = {};
+    document.querySelectorAll('.books-list input[type="checkbox"]').forEach(function(cb) { cb.checked = false; });
+    var countInput = document.getElementById('books-students-count');
+    if (countInput) countInput.value = 1;
+    calculateBooksTotal();
+    showToast('تم إعادة تعيين الحاسبة', 'normal');
+}
+
+function printBooksCalculator() {
+    window.print();
+}
