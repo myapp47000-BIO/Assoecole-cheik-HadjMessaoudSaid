@@ -1516,10 +1516,12 @@ function calculateBooksTotal() {
     if (totalEl) totalEl.textContent = count + ' كتاب';
     if (priceEl) priceEl.textContent = total.toLocaleString('ar-DZ') + ' د.ج';
     
-    var studentsCount = parseInt(document.getElementById('books-students-count').value) || 1;
-    var grandTotal = total * studentsCount;
-    var grandEl = document.getElementById('books-grand-total');
-    if (grandEl) grandEl.textContent = grandTotal.toLocaleString('ar-DZ') + ' د.ج';
+    var registrationFee = 35;
+    var associationFee = 500;
+    var grandTotalWithFees = total + registrationFee + associationFee;
+    
+    var grandEl = document.getElementById('books-grand-total-with-fees');
+    if (grandEl) grandEl.textContent = grandTotalWithFees.toLocaleString('ar-DZ') + ' د.ج';
 }
 
 function resetBooksCalculator() {
