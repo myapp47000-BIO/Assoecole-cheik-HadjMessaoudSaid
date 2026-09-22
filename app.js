@@ -256,15 +256,17 @@ function handleRegister(e) {
     if (e) e.preventDefault();
 
     var nameVal = (document.getElementById('reg-name') || {}).value || '';
+    var studentNameVal = (document.getElementById('reg-student-name') || {}).value || '';
     var levelVal = (document.getElementById('reg-level') || {}).value || '';
     var emailVal = (document.getElementById('reg-email') || {}).value || '';
     var phoneVal = (document.getElementById('reg-phone') || {}).value || '';
 
     nameVal = nameVal.trim();
+    studentNameVal = studentNameVal.trim();
     emailVal = emailVal.trim();
     phoneVal = phoneVal.trim();
 
-    if (!nameVal || !levelVal || !emailVal || !phoneVal) {
+    if (!nameVal || !studentNameVal || !levelVal || !emailVal || !phoneVal) {
         showToast('أكمل جميع الحقول المطلوبة', 'error');
         return;
     }
@@ -294,11 +296,12 @@ function handleRegister(e) {
     var newUser = {
         id: userId,
         name: nameVal,
+        studentName: studentNameVal,
         level: levelVal,
         levelName: (typeof STUDENT_LEVELS !== 'undefined' && STUDENT_LEVELS[levelVal]) ? STUDENT_LEVELS[levelVal] : levelVal,
         phone: normalizedPhone,
         email: emailVal,
-        students: [],
+        students: [{ name: studentNameVal, level: levelVal, levelName: (typeof STUDENT_LEVELS !== 'undefined' && STUDENT_LEVELS[levelVal]) ? STUDENT_LEVELS[levelVal] : levelVal }],
         isAdmin: false,
         verified: false,
         activationCode: code,
@@ -312,7 +315,7 @@ function handleRegister(e) {
     pendingVerificationCode = code;
     pendingVerificationPhone = normalizedPhone;
 
-    saveRegistrationToGitHub(normalizedPhone, nameVal, levelVal, emailVal).catch(function() {});
+    saveRegistrationToGitHub(normalizedPhone, nameVal, levelVal, emailVal, studentNameVal).catch(function() {});
 
     hideAllPages();
     var verPage = document.getElementById('verification-page');
