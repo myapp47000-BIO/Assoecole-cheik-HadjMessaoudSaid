@@ -146,6 +146,106 @@ function normalizePhone(phone) {
     return '213' + p;
 }
 
+function fetchActivations() {
+    return fetch(GITHUB_CONFIG.rawBase + 'activations.json?t=' + Date.now())
+        .then(function(r) { return r.json(); })
+        .catch(function() { return {}; });
+}
+
+function saveRegistrationToGitHub(phone, name, level, email) {
+    return fetch(GITHUB_CONFIG.apiBase + '/activations.json', {
+        headers: { 'Authorization': 'token ' + GITHUB_CONFIG.token }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(meta) {
+        var current = {};
+        try { current = JSON.parse(atob(meta.content.replace(/\s/g, ''))); } catch(e) { current = {}; }
+        current[phone] = {
+            name: name,
+            level: level,
+            levelName: (typeof STUDENT_LEVELS !== 'undefined' && STUDENT_LEVELS[level]) ? STUDENT_LEVELS[level] : level,
+            email: email,
+            pending: true,
+            registeredAt: new Date().toISOString()
+        };
+        var body = JSON.stringify(current);
+        var encoded = btoa(unescape(encodeURIComponent(body)));
+        return fetch(GITHUB_CONFIG.apiBase + '/activations.json', {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'token ' + GITHUB_CONFIG.token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: 'New registration: ' + phone,
+                content: encoded,
+                sha: meta.sha,
+                branch: 'main'
+            })
+        });
+    })
+    .then(function(r) { return r.json(); });
+}
+
+function activateUserOnGitHub(phone) {
+    return fetch(GITHUB_CONFIG.apiBase + '/activations.json', {
+        headers: { 'Authorization': 'token ' + GITHUB_CONFIG.token }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(meta) {
+        var current = {};
+        try { current = JSON.parse(atob(meta.content.replace(/\s/g, ''))); } catch(e) { current = {}; }
+        if (current[phone]) {
+            current[phone].pending = false;
+            current[phone].activatedAt = new Date().toISOString();
+        }
+        var body = JSON.stringify(current);
+        var encoded = btoa(unescape(encodeURIComponent(body)));
+        return fetch(GITHUB_CONFIG.apiBase + '/activations.json', {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'token ' + GITHUB_CONFIG.token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: 'Activate user: ' + phone,
+                content: encoded,
+                sha: meta.sha,
+                branch: 'main'
+            })
+        });
+    })
+    .then(function(r) { return r.json(); });
+}
+
+function removeActivationOnGitHub(phone) {
+    return fetch(GITHUB_CONFIG.apiBase + '/activations.json', {
+        headers: { 'Authorization': 'token ' + GITHUB_CONFIG.token }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(meta) {
+        var current = {};
+        try { current = JSON.parse(atob(meta.content.replace(/\s/g, ''))); } catch(e) { current = {}; }
+        delete current[phone];
+        var body = JSON.stringify(current);
+        var encoded = btoa(unescape(encodeURIComponent(body)));
+        return fetch(GITHUB_CONFIG.apiBase + '/activations.json', {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'token ' + GITHUB_CONFIG.token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: 'Remove user: ' + phone,
+                content: encoded,
+                sha: meta.sha,
+                branch: 'main'
+            })
+        });
+    })
+    .then(function(r) { return r.json(); });
+}
+
 function showLoginPage() {
     var regPage = document.getElementById('register-page');
     var loginPage = document.getElementById('login-page');
@@ -235,6 +335,8 @@ function handleRegister(e) {
     pendingVerificationCode = code;
     pendingVerificationPhone = normalizedPhone;
 
+    saveRegistrationToGitHub(normalizedPhone, nameVal, levelVal, emailVal).catch(function() {});
+
     var loginPage = document.getElementById('login-page');
     var regPage = document.getElementById('register-page');
     var verPage = document.getElementById('verification-page');
@@ -245,7 +347,7 @@ function handleRegister(e) {
     var codeDisplay = document.getElementById('verify-code-display');
     if (codeDisplay) codeDisplay.textContent = code;
 
-    showToast('تم إنشاء الحساب. في انتظار التفعيل', 'normal');
+    showToast('تم إرسال طلب التسجيل. في انتظار تفعيل الإدارة', 'normal');
 }
 
 function sendCodeViaWhatsApp() {
@@ -333,22 +435,26 @@ function handleLogin(e) {
     }
 
     if (!user.verified) {
-        var code = generateCode();
-        user.activationCode = code;
-        localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
+        showToast('جاري التحقق من حالة الحساب...', 'normal');
 
-        pendingVerificationCode = code;
-        pendingVerificationPhone = normalizePhone(user.phone);
-
-        var loginPage = document.getElementById('login-page');
-        var verPage = document.getElementById('verification-page');
-        if (loginPage) loginPage.classList.add('hidden');
-        if (verPage) verPage.classList.remove('hidden');
-
-        var codeDisplay = document.getElementById('verify-code-display');
-        if (codeDisplay) codeDisplay.textContent = code;
-
-        showToast('حسابك غير مفعّل. تم إرسال كود التحقق', 'normal');
+        fetchActivations().then(function(activations) {
+            var act = activations[normalizedPhone];
+            if (act && !act.pending) {
+                user.verified = true;
+                user.activationCode = null;
+                user.loginDate = new Date().toISOString();
+                user.lastLogin = new Date().toISOString();
+                localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
+                completeLogin(user);
+                showToast('تم تفعيل حسابك بنجاح! مرحباً بكم ' + user.name, 'success');
+            } else if (act && act.pending) {
+                showToast('طلبك قيد المراجعة من الإدارة. يُرجى الانتظار', 'error');
+            } else {
+                showToast('حسابك غير مسجل. سجّل حساب جديد أولاً', 'error');
+            }
+        }).catch(function() {
+            showToast('لا يوجد اتصال. حاول مرة أخرى', 'error');
+        });
         return;
     }
 
@@ -431,18 +537,31 @@ function getPendingRegistrations() {
 function adminApproveUser(userId) {
     for (var i = 0; i < parentsDatabase.length; i++) {
         if (parentsDatabase[i].id === userId) {
-            var code = generateCode();
-            parentsDatabase[i].activationCode = code;
+            var user = parentsDatabase[i];
+            user.verified = true;
+            user.activationCode = null;
+            user.loginDate = new Date().toISOString();
+            user.lastLogin = new Date().toISOString();
             localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
-            return code;
+
+            var normalizedPhone = normalizePhone(user.phone);
+            activateUserOnGitHub(normalizedPhone, user.name, user.level, user.email)
+                .then(function() {
+                    showToast('تم تفعيل الحساب على السحابة', 'success');
+                })
+                .catch(function() {
+                    showToast('تم التفعيل محلياً', 'normal');
+                });
+
+            return user;
         }
     }
     return null;
 }
 
-function adminSendWhatsApp(phone, code) {
+function adminSendWhatsApp(phone, name) {
     var normalized = normalizePhone(phone);
-    var msg = 'كود تفعيل حسابك في تطبيق جمعية أولياء التلاميذ: ' + code;
+    var msg = 'مرحباً ' + (name || '') + '\nتم تفعيل حسابك في تطبيق جمعية أولياء التلاميذ.\nيمكنك الآن الدخول برقم هاتفك.';
     var url = 'https://wa.me/' + normalized + '?text=' + encodeURIComponent(msg);
     window.open(url, '_blank');
 }
@@ -458,6 +577,11 @@ function adminDeleteUser(userId) {
     }
     localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
 
+    if (user) {
+        var normalizedPhone = normalizePhone(user.phone);
+        removeActivationOnGitHub(normalizedPhone).catch(function() {});
+    }
+
     if (user && parentData.id === userId) {
         handleLogout();
     }
@@ -469,42 +593,73 @@ function renderPendingRegistrations() {
     var container = document.getElementById('pending-registrations');
     if (!container) return;
 
-    var pending = getPendingRegistrations();
+    container.innerHTML = '<div class="empty-state"><div class="spinner"></div><p>جاري تحميل الطلبات...</p></div>';
 
-    if (pending.length === 0) {
-        container.innerHTML = '<div class="empty-state"><p>لا توجد طلبات تسجيل معلقة</p></div>';
-        return;
-    }
+    fetchActivations().then(function(activations) {
+        var pending = [];
+        var phones = Object.keys(activations);
+        for (var i = 0; i < phones.length; i++) {
+            var phone = phones[i];
+            if (activations[phone].pending) {
+                pending.push({
+                    phone: phone,
+                    name: activations[phone].name || '',
+                    level: activations[phone].levelName || activations[phone].level || '',
+                    email: activations[phone].email || '',
+                    registeredAt: activations[phone].registeredAt || ''
+                });
+            }
+        }
 
-    var html = '';
-    for (var i = 0; i < pending.length; i++) {
-        var user = pending[i];
-        var dateStr = user.loginDate ? new Date(user.loginDate).toLocaleDateString('ar-DZ') : '';
-        html += '<div class="pending-item">' +
-            '<div class="pending-item-info">' +
-                '<h5>' + (user.name || '') + '</h5>' +
-                '<span>' + (user.phone || '') + ' - ' + (user.email || '') + '</span>' +
-                '<span class="pending-date">' + dateStr + '</span>' +
-            '</div>' +
-            '<div class="pending-actions">' +
-                '<button class="admin-btn approve" onclick="approveAndSendCode(\'' + user.id + '\', \'' + (user.phone || '') + '\')">تفعيل + واتساب</button>' +
-                '<button class="admin-btn delete" onclick="adminDeleteUser(\'' + user.id + '\')">حذف</button>' +
-            '</div>' +
-        '</div>';
-    }
+        if (pending.length === 0) {
+            container.innerHTML = '<div class="empty-state"><p>لا توجد طلبات تسجيل معلقة</p></div>';
+            return;
+        }
 
-    container.innerHTML = html;
+        var html = '';
+        for (var j = 0; j < pending.length; j++) {
+            var user = pending[j];
+            var dateStr = user.registeredAt ? new Date(user.registeredAt).toLocaleDateString('ar-DZ') : '';
+            html += '<div class="pending-item">' +
+                '<div class="pending-item-info">' +
+                    '<h5>' + user.name + '</h5>' +
+                    '<span>' + user.phone + ' - ' + user.email + '</span>' +
+                    '<span>' + user.level + '</span>' +
+                    '<span class="pending-date">' + dateStr + '</span>' +
+                '</div>' +
+                '<div class="pending-actions">' +
+                    '<button class="admin-btn approve" onclick="approveAndSendCode(\'' + user.phone + '\')">تفعيل</button>' +
+                    '<button class="admin-btn whatsapp" onclick="adminSendWhatsApp(\'' + user.phone + '\', \'' + user.name.replace(/'/g, "\\'") + '\')">واتساب</button>' +
+                    '<button class="admin-btn delete" onclick="adminDeleteUserByPhone(\'' + user.phone + '\')">حذف</button>' +
+                '</div>' +
+            '</div>';
+        }
+
+        container.innerHTML = html;
+    }).catch(function() {
+        container.innerHTML = '<div class="empty-state"><p>خطأ في تحميل الطلبات</p></div>';
+    });
 }
 
-function approveAndSendCode(userId, phone) {
-    var code = adminApproveUser(userId);
-    if (code) {
-        adminSendWhatsApp(phone, code);
+function approveAndSendCode(phone, name) {
+    var normalizedPhone = normalizePhone(phone);
+    activateUserOnGitHub(normalizedPhone).then(function() {
+        adminSendWhatsApp(phone, name || '');
         renderPendingRegistrations();
-        showToast('تم توليد الكود وإرساله عبر واتساب', 'success');
-    } else {
+        showToast('تم تفعيل الحساب وإرسال الإشعار عبر واتساب', 'success');
+    }).catch(function() {
+        showToast('حدث خطأ في التفعيل', 'error');
+    });
+}
+
+function adminDeleteUserByPhone(phone) {
+    var normalizedPhone = normalizePhone(phone);
+    removeActivationOnGitHub(normalizedPhone).then(function() {
+        renderPendingRegistrations();
+        showToast('تم حذف المستخدم', 'normal');
+    }).catch(function() {
         showToast('حدث خطأ', 'error');
-    }
+    });
 }
 
 function updateProfileCard() {
