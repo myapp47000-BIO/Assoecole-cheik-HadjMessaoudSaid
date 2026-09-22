@@ -565,10 +565,25 @@ const ADMIN_KEY = 'school_admin_auth';
 const CHECKED_ITEMS_KEY = 'checked_supply_items';
 const FB_POSTS_KEY = 'school_fb_posts';
 
+const GITHUB_CONFIG = {
+    owner: 'myapp47000-BIO',
+    repo: 'Assoecole-cheik-HadjMessaoudSaid',
+    apiBase: 'https://api.github.com/repos/myapp47000-BIO/Assoecole-cheik-HadjMessaoudSaid/contents',
+    rawBase: 'https://myapp47000-bio.github.io/Assoecole-cheik-HadjMessaoudSaid/'
+};
+
 const ADMIN_CREDENTIALS = {
     username: 'admin',
     password: 'amihamou2026'
 };
+
+function getGitHubToken() {
+    return localStorage.getItem('github_token') || '';
+}
+
+function setGitHubToken(token) {
+    localStorage.setItem('github_token', token);
+}
 
 // Books Data - الديوان الوطني للمطبوعات المدرسية
 const BOOKS_DATA = {
