@@ -701,12 +701,45 @@ function renderUsersList() {
     var container = document.getElementById('users-list');
     if (!container) return;
 
-    var users = parentsDatabase.filter(function(u) {
-        return u.phone && !isAdminPhone(u.phone);
-    });
+    var token = getGitHubToken();
+    if (!token) {
+        var users = getUsersListData();
+        renderUsersListHTML(container, users);
+        return;
+    }
 
+    container.innerHTML = '<div class="empty-state"><div class="spinner"></div><p>جاري تحميل القائمة...</p></div>';
+
+    fetchActivations().then(function(activations) {
+        var users = [];
+        var phones = Object.keys(activations || {});
+        for (var i = 0; i < phones.length; i++) {
+            var phone = phones[i];
+            var act = activations[phone];
+            if (phone !== normalizePhone(DB_KEYS.ADMIN_EMAIL) && !isAdminPhone(phone)) {
+                users.push({
+                    id: phone,
+                    name: act.name || '',
+                    phone: act.phone || phone,
+                    level: act.level || '',
+                    levelName: act.levelName || act.level || '',
+                    email: act.email || '',
+                    verified: !act.pending,
+                    lastLogin: act.lastLogin || act.activatedAt || ''
+                });
+            }
+        }
+        renderUsersListHTML(container, users);
+    }).catch(function() {
+        var users = getUsersListData();
+        renderUsersListHTML(container, users);
+    });
+}
+
+function renderUsersListHTML(container, users) {
     if (users.length === 0) {
         container.innerHTML = '<div class="empty-state"><p>لا يوجد مستخدمون مسجلون</p></div>';
+        updateAdminStats();
         return;
     }
 
@@ -742,24 +775,25 @@ function renderUsersList() {
 function adminDeleteUserById(userId) {
     if (!confirm('هل تريد حذف هذا المستخدم؟')) return;
 
-    var user = null;
+    var phone = userId;
     for (var i = 0; i < parentsDatabase.length; i++) {
-        if (parentsDatabase[i].id === userId) {
-            user = parentsDatabase[i];
+        if (parentsDatabase[i].phone && normalizePhone(parentsDatabase[i].phone) === normalizePhone(phone)) {
             parentsDatabase.splice(i, 1);
             break;
         }
     }
     localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
 
-    if (user) {
-        removeActivationOnGitHub(normalizePhone(user.phone)).catch(function() {});
-    }
-
-    renderUsersList();
-    renderPendingRegistrations();
-    renderStats();
-    showToast('تم حذف المستخدم', 'normal');
+    removeActivationOnGitHub(normalizePhone(phone)).then(function() {
+        renderUsersList();
+        renderPendingRegistrations();
+        updateAdminStats();
+        showToast('تم حذف المستخدم', 'normal');
+    }).catch(function() {
+        renderUsersList();
+        updateAdminStats();
+        showToast('تم الحذف محلياً', 'normal');
+    });
 }
 
 function getUsersListData() {
@@ -938,10 +972,33 @@ function toggleCloudSettings() {
 }
 
 function updateAdminStats() {
+    var token = getGitHubToken();
+    if (token) {
+        fetchActivations().then(function(activations) {
+            var total = 0, verified = 0;
+            var phones = Object.keys(activations || {});
+            for (var i = 0; i < phones.length; i++) {
+                if (!isAdminPhone(phones[i])) {
+                    total++;
+                    if (!activations[phones[i]].pending) verified++;
+                }
+            }
+            setStatsValues(total, total - verified, verified);
+        }).catch(function() {
+            setStatsFromLocal();
+        });
+    } else {
+        setStatsFromLocal();
+    }
+}
+
+function setStatsFromLocal() {
     var total = parentsDatabase.filter(function(u) { return u.phone && !isAdminPhone(u.phone); }).length;
     var verified = parentsDatabase.filter(function(u) { return u.verified && u.phone && !isAdminPhone(u.phone); }).length;
-    var pending = total - verified;
+    setStatsValues(total, total - verified, verified);
+}
 
+function setStatsValues(total, pending, verified) {
     var totalEl = document.getElementById('stat-total');
     var pendingEl = document.getElementById('stat-pending');
     var verifiedEl = document.getElementById('stat-verified');
