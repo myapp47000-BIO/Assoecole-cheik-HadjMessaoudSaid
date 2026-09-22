@@ -3799,3 +3799,52 @@ select#reg-level option {
     color: white;
     padding: 8px;
 }
+
+/* Phone Input with Country Code */
+.phone-input-group {
+    display: flex;
+    align-items: center;
+    background: var(--bg-darker, #0d1520);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    transition: border-color 0.3s;
+}
+
+.phone-input-group:focus-within {
+    border-color: var(--accent, #f1c40f);
+}
+
+.phone-country-code {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 10px;
+    background: rgba(241, 196, 15, 0.1);
+    color: #f1c40f;
+    font-weight: 700;
+    font-size: 14px;
+    font-family: monospace;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    white-space: nowrap;
+    user-select: none;
+}
+
+.phone-input-group input[type="tel"] {
+    flex: 1;
+    padding: 12px 14px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 15px;
+    font-family: 'Noto Kufi Arabic', sans-serif;
+    outline: none;
+    direction: ltr;
+    text-align: left;
+}
+
+.phone-input-group input[type="tel"]::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+    direction: rtl;
+    text-align: right;
+}
