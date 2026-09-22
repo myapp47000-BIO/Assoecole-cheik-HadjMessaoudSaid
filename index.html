@@ -1139,6 +1139,7 @@
 
                         <div class="admin-tabs">
                             <button class="admin-tab active" onclick="showAdminTab('pending', this)">طلبات التسجيل</button>
+                            <button class="admin-tab" onclick="showAdminTab('users', this)">المسجلون</button>
                             <button class="admin-tab" onclick="showAdminTab('add-notif', this)">إضافة إشعار</button>
                             <button class="admin-tab" onclick="showAdminTab('manage-notifs', this)">إدارة الإشعارات</button>
                             <button class="admin-tab" onclick="showAdminTab('manage-supplies', this)">إدارة الأدوات</button>
@@ -1149,6 +1150,15 @@
                             <div class="admin-form-card">
                                 <h4>طلبات التسجيل المعلقة</h4>
                                 <div id="pending-registrations">
+                                    <!-- Filled by JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="admin-users" class="admin-section">
+                            <div class="admin-form-card">
+                                <h4>قائمة المسجلين</h4>
+                                <div id="users-list">
                                     <!-- Filled by JS -->
                                 </div>
                             </div>
