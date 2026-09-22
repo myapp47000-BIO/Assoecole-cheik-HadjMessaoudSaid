@@ -4169,6 +4169,14 @@ select#reg-level option {
     margin: 8px 12px;
 }
 
+.admin-menu-item {
+    display: none !important;
+}
+
+body.admin-mode .admin-menu-item {
+    display: flex !important;
+}
+
 @media (max-width: 600px) {
     .admin-stats-row {
         grid-template-columns: repeat(2, 1fr);
