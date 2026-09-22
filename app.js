@@ -153,8 +153,10 @@ function fetchActivations() {
 }
 
 function saveRegistrationToGitHub(phone, name, level, email) {
+    var token = getGitHubToken();
+    if (!token) return Promise.resolve();
     return fetch(GITHUB_CONFIG.apiBase + '/activations.json', {
-        headers: { 'Authorization': 'token ' + GITHUB_CONFIG.token }
+        headers: { 'Authorization': 'token ' + token }
     })
     .then(function(r) { return r.json(); })
     .then(function(meta) {
@@ -173,7 +175,7 @@ function saveRegistrationToGitHub(phone, name, level, email) {
         return fetch(GITHUB_CONFIG.apiBase + '/activations.json', {
             method: 'PUT',
             headers: {
-                'Authorization': 'token ' + GITHUB_CONFIG.token,
+                'Authorization': 'token ' + getGitHubToken(),
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -189,7 +191,7 @@ function saveRegistrationToGitHub(phone, name, level, email) {
 
 function activateUserOnGitHub(phone) {
     return fetch(GITHUB_CONFIG.apiBase + '/activations.json', {
-        headers: { 'Authorization': 'token ' + GITHUB_CONFIG.token }
+        headers: { 'Authorization': 'token ' + getGitHubToken() }
     })
     .then(function(r) { return r.json(); })
     .then(function(meta) {
@@ -204,7 +206,7 @@ function activateUserOnGitHub(phone) {
         return fetch(GITHUB_CONFIG.apiBase + '/activations.json', {
             method: 'PUT',
             headers: {
-                'Authorization': 'token ' + GITHUB_CONFIG.token,
+                'Authorization': 'token ' + getGitHubToken(),
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -220,7 +222,7 @@ function activateUserOnGitHub(phone) {
 
 function removeActivationOnGitHub(phone) {
     return fetch(GITHUB_CONFIG.apiBase + '/activations.json', {
-        headers: { 'Authorization': 'token ' + GITHUB_CONFIG.token }
+        headers: { 'Authorization': 'token ' + getGitHubToken() }
     })
     .then(function(r) { return r.json(); })
     .then(function(meta) {
@@ -232,7 +234,7 @@ function removeActivationOnGitHub(phone) {
         return fetch(GITHUB_CONFIG.apiBase + '/activations.json', {
             method: 'PUT',
             headers: {
-                'Authorization': 'token ' + GITHUB_CONFIG.token,
+                'Authorization': 'token ' + getGitHubToken(),
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -680,6 +682,29 @@ function updateProfileCard() {
     }
 }
 
+function saveGitHubToken() {
+    var input = document.getElementById('github-token-input');
+    var status = document.getElementById('token-status');
+    var token = input ? input.value.trim() : '';
+    if (!token) {
+        if (status) { status.textContent = 'أدخل التوكن أولاً'; status.style.color = '#e74c3c'; }
+        return;
+    }
+    setGitHubToken(token);
+    if (status) { status.textContent = 'تم حفظ التوكن بنجاح'; status.style.color = '#27ae60'; }
+    renderPendingRegistrations();
+}
+
+function loadGitHubToken() {
+    var input = document.getElementById('github-token-input');
+    var status = document.getElementById('token-status');
+    var token = getGitHubToken();
+    if (token) {
+        if (input) input.value = token;
+        if (status) { status.textContent = 'التوكن محفوظ'; status.style.color = '#27ae60'; }
+    }
+}
+
 function updateAdminView() {
     var loginSection = document.getElementById('admin-login');
     var panelSection = document.getElementById('admin-panel');
@@ -687,6 +712,7 @@ function updateAdminView() {
     if (isAdminLoggedIn) {
         if (loginSection) loginSection.classList.add('hidden');
         if (panelSection) panelSection.classList.remove('hidden');
+        loadGitHubToken();
         renderPendingRegistrations();
     } else {
         if (loginSection) loginSection.classList.remove('hidden');
