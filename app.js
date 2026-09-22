@@ -192,12 +192,12 @@ function handleRegister(e) {
     var emailVal = emailEl ? emailEl.value.trim() : '';
     var phoneVal = phoneEl ? phoneEl.value.trim() : '';
 
-    if (!nameVal || !levelVal || !emailVal || !phoneVal) {
+    if (!nameVal || !levelVal || !phoneVal) {
         showToast('أكمل جميع الحقول المطلوبة', 'error');
         return;
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+    if (emailVal && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
         showToast('البريد الإلكتروني غير صحيح', 'error');
         return;
     }
@@ -242,7 +242,7 @@ function handleRegister(e) {
     if (regPage) regPage.classList.add('hidden');
     if (verPage) verPage.classList.remove('hidden');
 
-    var codeDisplay = document.getElementById('verification-code-display');
+    var codeDisplay = document.getElementById('verify-code-display');
     if (codeDisplay) codeDisplay.textContent = code;
 
     showToast('تم إنشاء الحساب. في انتظار التفعيل', 'normal');
@@ -261,11 +261,8 @@ function sendCodeViaWhatsApp() {
 function handleVerifyCode(e) {
     if (e) e.preventDefault();
 
-    var codeInputs = '';
-    for (var i = 1; i <= 4; i++) {
-        var el = document.getElementById('code-' + i);
-        if (el) codeInputs += el.value;
-    }
+    var codeInput = document.getElementById('verify-code-input');
+    var codeInputs = codeInput ? codeInput.value.trim() : '';
 
     if (!codeInputs || codeInputs.length !== 4) {
         showToast('أدخل كود التحقق كاملاً', 'error');
@@ -348,7 +345,7 @@ function handleLogin(e) {
         if (loginPage) loginPage.classList.add('hidden');
         if (verPage) verPage.classList.remove('hidden');
 
-        var codeDisplay = document.getElementById('verification-code-display');
+        var codeDisplay = document.getElementById('verify-code-display');
         if (codeDisplay) codeDisplay.textContent = code;
 
         showToast('حسابك غير مفعّل. تم إرسال كود التحقق', 'normal');
