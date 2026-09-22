@@ -661,6 +661,70 @@ function approveAndSendCodeRemote(phone) {
     });
 }
 
+function renderUsersList() {
+    var container = document.getElementById('users-list');
+    if (!container) return;
+
+    var users = parentsDatabase.filter(function(u) {
+        return u.phone && !isAdminPhone(u.phone);
+    });
+
+    if (users.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>لا يوجد مستخدمون مسجلون</p></div>';
+        return;
+    }
+
+    var html = '<div class="users-table-header">' +
+        '<span>#</span>' +
+        '<span>الاسم واللقب</span>' +
+        '<span>رقم الهاتف</span>' +
+        '<span>المستوى</span>' +
+        '<span>الحالة</span>' +
+        '<span>إجراءات</span>' +
+    '</div>';
+
+    for (var i = 0; i < users.length; i++) {
+        var u = users[i];
+        var statusClass = u.verified ? 'verified' : 'pending';
+        var statusText = u.verified ? 'مفعّل' : 'معلّق';
+        html += '<div class="users-table-row">' +
+            '<span class="users-row-num">' + (i + 1) + '</span>' +
+            '<span class="users-row-name">' + (u.name || 'بدون اسم') + '</span>' +
+            '<span class="users-row-phone">' + (u.phone || '') + '</span>' +
+            '<span class="users-row-level">' + (u.levelName || u.level || '') + '</span>' +
+            '<span class="users-row-status ' + statusClass + '">' + statusText + '</span>' +
+            '<span class="users-row-actions">' +
+                '<button class="admin-btn delete" onclick="adminDeleteUserById(\'' + u.id + '\')">حذف</button>' +
+            '</span>' +
+        '</div>';
+    }
+
+    container.innerHTML = html;
+}
+
+function adminDeleteUserById(userId) {
+    if (!confirm('هل تريد حذف هذا المستخدم؟')) return;
+
+    var user = null;
+    for (var i = 0; i < parentsDatabase.length; i++) {
+        if (parentsDatabase[i].id === userId) {
+            user = parentsDatabase[i];
+            parentsDatabase.splice(i, 1);
+            break;
+        }
+    }
+    localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
+
+    if (user) {
+        removeActivationOnGitHub(normalizePhone(user.phone)).catch(function() {});
+    }
+
+    renderUsersList();
+    renderPendingRegistrations();
+    renderStats();
+    showToast('تم حذف المستخدم', 'normal');
+}
+
 function saveGitHubToken() {
     var input = document.getElementById('github-token-input');
     var status = document.getElementById('token-status');
@@ -752,6 +816,7 @@ function showAdminTab(tabName, btnEl) {
     if (btnEl) btnEl.classList.add('active');
 
     if (tabName === 'pending') renderPendingRegistrations();
+    if (tabName === 'users') renderUsersList();
     if (tabName === 'manage-notifs') renderAdminNotifs();
     if (tabName === 'manage-supplies') renderAdminSupplies();
     if (tabName === 'stats') renderStats();
