@@ -477,6 +477,42 @@ function completeLogin(user) {
     if (adminCard) adminCard.style.display = isAdminLoggedIn ? '' : 'none';
 
     showToast('مرحباً بكم ' + (user.name || ''), 'success');
+
+    if (!isAdminPhone(user.phone) && user.phone) {
+        saveUserToGitHub(user).catch(function() {});
+    }
+}
+
+function saveUserToGitHub(user) {
+    var token = getGitHubToken();
+    if (!token) return Promise.resolve();
+    var normalizedPhone = normalizePhone(user.phone);
+    return fetch(GITHUB_CONFIG.apiBase + '/activations.json', {
+        headers: { 'Authorization': 'token ' + token }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(meta) {
+        var current = {};
+        try { current = JSON.parse(atob(meta.content.replace(/\s/g, ''))); } catch(e) { current = {}; }
+        current[normalizedPhone] = {
+            name: user.name || '',
+            level: user.level || '',
+            levelName: user.levelName || '',
+            email: user.email || '',
+            phone: user.phone || '',
+            pending: !user.verified,
+            registeredAt: current[normalizedPhone] ? current[normalizedPhone].registeredAt : new Date().toISOString(),
+            lastLogin: new Date().toISOString()
+        };
+        var body = JSON.stringify(current);
+        var encoded = btoa(unescape(encodeURIComponent(body)));
+        return fetch(GITHUB_CONFIG.apiBase + '/activations.json', {
+            method: 'PUT',
+            headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: 'Update user: ' + normalizedPhone, content: encoded, sha: meta.sha, branch: 'main' })
+        });
+    })
+    .then(function(r) { return r.json(); });
 }
 
 function handleLogout() {
@@ -724,6 +760,143 @@ function adminDeleteUserById(userId) {
     renderPendingRegistrations();
     renderStats();
     showToast('تم حذف المستخدم', 'normal');
+}
+
+function getUsersListData() {
+    return parentsDatabase.filter(function(u) {
+        return u.phone && !isAdminPhone(u.phone);
+    });
+}
+
+function shareUsersListText() {
+    var users = getUsersListData();
+    if (users.length === 0) {
+        showToast('لا يوجد مسجلون', 'error');
+        return;
+    }
+    var text = 'قائمة المسجلين - جمعية أولياء التلاميذ\n';
+    text += '================================\n\n';
+    users.forEach(function(u, i) {
+        text += (i + 1) + '. ' + (u.name || 'بدون اسم') + '\n';
+        text += '   الهاتف: ' + (u.phone || '') + '\n';
+        text += '   المستوى: ' + (u.levelName || u.level || '') + '\n';
+        text += '   الحالة: ' + (u.verified ? 'مفعّل' : 'معلّق') + '\n\n';
+    });
+    text += 'الإجمالي: ' + users.length + ' مسجل';
+    if (navigator.share) {
+        navigator.share({ title: 'قائمة المسجلين', text: text }).catch(function() {});
+    } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function() {
+            showToast('تم نسخ القائمة', 'success');
+        });
+    } else {
+        var textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('تم نسخ القائمة', 'success');
+    }
+}
+
+function shareUsersListCSV() {
+    var users = getUsersListData();
+    if (users.length === 0) {
+        showToast('لا يوجد مسجلون', 'error');
+        return;
+    }
+    var csv = '\uFEFFالرقم,الاسم واللقب,رقم الهاتف,المستوى,البريد الإلكتروني,الحالة\n';
+    users.forEach(function(u, i) {
+        csv += (i + 1) + ',' + (u.name || '') + ',' + (u.phone || '') + ',' + (u.levelName || u.level || '') + ',' + (u.email || '') + ',' + (u.verified ? 'مفعّل' : 'معلّق') + '\n';
+    });
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = 'قائمة_المسجلين_' + new Date().toLocaleDateString('ar-DZ') + '.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+    showToast('تم تحميل الملف', 'success');
+}
+
+function shareUsersListWhatsApp() {
+    var users = getUsersListData();
+    if (users.length === 0) {
+        showToast('لا يوجد مسجلون', 'error');
+        return;
+    }
+    var text = 'قائمة المسجلين - جمعية أولياء التلاميذ\n';
+    text += '================================\n\n';
+    users.forEach(function(u, i) {
+        text += (i + 1) + '. ' + (u.name || 'بدون اسم') + ' | ' + (u.phone || '') + ' | ' + (u.levelName || u.level || '') + ' | ' + (u.verified ? 'مفعّل' : 'معلّق') + '\n';
+    });
+    text += '\nالإجمالي: ' + users.length + ' مسجل';
+    var url = 'https://wa.me/?text=' + encodeURIComponent(text);
+    window.open(url, '_blank');
+}
+
+function shareUsersListEmail() {
+    var users = getUsersListData();
+    if (users.length === 0) {
+        showToast('لا يوجد مسجلون', 'error');
+        return;
+    }
+    var body = 'قائمة المسجلين - جمعية أولياء التلاميذ\n\n';
+    users.forEach(function(u, i) {
+        body += (i + 1) + '. ' + (u.name || 'بدون اسم') + '\n';
+        body += '   الهاتف: ' + (u.phone || '') + '\n';
+        body += '   المستوى: ' + (u.levelName || u.level || '') + '\n';
+        body += '   الحالة: ' + (u.verified ? 'مفعّل' : 'معلّق') + '\n\n';
+    });
+    body += 'الإجمالي: ' + users.length + ' مسجل';
+    var subject = 'قائمة المسجلين - ' + new Date().toLocaleDateString('ar-DZ');
+    window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+}
+
+function showShareMenu() {
+    var existing = document.getElementById('share-menu-overlay');
+    if (existing) existing.remove();
+
+    var overlay = document.createElement('div');
+    overlay.id = 'share-menu-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:flex-end;justify-content:center;';
+    overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+
+    var menu = document.createElement('div');
+    menu.style.cssText = 'width:100%;max-width:400px;background:var(--bg-card);border-radius:16px 16px 0 0;padding:20px;animation:slideUp 0.3s ease;';
+
+    var users = getUsersListData();
+    var title = document.createElement('h4');
+    title.textContent = 'مشاركة قائمة المسجلين (' + users.length + ')';
+    title.style.cssText = 'color:var(--accent);margin-bottom:15px;text-align:center;';
+    menu.appendChild(title);
+
+    var options = [
+        { icon: '📋', label: 'نسخ كنص', action: shareUsersListText, color: '#3498db' },
+        { icon: '💬', label: 'إرسال عبر واتساب', action: shareUsersListWhatsApp, color: '#27ae60' },
+        { icon: '📊', label: 'تحميل Excel (CSV)', action: shareUsersListCSV, color: '#e67e22' },
+        { icon: '📧', label: 'إرسال بالبريد', action: shareUsersListEmail, color: '#9b59b6' }
+    ];
+
+    options.forEach(function(opt) {
+        var btn = document.createElement('button');
+        btn.style.cssText = 'width:100%;display:flex;align-items:center;gap:12px;padding:14px;margin-bottom:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:12px;color:white;font-family:"Noto Kufi Arabic",sans-serif;font-size:14px;cursor:pointer;transition:all 0.2s;';
+        btn.innerHTML = '<span style="font-size:20px;">' + opt.icon + '</span><span>' + opt.label + '</span>';
+        btn.onmouseover = function() { btn.style.background = 'rgba(255,255,255,0.1)'; };
+        btn.onmouseout = function() { btn.style.background = 'rgba(255,255,255,0.05)'; };
+        btn.onclick = function() { overlay.remove(); opt.action(); };
+        menu.appendChild(btn);
+    });
+
+    var cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'إلغاء';
+    cancelBtn.style.cssText = 'width:100%;padding:14px;margin-top:5px;background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);border-radius:12px;color:#e74c3c;font-family:"Noto Kufi Arabic",sans-serif;font-size:14px;font-weight:600;cursor:pointer;';
+    cancelBtn.onclick = function() { overlay.remove(); };
+    menu.appendChild(cancelBtn);
+
+    overlay.appendChild(menu);
+    document.body.appendChild(overlay);
 }
 
 function saveGitHubToken() {
