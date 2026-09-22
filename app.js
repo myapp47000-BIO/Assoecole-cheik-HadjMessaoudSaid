@@ -107,6 +107,12 @@ function initApp() {
     var adminCard = document.getElementById('admin-home-card');
     if (adminCard) adminCard.style.display = isAdminLoggedIn ? '' : 'none';
 
+    if (isAdminLoggedIn) {
+        document.body.classList.add('admin-mode');
+    } else {
+        document.body.classList.remove('admin-mode');
+    }
+
     updateProfileCard();
 
     document.addEventListener('visibilitychange', function() {
@@ -465,6 +471,9 @@ function completeLogin(user) {
     if (user.isAdmin || isAdminPhone(user.phone)) {
         localStorage.setItem(ADMIN_KEY, 'true');
         isAdminLoggedIn = true;
+        document.body.classList.add('admin-mode');
+    } else {
+        document.body.classList.remove('admin-mode');
     }
 
     isLoggedIn = true;
@@ -523,6 +532,7 @@ function handleLogout() {
     isLoggedIn = false;
     parentData = {};
     isAdminLoggedIn = false;
+    document.body.classList.remove('admin-mode');
 
     hideAllPages();
     var loginPage = document.getElementById('login-page');
@@ -1089,6 +1099,11 @@ function showAdminTab(tabName, btnEl) {
 }
 
 function navigateTo(page) {
+    if (page === 'admin' && !isAdminLoggedIn) {
+        showToast('هذه الصفحة خاصة بالأدمن فقط', 'error');
+        return;
+    }
+
     currentPage = page;
     document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
     var targetPage = document.getElementById('page-' + page);
