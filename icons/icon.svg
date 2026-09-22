@@ -23,15 +23,15 @@
   <path d="M176 180 L256 155 L336 180 L336 255 L256 280 L176 255 Z" fill="none" stroke="#f1c40f" stroke-width="4" stroke-linejoin="round"/>
   <line x1="256" y1="155" x2="256" y2="280" stroke="#f1c40f" stroke-width="3"/>
   
-  <!-- Main title -->
-  <text x="256" y="370" text-anchor="middle" fill="#f1c40f" font-size="72" font-weight="bold" font-family="Arial, sans-serif">ASSO.P.E</text>
+  <!-- ASSO.P.E -->
+  <text x="256" y="350" text-anchor="middle" fill="#f1c40f" font-size="64" font-weight="bold" font-family="Arial, sans-serif">ASSO.P.E</text>
   
-  <!-- Full name -->
-  <text x="256" y="420" text-anchor="middle" fill="#ecf0f1" font-size="36" font-family="Arial, sans-serif">جمعية أولياء التلاميذ</text>
+  <!-- ECOLE -->
+  <text x="256" y="400" text-anchor="middle" fill="#ecf0f1" font-size="42" font-weight="bold" font-family="Arial, sans-serif">ECOLE</text>
   
-  <!-- School name -->
-  <text x="256" y="465" text-anchor="middle" fill="#95a5a6" font-size="28" font-family="Arial, sans-serif">الشيخ حاج مسعود سعيد</text>
+  <!-- HADJ MESSAOUD SAID -->
+  <text x="256" y="445" text-anchor="middle" fill="#ecf0f1" font-size="36" font-family="Arial, sans-serif">HADJ MESSAOUD SAID</text>
   
-  <!-- Location -->
-  <text x="256" y="500" text-anchor="middle" fill="#7f8c8d" font-size="22" font-family="Arial, sans-serif">العطف - غرداية - الجزائر</text>
+  <!-- EL-ATTEUF -->
+  <text x="256" y="490" text-anchor="middle" fill="#95a5a6" font-size="30" font-family="Arial, sans-serif">EL-ATTEUF</text>
 </svg>
