@@ -3449,6 +3449,113 @@ select {
     color: var(--accent);
 }
 
+/* Books List Styles */
+.books-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.books-list-header h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0;
+}
+
+.books-total-hint {
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: rgba(241, 196, 15, 0.1);
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(241, 196, 15, 0.3);
+}
+
+.book-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-dark);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+}
+
+.book-item:hover {
+    border-color: var(--accent);
+}
+
+.book-checkbox {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.book-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.book-checkmark {
+    width: 22px;
+    height: 22px;
+    background: var(--bg-dark);
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.book-checkbox input:checked ~ .book-checkmark {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.book-checkbox input:checked ~ .book-checkmark::after {
+    content: '✓';
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.book-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.book-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+
+.book-code {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.book-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+    white-space: nowrap;
+}
+
 /* Fawziya Styles */
 .fawziya-icon { color: #1abc9c; }
 .fawziya-icon + h3 { color: #1abc9c; }
