@@ -577,14 +577,6 @@ const ADMIN_CREDENTIALS = {
     password: 'amihamou2026'
 };
 
-function getGitHubToken() {
-    return localStorage.getItem('github_token') || '';
-}
-
-function setGitHubToken(token) {
-    localStorage.setItem('github_token', token);
-}
-
 // Books Data - الديوان الوطني للمطبوعات المدرسية
 const BOOKS_DATA = {
     preparatory: {
