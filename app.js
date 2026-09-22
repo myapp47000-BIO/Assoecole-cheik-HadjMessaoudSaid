@@ -1368,3 +1368,66 @@ function showToast(message, type) {
         setTimeout(function() { toast.remove(); }, 300);
     }, 3000);
 }
+
+var deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+});
+
+function toggleAppMenu() {
+    var menu = document.getElementById('app-menu');
+    var overlay = document.getElementById('app-menu-overlay');
+    if (!menu || !overlay) return;
+
+    var isOpen = !menu.classList.contains('hidden');
+    if (isOpen) {
+        menu.classList.add('hidden');
+        overlay.classList.add('hidden');
+    } else {
+        menu.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+    }
+}
+
+function installApp() {
+    toggleAppMenu();
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function(choice) {
+            if (choice.outcome === 'accepted') {
+                showToast('تم تثبيت التطبيق بنجاح', 'success');
+            }
+            deferredPrompt = null;
+        });
+    } else {
+        showToast('افتح التطبيق في المتصفح واضغف "إضافة للشاشة الرئيسية"', 'normal');
+    }
+}
+
+function shareAppLink() {
+    toggleAppMenu();
+    var url = window.location.href;
+    var text = 'تطبيق جمعية أولياء التلاميذ إبتدائية الشيخ حاج مسعود سعيد\n' + url;
+
+    if (navigator.share) {
+        navigator.share({
+            title: 'جمعية أولياء التلاميذ',
+            text: 'تطبيق جمعية أولياء التلاميذ إبتدائية الشيخ حاج مسعود سعيد',
+            url: url
+        }).catch(function() {});
+    } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function() {
+            showToast('تم نسخ رابط التطبيق', 'success');
+        });
+    } else {
+        var textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('تم نسخ رابط التطبيق', 'success');
+    }
+}
