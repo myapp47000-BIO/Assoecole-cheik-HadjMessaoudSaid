@@ -3630,3 +3630,172 @@ select {
 .fawziya-visit-btn:active {
     transform: scale(0.97);
 }
+
+/* WhatsApp Button */
+.whatsapp-send-section {
+    padding: 0 24px;
+    margin-bottom: 16px;
+}
+
+.whatsapp-btn {
+    width: 100%;
+    padding: 14px 24px;
+    background: #25D366;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Noto Kufi Arabic', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s;
+}
+
+.whatsapp-btn:hover {
+    background: #1da851;
+    transform: translateY(-1px);
+}
+
+.whatsapp-btn:active {
+    transform: scale(0.97);
+}
+
+/* Verification Code Display */
+#verify-code-display {
+    font-size: 32px !important;
+    letter-spacing: 8px;
+    fill: #f1c40f !important;
+}
+
+/* Pending Registrations */
+.pending-count {
+    text-align: center;
+    padding: 10px;
+    background: rgba(241, 196, 15, 0.1);
+    border-radius: var(--radius-sm);
+    color: #f1c40f;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.pending-card {
+    background: var(--bg-card, #1e2a3a);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.pending-info {
+    margin-bottom: 10px;
+}
+
+.pending-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 4px;
+}
+
+.pending-details {
+    display: flex;
+    gap: 12px;
+    font-size: 13px;
+    color: #95a5a6;
+    margin-bottom: 4px;
+}
+
+.pending-level {
+    background: rgba(241, 196, 15, 0.15);
+    color: #f1c40f;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.pending-phone {
+    color: #3498db;
+}
+
+.pending-date {
+    font-size: 11px;
+    color: #7f8c8d;
+}
+
+.pending-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.pending-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.2s;
+    font-family: 'Noto Kufi Arabic', sans-serif;
+}
+
+.pending-btn.approve {
+    background: #27ae60;
+    color: white;
+}
+
+.pending-btn.approve:hover {
+    background: #2ecc71;
+}
+
+.pending-btn.whatsapp {
+    background: #25D366;
+    color: white;
+}
+
+.pending-btn.whatsapp:hover {
+    background: #1da851;
+}
+
+.pending-btn.delete {
+    flex: 0;
+    padding: 8px 10px;
+    background: rgba(231, 76, 60, 0.15);
+    color: #e74c3c;
+}
+
+.pending-btn.delete:hover {
+    background: #e74c3c;
+    color: white;
+}
+
+/* Select dropdown styling */
+select#reg-level {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg-darker, #0d1520);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-sm);
+    color: white;
+    font-size: 15px;
+    font-family: 'Noto Kufi Arabic', sans-serif;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2395a5a6' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left 12px center;
+    cursor: pointer;
+}
+
+select#reg-level option {
+    background: #1a2332;
+    color: white;
+    padding: 8px;
+}

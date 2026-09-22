@@ -143,30 +143,18 @@
                         </svg>
                     </div>
                     <h1 class="login-title">تسجيل الدخول</h1>
-                    <p class="login-subtitle">أدخل بريدك وكلمة المرور للوصول إلى التطبيق</p>
+                    <p class="login-subtitle">أدخل رقم هاتفك للدخول إلى التطبيق</p>
                 </div>
 
                 <form id="login-form" class="login-form" onsubmit="handleLogin(event)">
                     <div class="form-group">
-                        <label for="login-email">
+                        <label for="login-phone">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                <polyline points="22,6 12,13 2,6"/>
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
                             </svg>
-                            البريد الإلكتروني
+                            رقم الهاتف (الواتساب)
                         </label>
-                        <input type="email" id="login-email" placeholder="example@email.com" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="login-password">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                            </svg>
-                            كلمة المرور
-                        </label>
-                        <input type="password" id="login-password" placeholder="••••••••" required>
+                        <input type="tel" id="login-phone" placeholder="0XXX XX XX XX" required>
                     </div>
 
                     <button type="submit" class="login-btn" id="login-submit-btn">
@@ -175,9 +163,8 @@
                             <polyline points="10 17 15 12 10 7"/>
                             <line x1="15" y1="12" x2="3" y2="12"/>
                         </svg>
-                        <span id="login-btn-text">تسجيل الدخول</span>
+                        <span>تسجيل الدخول</span>
                     </button>
-
                 </form>
 
                 <div class="login-footer">
@@ -225,14 +212,22 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="reg-email">
+                        <label for="reg-level">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                <polyline points="22,6 12,13 2,6"/>
+                                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                                <path d="M6 12v5c3 3 9 3 12 0v-5"/>
                             </svg>
-                            البريد الإلكتروني
+                            مستوى التلميذ(ة)
                         </label>
-                        <input type="email" id="reg-email" placeholder="example@email.com" required>
+                        <select id="reg-level" required>
+                            <option value="">اختر المستوى</option>
+                            <option value="preparatory">التحضيريري</option>
+                            <option value="1">السنة الأولى ابتدائي</option>
+                            <option value="2">السنة الثانية ابتدائي</option>
+                            <option value="3">السنة الثالثة ابتدائي</option>
+                            <option value="4">السنة الرابعة ابتدائي</option>
+                            <option value="5">السنة الخامسة ابتدائي</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
@@ -240,39 +235,26 @@
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
                             </svg>
-                            رقم الهاتف
+                            رقم الهاتف (الواتساب)
                         </label>
                         <input type="tel" id="reg-phone" placeholder="0XXX XX XX XX" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="reg-password">
+                        <label for="reg-email">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
                             </svg>
-                            كلمة المرور
+                            البريد الإلكتروني (اختياري)
                         </label>
-                        <input type="password" id="reg-password" placeholder="6 أحرف على الأقل" minlength="6" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="reg-password-confirm">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            </svg>
-                            تأكيد كلمة المرور
-                        </label>
-                        <input type="password" id="reg-password-confirm" placeholder="أعد إدخال كلمة المرور" minlength="6" required>
-                        <div id="password-match-error" class="field-error hidden">كلمتا المرور غير متطابقتين</div>
+                        <input type="email" id="reg-email" placeholder="example@email.com">
                     </div>
 
                     <button type="submit" class="login-btn register-submit-btn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="8.5" cy="7" r="4"/>
-                            <line x1="20" y1="8" x2="20" y2="14"/>
-                            <line x1="23" y1="11" x2="17" y2="11"/>
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
                         </svg>
                         التسجيل
                     </button>
@@ -285,37 +267,64 @@
             </div>
         </div>
 
-                <!-- Verification Code Page -->
+        <!-- Verification Code Page -->
         <div id="verification-page" class="login-page hidden">
             <div class="login-content">
                 <div class="login-header">
-                    <div class="verification-icon">
-                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#f1c40f" stroke-width="1.5">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                            <polyline points="22,6 12,13 2,6"/>
+                    <div class="login-emblem">
+                        <svg viewBox="0 0 120 120" class="login-logo">
+                            <defs>
+                                <linearGradient id="verifyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#27ae60"/>
+                                    <stop offset="100%" style="stop-color:#2ecc71"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="60" cy="60" r="55" fill="none" stroke="url(#verifyGrad)" stroke-width="3"/>
+                            <circle cx="60" cy="60" r="48" fill="none" stroke="url(#verifyGrad)" stroke-width="1.5"/>
+                            <text x="60" y="50" text-anchor="middle" fill="#27ae60" font-size="12" font-weight="bold" font-family="Noto Kufi Arabic">كود</text>
+                            <text x="60" y="68" text-anchor="middle" fill="#f1c40f" font-size="28" font-weight="bold" font-family="monospace" id="verify-code-display">----</text>
+                            <text x="60" y="85" text-anchor="middle" fill="#95a5a6" font-size="8" font-family="Noto Kufi Arabic">التفعيل</text>
                         </svg>
                     </div>
-                    <h1 class="login-title">تفعيل الحساب</h1>
-                    <p class="login-subtitle" id="verification-email-display">تم إرسال رابط التفعيل إلى بريدك الإلكتروني</p>
-                    <p class="login-hint">اضغط على الرابط في الرسالة لتفعيل حسابك</p>
+                    <h1 class="login-title">كود التفعيل</h1>
+                    <p class="login-subtitle">أرسل كود التفعيل عبر الواتساب ثم أدخله هنا</p>
                 </div>
 
-                <form id="verification-form" class="login-form">
-                                        <div class="activation-message">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#27ae60" stroke-width="1.5">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                            <polyline points="22,6 12,13 2,6"/>
+                <div class="whatsapp-send-section">
+                    <button type="button" class="whatsapp-btn" onclick="sendCodeViaWhatsApp()">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                         </svg>
-                        <p class="activation-text">تم إرسال رابط التفعيل إلى بريدك الإلكتروني</p>
-                        <p class="activation-hint">افتح البريد الإلكتروني واضغط على رابط التفعيل</p>
+                        إرسال الكود عبر الواتساب
+                    </button>
+                </div>
+
+                <form id="verification-form" class="login-form" onsubmit="handleVerifyCode(event)">
+                    <div class="form-group">
+                        <label for="verify-code-input">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                            أدخل كود التفعيل
+                        </label>
+                        <input type="text" id="verify-code-input" placeholder="أدخل الكود المكون من 4 أرقام" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" autocomplete="off" required>
                     </div>
 
-</form>
+                    <button type="submit" class="login-btn" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        تفعيل الحساب
+                    </button>
+                </form>
 
                 <div class="login-footer">
-                    <button class="back-to-login" onclick="backToLogin()">&#x2190; العودة لتسجيل الدخول</button>
+                    <button class="back-to-login" onclick="backToLogin()">&#x2190; العودة للتسجيل</button>
                 </div>
             </div>
+        </div>
         </div>
 
         <!-- Main App -->
@@ -1113,10 +1122,20 @@
                         </div>
 
                         <div class="admin-tabs">
-                            <button class="admin-tab active" onclick="showAdminTab('add-notif', this)">إضافة إشعار</button>
+                            <button class="admin-tab active" onclick="showAdminTab('pending', this)">طلبات التسجيل</button>
+                            <button class="admin-tab" onclick="showAdminTab('add-notif', this)">إضافة إشعار</button>
                             <button class="admin-tab" onclick="showAdminTab('manage-notifs', this)">إدارة الإشعارات</button>
                             <button class="admin-tab" onclick="showAdminTab('manage-supplies', this)">إدارة الأدوات</button>
                             <button class="admin-tab" onclick="showAdminTab('stats', this)">إحصائيات</button>
+                        </div>
+
+                        <div id="admin-pending" class="admin-section active">
+                            <div class="admin-form-card">
+                                <h4>طلبات التسجيل المعلقة</h4>
+                                <div id="pending-registrations">
+                                    <!-- Filled by JS -->
+                                </div>
+                            </div>
                         </div>
 
                         <div id="admin-add-notif" class="admin-section active">

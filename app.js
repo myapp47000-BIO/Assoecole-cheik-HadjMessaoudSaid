@@ -1,79 +1,78 @@
 // App State
-let currentPage = 'home';
-let currentGrade = 'grade1';
-let isAdminLoggedIn = false;
-let notificationsEnabled = false;
-let notifications = [];
-let checkedItems = {};
-let facebookPosts = [];
-let isLoggedIn = false;
-let parentData = {};
-let parentsDatabase = [];
+var currentPage = 'home';
+var currentGrade = 'grade1';
+var isAdminLoggedIn = false;
+var notificationsEnabled = false;
+var notifications = [];
+var checkedItems = {};
+var facebookPosts = [];
+var isLoggedIn = false;
+var parentData = {};
+var parentsDatabase = [];
+var pendingVerificationCode = null;
+var pendingVerificationPhone = null;
 
 // DOM Ready
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     try {
         initApp();
     } catch(e) {
         console.error('Init error:', e);
     }
-    
-    // Always show login/app after delay
-    setTimeout(() => {
+
+    setTimeout(function() {
         try {
-            const splash = document.getElementById('splash-screen');
-            const mainApp = document.getElementById('main-app');
-            const loginPage = document.getElementById('login-page');
-            const registerPage = document.getElementById('register-page');
-            
+            var splash = document.getElementById('splash-screen');
+            var mainApp = document.getElementById('main-app');
+            var loginPage = document.getElementById('login-page');
+            var registerPage = document.getElementById('register-page');
+            var verificationPage = document.getElementById('verification-page');
+
             if (splash) {
                 splash.style.opacity = '0';
                 splash.style.visibility = 'hidden';
                 splash.style.display = 'none';
             }
-            
+
             if (isLoggedIn && parentData.name) {
                 if (mainApp) mainApp.classList.remove('hidden');
+                if (loginPage) loginPage.classList.add('hidden');
             } else {
                 if (loginPage) loginPage.classList.remove('hidden');
                 if (registerPage) registerPage.classList.add('hidden');
+                if (verificationPage) verificationPage.classList.add('hidden');
             }
         } catch(e) {
             console.error('Splash error:', e);
-            // Last resort - just hide splash
-            const splash = document.getElementById('splash-screen');
-            const loginPage = document.getElementById('login-page');
-            if (splash) splash.remove();
-            if (loginPage) loginPage.classList.remove('hidden');
+            var splash2 = document.getElementById('splash-screen');
+            var loginPage2 = document.getElementById('login-page');
+            if (splash2) splash2.remove();
+            if (loginPage2) loginPage2.classList.remove('hidden');
         }
     }, 2500);
 });
 
 function initApp() {
-    // Load data safely
     try {
-        facebookPosts = JSON.parse(localStorage.getItem(FB_POSTS_KEY)) || [...FACEBOOK_POSTS_MOCK];
+        facebookPosts = JSON.parse(localStorage.getItem(FB_POSTS_KEY)) || (typeof FACEBOOK_POSTS_MOCK !== 'undefined' ? [].concat(FACEBOOK_POSTS_MOCK) : []);
     } catch(e) {
-        facebookPosts = [...FACEBOOK_POSTS_MOCK];
+        facebookPosts = (typeof FACEBOOK_POSTS_MOCK !== 'undefined') ? [].concat(FACEBOOK_POSTS_MOCK) : [];
     }
     try {
         parentsDatabase = JSON.parse(localStorage.getItem(DB_KEYS.PARENTS)) || [];
     } catch(e) {
         parentsDatabase = [];
     }
-    
+
     notifications = JSON.parse(localStorage.getItem(NOTIFICATIONS_KEY) || '[]');
     checkedItems = JSON.parse(localStorage.getItem(CHECKED_ITEMS_KEY) || '{}');
     isAdminLoggedIn = localStorage.getItem(ADMIN_KEY) === 'true';
     notificationsEnabled = 'Notification' in window && Notification.permission === 'granted';
-    
-    // Check if user is logged in
-    const currentUserId = localStorage.getItem(DB_KEYS.CURRENT_USER);
+
+    var currentUserId = localStorage.getItem(DB_KEYS.CURRENT_USER);
     if (currentUserId) {
         isLoggedIn = true;
-        parentData = parentsDatabase.find(p => p.id === currentUserId) || {};
-        
-        // Check if user is admin
+        parentData = parentsDatabase.find(function(p) { return p.id === currentUserId; }) || {};
         if (parentData.email && parentData.email.toLowerCase() === DB_KEYS.ADMIN_EMAIL.toLowerCase()) {
             isAdminLoggedIn = true;
             localStorage.setItem(ADMIN_KEY, 'true');
@@ -83,7 +82,6 @@ function initApp() {
         parentData = {};
     }
 
-    // Add default notifications if none exist
     if (notifications.length === 0) {
         notifications = [
             {
@@ -104,9 +102,6 @@ function initApp() {
         localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(notifications));
     }
 
-    // Splash screen handled by DOMContentLoaded timeout above
-
-    // Update notification badge
     try { updateNotificationBadge(); } catch(e) { console.error(e); }
     try { renderNotifications(); } catch(e) { console.error(e); }
     try { renderAdminNotifs(); } catch(e) { console.error(e); }
@@ -116,191 +111,88 @@ function initApp() {
     try { renderSupplies(); } catch(e) { console.error(e); }
     try { loadFacebookFeed(); } catch(e) { console.error(e); }
 
-    // Update notification toggle state
-    const notifToggle = document.getElementById('notif-toggle');
+    var notifToggle = document.getElementById('notif-toggle');
     if (notifToggle) notifToggle.checked = notificationsEnabled;
 
-    // Set default datetime values
-    const now = new Date();
-    const startInput = document.getElementById('notif-start');
-    const endInput = document.getElementById('notif-end');
-    if (startInput) {
-        startInput.value = formatDateTimeLocal(now);
-    }
+    var now = new Date();
+    var startInput = document.getElementById('notif-start');
+    var endInput = document.getElementById('notif-end');
+    if (startInput) startInput.value = formatDateTimeLocal(now);
     if (endInput) {
-        const tomorrow = new Date(now);
+        var tomorrow = new Date(now);
         tomorrow.setDate(tomorrow.getDate() + 1);
         endInput.value = formatDateTimeLocal(tomorrow);
     }
 
-    // Update admin card visibility
-    const adminCard = document.getElementById('admin-home-card');
+    var adminCard = document.getElementById('admin-home-card');
     if (adminCard) adminCard.style.display = isAdminLoggedIn ? '' : 'none';
 
-    // Update profile card
     updateProfileCard();
 
-    // Listen for visibility change to refresh
-    document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) {
-            loadFacebookFeed();
-        }
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) loadFacebookFeed();
     });
 }
 
-function updateProfileCard() {
-    if (isLoggedIn && parentData.name) {
-        document.getElementById('parent-name-display').textContent = parentData.name;
-        const studentsCount = parentData.students ? parentData.students.length : 0;
-        const childrenInfo = parentData.students 
-            ? parentData.students.map(s => s.levelName || s.level).join('، ')
-            : '';
-        document.getElementById('parent-students-display').textContent = 
-            studentsCount + ' ' + (studentsCount === 1 ? 'تلميذ' : 'تلاميذ') + (childrenInfo ? ' - ' + childrenInfo : '') + (parentData.phone ? ' | ' + parentData.phone : '');
-    }
+function generateCode() {
+    return String(Math.floor(1000 + Math.random() * 9000));
 }
 
-// Show/Hide Pages
+function normalizePhone(phone) {
+    var p = phone.replace(/[\s\-\(\)]/g, '');
+    if (p.startsWith('+213')) return p.substring(1);
+    if (p.startsWith('213')) return p;
+    if (p.startsWith('0')) return '213' + p.substring(1);
+    return '213' + p;
+}
+
 function showLoginPage() {
-    document.getElementById('register-page').classList.add('hidden');
-    document.getElementById('login-page').classList.remove('hidden');
-    document.getElementById('verification-page').classList.add('hidden');
-    // Reset forms
-    document.getElementById('login-form').reset();
+    var regPage = document.getElementById('register-page');
+    var loginPage = document.getElementById('login-page');
+    var verPage = document.getElementById('verification-page');
+    if (regPage) regPage.classList.add('hidden');
+    if (verPage) verPage.classList.add('hidden');
+    if (loginPage) loginPage.classList.remove('hidden');
+    var f = document.getElementById('login-form');
+    if (f) f.reset();
 }
 
 function showRegisterPage() {
-    document.getElementById('login-page').classList.add('hidden');
-    document.getElementById('register-page').classList.remove('hidden');
-    document.getElementById('verification-page').classList.add('hidden');
+    var loginPage = document.getElementById('login-page');
+    var regPage = document.getElementById('register-page');
+    var verPage = document.getElementById('verification-page');
+    if (loginPage) loginPage.classList.add('hidden');
+    if (verPage) verPage.classList.add('hidden');
+    if (regPage) regPage.classList.remove('hidden');
     var f = document.getElementById('register-form');
     if (f) f.reset();
 }
 
 function backToLogin() {
-    document.getElementById('verification-page').classList.add('hidden');
-    document.getElementById('register-page').classList.add('hidden');
-    document.getElementById('login-page').classList.remove('hidden');
+    var verPage = document.getElementById('verification-page');
+    var regPage = document.getElementById('register-page');
+    var loginPage = document.getElementById('login-page');
+    if (verPage) verPage.classList.add('hidden');
+    if (regPage) regPage.classList.add('hidden');
+    if (loginPage) loginPage.classList.remove('hidden');
     var f = document.getElementById('login-form');
     if (f) f.reset();
 }
 
-function togglePasswordVisibility(inputId, btn) {
-    const input = document.getElementById(inputId);
-    const isPassword = input.type === 'password';
-    input.type = isPassword ? 'text' : 'password';
-    btn.innerHTML = isPassword
-        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
-        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-}
-
-function handleLogin(e) {
-    e.preventDefault();
-    var email = document.getElementById('login-email').value.trim();
-    var password = document.getElementById('login-password').value;
-
-    if (!email || !password) {
-        showToast('أدخل البريد الإلكتروني وكلمة المرور', 'error');
-        return;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showToast('البريد الإلكتروني غير صحيح', 'error');
-        return;
-    }
-
-    // Find user in local database
-    var existingUser = null;
-    for (var i = 0; i < parentsDatabase.length; i++) {
-        if (parentsDatabase[i].email && parentsDatabase[i].email.toLowerCase() === email.toLowerCase()) {
-            existingUser = parentsDatabase[i];
-            break;
-        }
-    }
-
-    // If not found locally, try cloud database
-    if (!existingUser) {
-        var cloudParents = CLOUD_DB.getAllParents();
-        if (cloudParents && cloudParents.length > 0) {
-            var cloudUser = null;
-            for (var j = 0; j < cloudParents.length; j++) {
-                if (cloudParents[j].email && cloudParents[j].email.toLowerCase() === email.toLowerCase()) {
-                    cloudUser = cloudParents[j];
-                    break;
-                }
-            }
-            if (!cloudUser) {
-                showToast('الحساب غير موجود. سجّل حساب جديد', 'error');
-                return;
-            }
-            // Check password
-            if (cloudUser.password !== password) {
-                showToast('كلمة المرور غير صحيحة', 'error');
-                return;
-            }
-            // Sync to local database
-            parentsDatabase.push(cloudUser);
-            localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
-            // Auto login
-            completeLogin(cloudUser);
-        } else {
-            showToast('الحساب غير موجود. سجّل حساب جديد', 'error');
-        }
-        return;
-    }
-
-    // Check password
-    if (existingUser.password !== password) {
-        showToast('كلمة المرور غير صحيحة', 'error');
-        return;
-    }
-
-    // Login successful
-    completeLogin(existingUser);
-}
-
-function completeLogin(user) {
-    localStorage.setItem(DB_KEYS.CURRENT_USER, user.id);
-    if (user.isAdmin) {
-        localStorage.setItem(ADMIN_KEY, 'true');
-        isAdminLoggedIn = true;
-    }
-
-    isLoggedIn = true;
-    parentData = user;
-
-    document.getElementById('login-page').classList.add('hidden');
-    document.getElementById('main-app').classList.remove('hidden');
-    updateProfileCard();
-
-    var adminCard = document.getElementById('admin-home-card');
-    if (adminCard) adminCard.style.display = user.isAdmin ? '' : 'none';
-
-    showToast('مرحباً بكم ' + user.name, 'success');
-}
-
 function handleRegister(e) {
     if (e) e.preventDefault();
-    console.log('handleRegister called');
 
-    var name = document.getElementById('reg-name');
-    var phone = document.getElementById('reg-phone');
-    var email = document.getElementById('reg-email');
-    var password = document.getElementById('reg-password');
-    var passwordConfirm = document.getElementById('reg-password-confirm');
+    var nameEl = document.getElementById('reg-name');
+    var levelEl = document.getElementById('reg-level');
+    var emailEl = document.getElementById('reg-email');
+    var phoneEl = document.getElementById('reg-phone');
 
-    console.log('Fields:', {name: name, phone: phone, email: email, password: password, passwordConfirm: passwordConfirm});
+    var nameVal = nameEl ? nameEl.value.trim() : '';
+    var levelVal = levelEl ? levelEl.value : '';
+    var emailVal = emailEl ? emailEl.value.trim() : '';
+    var phoneVal = phoneEl ? phoneEl.value.trim() : '';
 
-    var nameVal = name ? name.value.trim() : '';
-    var phoneVal = phone ? phone.value.trim() : '';
-    var emailVal = email ? email.value.trim() : '';
-    var passwordVal = password ? password.value : '';
-    var confirmVal = passwordConfirm ? passwordConfirm.value : '';
-
-    console.log('Values:', {nameVal: nameVal, phoneVal: phoneVal, emailVal: emailVal});
-
-    // Validation
-    if (!nameVal || !phoneVal || !emailVal || !passwordVal || !confirmVal) {
+    if (!nameVal || !levelVal || !emailVal || !phoneVal) {
         showToast('أكمل جميع الحقول المطلوبة', 'error');
         return;
     }
@@ -310,113 +202,296 @@ function handleRegister(e) {
         return;
     }
 
-    if (passwordVal.length < 6) {
-        showToast('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
-        return;
-    }
+    var normalizedPhone = normalizePhone(phoneVal);
 
-    if (passwordVal !== confirmVal) {
-        var errEl = document.getElementById('password-match-error');
-        if (errEl) errEl.classList.remove('hidden');
-        showToast('كلمتا المرور غير متطابقتين', 'error');
-        return;
-    }
-    var errEl = document.getElementById('password-match-error');
-    if (errEl) errEl.classList.add('hidden');
-
-    // Check if email already exists in local DB
     for (var i = 0; i < parentsDatabase.length; i++) {
-        if (parentsDatabase[i].email && parentsDatabase[i].email.toLowerCase() === emailVal.toLowerCase()) {
-            showToast('البريد الإلكتروني مسجل بالفعل', 'error');
+        if (parentsDatabase[i].phone && normalizePhone(parentsDatabase[i].phone) === normalizedPhone) {
+            showToast('رقم الهاتف مسجل بالفعل', 'error');
             return;
         }
     }
 
+    var code = generateCode();
     var userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    var isAdmin = emailVal.toLowerCase() === DB_KEYS.ADMIN_EMAIL.toLowerCase();
 
     var newUser = {
         id: userId,
         name: nameVal,
-        phone: phoneVal,
+        level: levelVal,
+        levelName: (typeof STUDENT_LEVELS !== 'undefined' && STUDENT_LEVELS[levelVal]) ? STUDENT_LEVELS[levelVal] : levelVal,
+        phone: normalizedPhone,
         email: emailVal,
-        password: passwordVal,
         students: [],
-        isAdmin: isAdmin,
-        verified: true,
+        isAdmin: emailVal.toLowerCase() === DB_KEYS.ADMIN_EMAIL.toLowerCase(),
+        verified: false,
+        activationCode: code,
         loginDate: new Date().toISOString(),
         lastLogin: new Date().toISOString()
     };
 
-    // Add to local database
     parentsDatabase.push(newUser);
     localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
 
-    // Save to cloud database
-    try {
-        CLOUD_DB.addParent(newUser);
-    } catch(err) {
-        console.error('Cloud save error:', err);
+    pendingVerificationCode = code;
+    pendingVerificationPhone = normalizedPhone;
+
+    var loginPage = document.getElementById('login-page');
+    var regPage = document.getElementById('register-page');
+    var verPage = document.getElementById('verification-page');
+    if (loginPage) loginPage.classList.add('hidden');
+    if (regPage) regPage.classList.add('hidden');
+    if (verPage) verPage.classList.remove('hidden');
+
+    var codeDisplay = document.getElementById('verification-code-display');
+    if (codeDisplay) codeDisplay.textContent = code;
+
+    showToast('تم إنشاء الحساب. في انتظار التفعيل', 'normal');
+}
+
+function sendCodeViaWhatsApp() {
+    if (!pendingVerificationPhone || !pendingVerificationCode) {
+        showToast('لا يوجد كود تحقق', 'error');
+        return;
+    }
+    var msg = 'كود تفعيل حسابك في تطبيق جمعية أولياء التلاميذ: ' + pendingVerificationCode;
+    var url = 'https://wa.me/' + pendingVerificationPhone + '?text=' + encodeURIComponent(msg);
+    window.open(url, '_blank');
+}
+
+function handleVerifyCode(e) {
+    if (e) e.preventDefault();
+
+    var codeInputs = '';
+    for (var i = 1; i <= 4; i++) {
+        var el = document.getElementById('code-' + i);
+        if (el) codeInputs += el.value;
     }
 
-    // Auto login
-    localStorage.setItem(DB_KEYS.CURRENT_USER, userId);
-    if (isAdmin) {
+    if (!codeInputs || codeInputs.length !== 4) {
+        showToast('أدخل كود التحقق كاملاً', 'error');
+        return;
+    }
+
+    if (codeInputs === pendingVerificationCode) {
+        var user = null;
+        for (var j = 0; j < parentsDatabase.length; j++) {
+            if (normalizePhone(parentsDatabase[j].phone) === pendingVerificationPhone) {
+                parentsDatabase[j].verified = true;
+                parentsDatabase[j].activationCode = null;
+                parentsDatabase[j].loginDate = new Date().toISOString();
+                parentsDatabase[j].lastLogin = new Date().toISOString();
+                user = parentsDatabase[j];
+                localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
+                break;
+            }
+        }
+
+        if (!user) {
+            showToast('حدث خطأ. حاول مرة أخرى', 'error');
+            return;
+        }
+
+        if (user.isAdmin) {
+            isAdminLoggedIn = true;
+            localStorage.setItem(ADMIN_KEY, 'true');
+        }
+
+        localStorage.setItem(DB_KEYS.CURRENT_USER, user.id);
+        pendingVerificationCode = null;
+        pendingVerificationPhone = null;
+
+        for (var k = 1; k <= 4; k++) {
+            var cel = document.getElementById('code-' + k);
+            if (cel) cel.value = '';
+        }
+
+        completeLogin(user);
+    } else {
+        showToast('كود التحقق غير صحيح', 'error');
+    }
+}
+
+function handleLogin(e) {
+    e.preventDefault();
+    var phoneEl = document.getElementById('login-phone');
+    var phoneVal = phoneEl ? phoneEl.value.trim() : '';
+
+    if (!phoneVal) {
+        showToast('أدخل رقم الهاتف', 'error');
+        return;
+    }
+
+    var normalizedPhone = normalizePhone(phoneVal);
+    var user = null;
+    for (var i = 0; i < parentsDatabase.length; i++) {
+        if (normalizePhone(parentsDatabase[i].phone) === normalizedPhone) {
+            user = parentsDatabase[i];
+            break;
+        }
+    }
+
+    if (!user) {
+        showToast('الحساب غير موجود. سجّل حساب جديد', 'error');
+        return;
+    }
+
+    if (!user.verified) {
+        var code = generateCode();
+        user.activationCode = code;
+        localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
+
+        pendingVerificationCode = code;
+        pendingVerificationPhone = normalizePhone(user.phone);
+
+        var loginPage = document.getElementById('login-page');
+        var verPage = document.getElementById('verification-page');
+        if (loginPage) loginPage.classList.add('hidden');
+        if (verPage) verPage.classList.remove('hidden');
+
+        var codeDisplay = document.getElementById('verification-code-display');
+        if (codeDisplay) codeDisplay.textContent = code;
+
+        showToast('حسابك غير مفعّل. تم إرسال كود التحقق', 'normal');
+        return;
+    }
+
+    completeLogin(user);
+}
+
+function completeLogin(user) {
+    localStorage.setItem(DB_KEYS.CURRENT_USER, user.id);
+    user.lastLogin = new Date().toISOString();
+    localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
+
+    if (user.isAdmin) {
         localStorage.setItem(ADMIN_KEY, 'true');
         isAdminLoggedIn = true;
     }
 
     isLoggedIn = true;
-    parentData = newUser;
+    parentData = user;
 
-    // Show main app
-    document.getElementById('login-page').classList.add('hidden');
-    document.getElementById('register-page').classList.add('hidden');
-    document.getElementById('main-app').classList.remove('hidden');
+    var loginPage = document.getElementById('login-page');
+    var regPage = document.getElementById('register-page');
+    var verPage = document.getElementById('verification-page');
+    var mainApp = document.getElementById('main-app');
+
+    if (loginPage) loginPage.classList.add('hidden');
+    if (regPage) regPage.classList.add('hidden');
+    if (verPage) verPage.classList.add('hidden');
+    if (mainApp) mainApp.classList.remove('hidden');
+
     updateProfileCard();
 
     var adminCard = document.getElementById('admin-home-card');
-    if (adminCard) adminCard.style.display = isAdmin ? '' : 'none';
+    if (adminCard) adminCard.style.display = user.isAdmin ? '' : 'none';
 
-    showToast('مرحباً بكم ' + nameVal + '! تم إنشاء حسابك بنجاح', 'success');
+    for (var k = 1; k <= 4; k++) {
+        var cel = document.getElementById('code-' + k);
+        if (cel) cel.value = '';
+    }
+
+    showToast('مرحباً بكم ' + user.name, 'success');
 }
 
-function updateChildrenCount(delta) {
-    var count = parseInt(document.getElementById('reg-children-count').value) || 1;
-    count = Math.max(1, Math.min(3, count + delta));
-    document.getElementById('reg-children-count').value = count;
-    updateChildrenCountDisplay(count);
+function handleLogout() {
+    localStorage.removeItem(DB_KEYS.CURRENT_USER);
+    isLoggedIn = false;
+    parentData = {};
+    isAdminLoggedIn = false;
+
+    var mainApp = document.getElementById('main-app');
+    var loginPage = document.getElementById('login-page');
+    var regPage = document.getElementById('register-page');
+    var verPage = document.getElementById('verification-page');
+    var adminCard = document.getElementById('admin-home-card');
+
+    if (mainApp) mainApp.classList.add('hidden');
+    if (regPage) regPage.classList.add('hidden');
+    if (verPage) verPage.classList.add('hidden');
+    if (adminCard) adminCard.style.display = 'none';
+    if (loginPage) loginPage.classList.remove('hidden');
+
+    var loginForm = document.getElementById('login-form');
+    if (loginForm) loginForm.reset();
+    var registerForm = document.getElementById('register-form');
+    if (registerForm) registerForm.reset();
+    for (var ci = 1; ci <= 4; ci++) { var cel = document.getElementById('code-' + ci); if (cel) cel.value = ''; }
+
+    showToast('تم تسجيل الخروج بنجاح', 'normal');
 }
 
-function updateChildrenCountDisplay(count) {
-    var display = document.getElementById('children-count-display');
-    if (display) display.textContent = count;
-    var container = document.getElementById('children-fields-container');
-    if (container) renderChildrenFields(count);
+function getPendingRegistrations() {
+    var pending = [];
+    for (var i = 0; i < parentsDatabase.length; i++) {
+        if (!parentsDatabase[i].verified) {
+            pending.push(parentsDatabase[i]);
+        }
+    }
+    return pending;
 }
 
-function renderChildrenFields(count) {
-    var container = document.getElementById('children-fields-container');
+function adminApproveUser(userId) {
+    for (var i = 0; i < parentsDatabase.length; i++) {
+        if (parentsDatabase[i].id === userId) {
+            var code = generateCode();
+            parentsDatabase[i].activationCode = code;
+            localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
+            return code;
+        }
+    }
+    return null;
+}
+
+function adminSendWhatsApp(phone, code) {
+    var normalized = normalizePhone(phone);
+    var msg = 'كود تفعيل حسابك في تطبيق جمعية أولياء التلاميذ: ' + code;
+    var url = 'https://wa.me/' + normalized + '?text=' + encodeURIComponent(msg);
+    window.open(url, '_blank');
+}
+
+function adminDeleteUser(userId) {
+    var user = null;
+    for (var i = 0; i < parentsDatabase.length; i++) {
+        if (parentsDatabase[i].id === userId) {
+            user = parentsDatabase[i];
+            parentsDatabase.splice(i, 1);
+            break;
+        }
+    }
+    localStorage.setItem(DB_KEYS.PARENTS, JSON.stringify(parentsDatabase));
+
+    if (user && parentData.id === userId) {
+        handleLogout();
+    }
+    renderPendingRegistrations();
+    showToast('تم حذف المستخدم', 'normal');
+}
+
+function renderPendingRegistrations() {
+    var container = document.getElementById('pending-registrations');
+    if (!container) return;
+
+    var pending = getPendingRegistrations();
+
+    if (pending.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>لا توجد طلبات تسجيل معلقة</p></div>';
+        return;
+    }
+
     var html = '';
-    var childNames = ['الأول', 'الثاني', 'الثالث'];
-
-    for (var i = 0; i < count; i++) {
-        html += '<div class="child-field-group" data-index="' + i + '">' +
-            '<div class="child-field-header">' +
-                '<span class="child-number">' + (i + 1) + '</span>' +
-                '<span class="child-label">التلميذ ' + childNames[i] + '</span>' +
+    for (var i = 0; i < pending.length; i++) {
+        var user = pending[i];
+        var dateStr = user.loginDate ? new Date(user.loginDate).toLocaleDateString('ar-DZ') : '';
+        html += '<div class="pending-item">' +
+            '<div class="pending-item-info">' +
+                '<h5>' + (user.name || '') + '</h5>' +
+                '<span>' + (user.phone || '') + ' - ' + (user.email || '') + '</span>' +
+                '<span class="pending-date">' + dateStr + '</span>' +
             '</div>' +
-            '<div class="child-fields-row">' +
-                '<input type="text" class="child-name-input" placeholder="اسم التلميذ" required>' +
-                '<select class="child-level-select" required>' +
-                    '<option value="">المستوى</option>' +
-                    '<option value="preparatory">التحضيريري</option>' +
-                    '<option value="1">الأولى ابتدائي</option>' +
-                    '<option value="2">الثانية ابتدائي</option>' +
-                    '<option value="3">الثالثة ابتدائي</option>' +
-                    '<option value="4">الرابعة ابتدائي</option>' +
-                    '<option value="5">الخامسة ابتدائي</option>' +
-                '</select>' +
+            '<div class="pending-actions">' +
+                '<button class="admin-btn approve" onclick="approveAndSendCode(\'' + user.id + '\', \'' + (user.phone || '') + '\')">تفعيل + واتساب</button>' +
+                '<button class="admin-btn delete" onclick="adminDeleteUser(\'' + user.id + '\')">حذف</button>' +
             '</div>' +
         '</div>';
     }
@@ -424,27 +499,60 @@ function renderChildrenFields(count) {
     container.innerHTML = html;
 }
 
-function handleLogout() {
-    localStorage.removeItem(DB_KEYS.CURRENT_USER);
-    
-    isLoggedIn = false;
-    parentData = {};
-    
-    // Hide main app and show login page
-    document.getElementById('main-app').classList.add('hidden');
-    document.getElementById('login-page').classList.add('hidden');
-    document.getElementById('register-page').classList.add('hidden');
-    document.getElementById('verification-page').classList.add('hidden');
-    document.getElementById('login-page').classList.remove('hidden');
-    
-    // Reset forms
-    var loginForm = document.getElementById('login-form');
-    if (loginForm) loginForm.reset();
-    var registerForm = document.getElementById('register-form');
-    if (registerForm) registerForm.reset();
-    for (var ci = 1; ci <= 6; ci++) { var cel = document.getElementById('code-' + ci); if (cel) cel.value = ''; }
-    
-    showToast('تم تسجيل الخروج بنجاح', 'normal');
+function approveAndSendCode(userId, phone) {
+    var code = adminApproveUser(userId);
+    if (code) {
+        adminSendWhatsApp(phone, code);
+        renderPendingRegistrations();
+        showToast('تم توليد الكود وإرساله عبر واتساب', 'success');
+    } else {
+        showToast('حدث خطأ', 'error');
+    }
+}
+
+function updateProfileCard() {
+    if (isLoggedIn && parentData.name) {
+        var nameEl = document.getElementById('parent-name-display');
+        var infoEl = document.getElementById('parent-students-display');
+        if (nameEl) nameEl.textContent = parentData.name;
+        if (infoEl) {
+            var studentsCount = parentData.students ? parentData.students.length : 0;
+            var childrenInfo = parentData.students
+                ? parentData.students.map(function(s) { return s.levelName || s.level; }).join(', ')
+                : '';
+            var info = studentsCount + ' ' + (studentsCount === 1 ? 'تلميذ' : 'تلاميذ');
+            if (childrenInfo) info += ' - ' + childrenInfo;
+            if (parentData.phone) info += ' | ' + parentData.phone;
+            infoEl.textContent = info;
+        }
+    }
+}
+
+function updateAdminView() {
+    var loginSection = document.getElementById('admin-login');
+    var panelSection = document.getElementById('admin-panel');
+
+    if (isAdminLoggedIn) {
+        if (loginSection) loginSection.classList.add('hidden');
+        if (panelSection) panelSection.classList.remove('hidden');
+        renderPendingRegistrations();
+    } else {
+        if (loginSection) loginSection.classList.remove('hidden');
+        if (panelSection) panelSection.classList.add('hidden');
+    }
+}
+
+function showAdminTab(tabName, el) {
+    document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.admin-section').forEach(function(s) { s.classList.remove('active'); });
+
+    if (el) el.classList.add('active');
+    var section = document.getElementById('admin-' + tabName);
+    if (section) section.classList.add('active');
+
+    if (tabName === 'pending') renderPendingRegistrations();
+    if (tabName === 'manage-notifs') renderAdminNotifs();
+    if (tabName === 'stats') refreshStats();
 }
 
 // Get all parents (for admin)
@@ -569,6 +677,7 @@ function toggleSupplyCheck(itemId, element) {
 // Facebook Feed
 function loadFacebookFeed() {
     const feedContainer = document.getElementById('fb-feed');
+    if (!feedContainer) return;
     
     // Show loading
     feedContainer.innerHTML = `
@@ -735,6 +844,7 @@ function sendNotification(notif) {
 
 function renderNotifications() {
     const container = document.getElementById('notifications-list');
+    if (!container) return;
     
     // Filter notifications by active time
     const now = new Date();
@@ -979,6 +1089,7 @@ function showArchiveDetail(year) {
 // Education Resources
 function renderEducationSites() {
     const container = document.getElementById('edu-sites');
+    if (!container) return;
     
     let html = '';
     EDUCATION_SITES.forEach(site => {
@@ -1032,19 +1143,6 @@ function renderEducationVideos() {
 }
 
 // Admin Panel
-function updateAdminView() {
-    const loginSection = document.getElementById('admin-login');
-    const panelSection = document.getElementById('admin-panel');
-
-    if (isAdminLoggedIn) {
-        loginSection.classList.add('hidden');
-        panelSection.classList.remove('hidden');
-    } else {
-        loginSection.classList.remove('hidden');
-        panelSection.classList.add('hidden');
-    }
-}
-
 function adminLogin() {
     const username = document.getElementById('admin-username').value.trim();
     const password = document.getElementById('admin-password').value.trim();
@@ -1066,22 +1164,6 @@ function adminLogout() {
     localStorage.removeItem(ADMIN_KEY);
     updateAdminView();
     showToast('تم تسجيل الخروج', 'normal');
-}
-
-function showAdminTab(tabName, el) {
-    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-    
-    if (el) el.classList.add('active');
-    else event.target.classList.add('active');
-    document.getElementById('admin-' + tabName).classList.add('active');
-
-    if (tabName === 'manage-notifs') {
-        renderAdminNotifs();
-    }
-    if (tabName === 'stats') {
-        refreshStats();
-    }
 }
 
 function addNotification() {
@@ -1136,6 +1218,7 @@ function addNotification() {
 
 function renderAdminNotifs() {
     const container = document.getElementById('admin-notifs-list');
+    if (!container) return;
     
     if (notifications.length === 0) {
         container.innerHTML = '<div class="empty-state"><p>لا توجد إشعارات</p></div>';
@@ -1550,7 +1633,7 @@ function copyFacebookLink(event) {
 }
 
 // Books Calculator Functions
-let currentBooksGrade = 'preparatory';
+var currentBooksGrade = 'preparatory';
 
 function selectBooksGrade(grade, element) {
     currentBooksGrade = grade;
@@ -1565,6 +1648,7 @@ function selectBooksGrade(grade, element) {
 
 function renderBooksList() {
     const container = document.getElementById('books-list');
+    if (!container) return;
     const gradeData = BOOKS_DATA[currentBooksGrade];
     
     if (!gradeData) {
@@ -1816,7 +1900,7 @@ function closeNotifModal() {
 }
 
 // PWA Install Feature
-let deferredPrompt;
+var deferredPrompt;
 
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
