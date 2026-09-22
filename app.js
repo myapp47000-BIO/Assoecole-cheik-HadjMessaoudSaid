@@ -700,6 +700,7 @@ function renderUsersList() {
     }
 
     container.innerHTML = html;
+    updateAdminStats();
 }
 
 function adminDeleteUserById(userId) {
@@ -748,6 +749,37 @@ function loadGitHubToken() {
     }
 }
 
+function toggleCloudSettings() {
+    var body = document.getElementById('cloud-settings-body');
+    var arrow = document.getElementById('cloud-arrow');
+    if (body) {
+        var isOpen = body.style.maxHeight && body.style.maxHeight !== '0px';
+        body.style.maxHeight = isOpen ? '0px' : '200px';
+        body.style.overflow = 'hidden';
+        body.style.transition = 'max-height 0.3s ease';
+    }
+    if (arrow) {
+        arrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+        arrow.style.transition = 'transform 0.3s ease';
+    }
+}
+
+function updateAdminStats() {
+    var total = parentsDatabase.filter(function(u) { return u.phone && !isAdminPhone(u.phone); }).length;
+    var verified = parentsDatabase.filter(function(u) { return u.verified && u.phone && !isAdminPhone(u.phone); }).length;
+    var pending = total - verified;
+
+    var totalEl = document.getElementById('stat-total');
+    var pendingEl = document.getElementById('stat-pending');
+    var verifiedEl = document.getElementById('stat-verified');
+    var notifsEl = document.getElementById('stat-notifs');
+
+    if (totalEl) totalEl.textContent = total;
+    if (pendingEl) pendingEl.textContent = pending;
+    if (verifiedEl) verifiedEl.textContent = verified;
+    if (notifsEl) notifsEl.textContent = notifications.length;
+}
+
 function updateProfileCard() {
     if (isLoggedIn && parentData.name) {
         var nameEl = document.getElementById('parent-name-display');
@@ -774,6 +806,7 @@ function updateAdminView() {
         if (loginSection) loginSection.classList.add('hidden');
         if (panelSection) panelSection.classList.remove('hidden');
         loadGitHubToken();
+        updateAdminStats();
         renderPendingRegistrations();
     } else {
         if (loginSection) loginSection.classList.remove('hidden');
