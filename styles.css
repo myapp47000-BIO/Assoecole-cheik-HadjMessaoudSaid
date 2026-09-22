@@ -3848,3 +3848,87 @@ select#reg-level option {
     direction: rtl;
     text-align: right;
 }
+
+/* Users Table */
+.users-table-header,
+.users-table-row {
+    display: grid;
+    grid-template-columns: 40px 1fr 1fr 1fr 80px 80px;
+    align-items: center;
+    padding: 10px 8px;
+    gap: 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 13px;
+}
+
+.users-table-header {
+    background: rgba(241, 196, 15, 0.08);
+    color: #f1c40f;
+    font-weight: 700;
+    border-radius: var(--radius-sm);
+    margin-bottom: 4px;
+}
+
+.users-table-row:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.users-row-num {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.users-row-name {
+    font-weight: 600;
+    color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.users-row-phone {
+    color: var(--accent);
+    font-family: monospace;
+    font-size: 12px;
+    direction: ltr;
+    text-align: left;
+}
+
+.users-row-level {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.users-row-status {
+    text-align: center;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.users-row-status.verified {
+    background: rgba(39, 174, 96, 0.15);
+    color: #27ae60;
+}
+
+.users-row-status.pending {
+    background: rgba(241, 196, 15, 0.15);
+    color: #f1c40f;
+}
+
+.users-row-actions {
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .users-table-header,
+    .users-table-row {
+        grid-template-columns: 30px 1fr 80px 70px;
+    }
+    .users-row-level,
+    .users-row-actions {
+        display: none;
+    }
+}
