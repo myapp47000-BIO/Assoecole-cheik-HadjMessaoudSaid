@@ -3849,7 +3849,204 @@ select#reg-level option {
     text-align: right;
 }
 
-/* Users Table */
+/* Admin Panel Redesign */
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: linear-gradient(135deg, rgba(26, 82, 118, 0.3), rgba(241, 196, 15, 0.1));
+    border-radius: var(--radius-md);
+    margin-bottom: 15px;
+    border: 1px solid rgba(241, 196, 15, 0.15);
+}
+
+.admin-header-info h3 {
+    color: #f1c40f;
+    font-size: 16px;
+    margin: 0 0 4px 0;
+}
+
+.admin-header-info p {
+    color: var(--text-muted);
+    font-size: 12px;
+    margin: 0;
+}
+
+.admin-logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: rgba(231, 76, 60, 0.15);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-family: 'Noto Kufi Arabic', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.admin-logout-btn:hover {
+    background: rgba(231, 76, 60, 0.3);
+}
+
+.admin-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.admin-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-md);
+    transition: all 0.3s;
+}
+
+.admin-stat-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-1px);
+}
+
+.admin-stat-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.stat-users {
+    background: rgba(52, 152, 219, 0.15);
+    color: #3498db;
+}
+
+.stat-pending {
+    background: rgba(241, 196, 15, 0.15);
+    color: #f1c40f;
+}
+
+.stat-verified {
+    background: rgba(39, 174, 96, 0.15);
+    color: #27ae60;
+}
+
+.stat-notifs {
+    background: rgba(155, 89, 182, 0.15);
+    color: #9b59b6;
+}
+
+.admin-stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-stat-num {
+    font-size: 20px;
+    font-weight: 800;
+    color: white;
+    line-height: 1;
+}
+
+.admin-stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.admin-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.admin-card-header h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 14px;
+}
+
+.admin-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 15px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.admin-tab {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-muted);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-family: 'Noto Kufi Arabic', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.admin-tab:hover {
+    background: rgba(241, 196, 15, 0.08);
+    color: #f1c40f;
+}
+
+.admin-tab.active {
+    background: rgba(241, 196, 15, 0.15);
+    color: #f1c40f;
+    border-color: rgba(241, 196, 15, 0.3);
+}
+
+.admin-login-icon {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(241, 196, 15, 0.08);
+    border-radius: 50%;
+    margin: 0 auto 15px;
+}
+
+.admin-login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+    .admin-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .admin-tabs {
+        gap: 4px;
+    }
+    .admin-tab {
+        padding: 7px 10px;
+        font-size: 11px;
+    }
+}
 .users-table-header,
 .users-table-row {
     display: grid;
