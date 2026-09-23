@@ -1903,6 +1903,131 @@ html, body {
     gap: 10px;
 }
 
+.edu-site-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.3s;
+}
+
+.edu-site-card:active {
+    transform: scale(0.98);
+    background: var(--bg-card-hover);
+}
+
+.edu-site-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 22px;
+}
+
+.edu-site-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.edu-site-text h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.edu-site-text p {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.edu-site-tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: var(--bg-dark);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+}
+
+.edu-channels-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.edu-channel-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.3s;
+}
+
+.edu-channel-card:active {
+    transform: scale(0.98);
+    background: var(--bg-card-hover);
+}
+
+.edu-channel-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.edu-channel-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.edu-channel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.edu-channel-head h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.edu-channel-tag {
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: var(--bg-dark);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.edu-channel-info p {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin: 3px 0 0;
+}
+
 .edu-card {
     display: flex;
     align-items: center;
