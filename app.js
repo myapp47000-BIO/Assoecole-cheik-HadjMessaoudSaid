@@ -1543,12 +1543,12 @@ function printBooksCalculator() {
 
 // Supplies Calculator
 var SUPPLIES_GRADES = {
-    preparatory: { name: 'الطور التحضيري', color: '#3498db', notebooks: 3, other: 10 },
-    grade1: { name: 'السنة الأولى ابتدائي', color: '#e74c3c', notebooks: 3, other: 10 },
-    grade2: { name: 'السنة الثانية ابتدائي', color: '#e67e22', notebooks: 3, other: 10 },
-    grade3: { name: 'السنة الثالثة ابتدائي', color: '#f1c40f', notebooks: 9, other: 8 },
-    grade4: { name: 'السنة الرابعة ابتدائي', color: '#27ae60', notebooks: 13, other: 10 },
-    grade5: { name: 'السنة الخامسة ابتدائي', color: '#9b59b6', notebooks: 13, other: 10 }
+    preparatory: { name: 'الطور التحضيري', color: '#3498db', nb64: 2, nbSmall: 0, nbDraw: 1, other: 10 },
+    grade1: { name: 'السنة الأولى ابتدائي', color: '#e74c3c', nb64: 2, nbSmall: 0, nbDraw: 1, other: 10 },
+    grade2: { name: 'السنة الثانية ابتدائي', color: '#e67e22', nb64: 2, nbSmall: 0, nbDraw: 1, other: 10 },
+    grade3: { name: 'السنة الثالثة ابتدائي', color: '#f1c40f', nb64: 7, nbSmall: 2, nbDraw: 0, other: 8 },
+    grade4: { name: 'السنة الرابعة ابتدائي', color: '#27ae60', nb64: 10, nbSmall: 3, nbDraw: 0, other: 10 },
+    grade5: { name: 'السنة الخامسة ابتدائي', color: '#9b59b6', nb64: 10, nbSmall: 3, nbDraw: 0, other: 10 }
 };
 
 function updateCalc(grade, delta) {
@@ -1569,32 +1569,48 @@ function gradeStudents(gradeKey) {
 
 function calculateTotal() {
     var totalStudents = 0;
-    var totalNotebooks = 0;
+    var totalNb64 = 0;
+    var totalNbSmall = 0;
+    var totalNbDraw = 0;
     var totalOther = 0;
     var resultsHtml = '';
 
     Object.keys(SUPPLIES_GRADES).forEach(function(gradeKey) {
         var info = SUPPLIES_GRADES[gradeKey];
         var count = gradeStudents(gradeKey);
+        if (count <= 0) return;
         totalStudents += count;
-        var notebooks = count * (info.notebooks || 0);
+        var nb64 = count * (info.nb64 || 0);
+        var nbSmall = count * (info.nbSmall || 0);
+        var nbDraw = count * (info.nbDraw || 0);
         var other = count * (info.other || 0);
-        totalNotebooks += notebooks;
+        totalNb64 += nb64;
+        totalNbSmall += nbSmall;
+        totalNbDraw += nbDraw;
         totalOther += other;
-        if (count > 0) {
-            resultsHtml += '<div class="calc-result-row">' +
-                '<span class="calc-result-grade"><span class="calc-grade-dot" style="background:' + info.color + '"></span> ' + info.name + ' (' + count + ' تلميذ)</span>' +
-                '<span class="calc-result-nums">' + notebooks + ' كراس - ' + other + ' أداة</span>' +
-            '</div>';
-        }
+
+        var parts = [];
+        if (nb64 > 0) parts.push(nb64 + ' كراس 64ص');
+        if (nbSmall > 0) parts.push(nbSmall + ' كراس صغير');
+        if (nbDraw > 0) parts.push(nbDraw + ' كراس رسم');
+        if (other > 0) parts.push(other + ' أداة');
+
+        resultsHtml += '<div class="calc-result-row">' +
+            '<span class="calc-result-grade"><span class="calc-grade-dot" style="background:' + info.color + '"></span> ' + info.name + ' (' + count + ' تلميذ)</span>' +
+            '<span class="calc-result-nums">' + parts.join(' + ') + '</span>' +
+        '</div>';
     });
 
     var studentsEl = document.getElementById('calc-total-students');
-    var notebooksEl = document.getElementById('calc-total-notebooks');
+    var nb64El = document.getElementById('calc-total-nb64');
+    var nbSmallEl = document.getElementById('calc-total-nbsmall');
+    var nbDrawEl = document.getElementById('calc-total-nbdraw');
     var suppliesEl = document.getElementById('calc-total-supplies');
     var resultsEl = document.getElementById('calc-results');
     if (studentsEl) studentsEl.textContent = totalStudents;
-    if (notebooksEl) notebooksEl.textContent = totalNotebooks;
+    if (nb64El) nb64El.textContent = totalNb64;
+    if (nbSmallEl) nbSmallEl.textContent = totalNbSmall;
+    if (nbDrawEl) nbDrawEl.textContent = totalNbDraw;
     if (suppliesEl) suppliesEl.textContent = totalOther;
     if (resultsEl) resultsEl.innerHTML = resultsHtml || '<p class="calc-empty">أدخل عدد التلاميذ لكل مستوى لعرض النتائج</p>';
 }
