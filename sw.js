@@ -1,4 +1,4 @@
-const CACHE_NAME = 'school-app-v4-20260923';
+const CACHE_NAME = 'school-app-v5-20260923';
 const BASE_PATH = './';
 const ASSETS = [
     BASE_PATH,
@@ -8,7 +8,10 @@ const ASSETS = [
     BASE_PATH + 'database.js',
     BASE_PATH + 'app.js',
     BASE_PATH + 'manifest.json',
-    BASE_PATH + 'icons/icon.svg'
+    BASE_PATH + 'icons/icon-192.png',
+    BASE_PATH + 'icons/icon-512.png',
+    BASE_PATH + 'icons/icon-maskable-192.png',
+    BASE_PATH + 'icons/icon-maskable-512.png'
 ];
 
 // Install
@@ -74,8 +77,8 @@ self.addEventListener('push', event => {
 
     const options = {
         body: data.body,
-        icon: './icons/icon.svg',
-        badge: './icons/icon.svg',
+        icon: './icons/icon-192.png',
+        badge: './icons/icon-192.png',
         vibrate: [100, 50, 100],
         data: { url: './' },
         actions: [
