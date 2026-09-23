@@ -1,4 +1,4 @@
-const CACHE_NAME = 'school-app-v3';
+const CACHE_NAME = 'school-app-v4-20260923';
 const BASE_PATH = './';
 const ASSETS = [
     BASE_PATH,
