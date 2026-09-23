@@ -1,6 +1,6 @@
 // App State
 var currentPage = 'home';
-var currentGrade = 'grade1';
+var currentGrade = 'preparatory';
 var isAdminLoggedIn = false;
 var notificationsEnabled = false;
 var notifications = [];
@@ -1131,6 +1131,9 @@ function showGrade(grade, el) {
 function renderSupplies() {
     var container = document.getElementById('supplies-content');
     if (!container) return;
+    document.querySelectorAll('.grade-tab').forEach(function(tab) {
+        tab.classList.toggle('active', tab.getAttribute('onclick').indexOf("'" + currentGrade + "'") !== -1);
+    });
     var grade = GRADES_DATA[currentGrade];
     if (!grade) {
         container.innerHTML = '<div class="empty-state"><p>لا توجد بيانات متاحة</p></div>';
@@ -1539,36 +1542,49 @@ function printBooksCalculator() {
 }
 
 // Supplies Calculator
+var SUPPLIES_GRADES = {
+    preparatory: { name: 'الطور التحضيري', color: '#3498db', notebooks: 3, other: 10 },
+    grade1: { name: 'السنة الأولى ابتدائي', color: '#e74c3c', notebooks: 3, other: 10 },
+    grade2: { name: 'السنة الثانية ابتدائي', color: '#e67e22', notebooks: 3, other: 10 },
+    grade3: { name: 'السنة الثالثة ابتدائي', color: '#f1c40f', notebooks: 9, other: 8 },
+    grade4: { name: 'السنة الرابعة ابتدائي', color: '#27ae60', notebooks: 13, other: 10 },
+    grade5: { name: 'السنة الخامسة ابتدائي', color: '#9b59b6', notebooks: 13, other: 10 }
+};
+
 function updateCalc(grade, delta) {
     var input = document.getElementById('calc-' + grade);
     if (!input) return;
-    var val = parseInt(input.value) || 0;
+    var val = parseInt(input.value, 10);
+    if (isNaN(val)) val = 0;
     val = Math.max(0, val + delta);
     input.value = val;
     calculateTotal();
 }
 
+function gradeStudents(gradeKey) {
+    var input = document.getElementById('calc-' + gradeKey);
+    var val = input ? parseInt(input.value, 10) : 0;
+    return isNaN(val) ? 0 : val;
+}
+
 function calculateTotal() {
     var totalStudents = 0;
     var totalNotebooks = 0;
-    var totalSupplies = 0;
+    var totalOther = 0;
     var resultsHtml = '';
-    var grades = ['preparatory', 'grade1', 'grade2', 'grade3', 'grade4', 'grade5'];
 
-    grades.forEach(function(gradeKey) {
-        var input = document.getElementById('calc-' + gradeKey);
-        var count = input ? (parseInt(input.value) || 0) : 0;
-        var grade = GRADES_DATA[gradeKey];
-        if (!grade) return;
+    Object.keys(SUPPLIES_GRADES).forEach(function(gradeKey) {
+        var info = SUPPLIES_GRADES[gradeKey];
+        var count = gradeStudents(gradeKey);
         totalStudents += count;
-        var notebooks = count * (grade.notebookCount || 0);
-        var supplies = count * (grade.supplyCount || 0);
+        var notebooks = count * (info.notebooks || 0);
+        var other = count * (info.other || 0);
         totalNotebooks += notebooks;
-        totalSupplies += supplies;
+        totalOther += other;
         if (count > 0) {
             resultsHtml += '<div class="calc-result-row">' +
-                '<span class="calc-result-grade"><span class="calc-grade-dot" style="background:' + grade.color + '"></span> ' + grade.name + ' (' + count + ' تلميذ)</span>' +
-                '<span class="calc-result-nums">' + notebooks + ' كراس - ' + supplies + ' أداة</span>' +
+                '<span class="calc-result-grade"><span class="calc-grade-dot" style="background:' + info.color + '"></span> ' + info.name + ' (' + count + ' تلميذ)</span>' +
+                '<span class="calc-result-nums">' + notebooks + ' كراس - ' + other + ' أداة</span>' +
             '</div>';
         }
     });
@@ -1579,12 +1595,12 @@ function calculateTotal() {
     var resultsEl = document.getElementById('calc-results');
     if (studentsEl) studentsEl.textContent = totalStudents;
     if (notebooksEl) notebooksEl.textContent = totalNotebooks;
-    if (suppliesEl) suppliesEl.textContent = totalSupplies;
+    if (suppliesEl) suppliesEl.textContent = totalOther;
     if (resultsEl) resultsEl.innerHTML = resultsHtml || '<p class="calc-empty">أدخل عدد التلاميذ لكل مستوى لعرض النتائج</p>';
 }
 
 function resetCalculator() {
-    ['preparatory', 'grade1', 'grade2', 'grade3', 'grade4', 'grade5'].forEach(function(gradeKey) {
+    Object.keys(SUPPLIES_GRADES).forEach(function(gradeKey) {
         var input = document.getElementById('calc-' + gradeKey);
         if (input) input.value = 0;
     });
