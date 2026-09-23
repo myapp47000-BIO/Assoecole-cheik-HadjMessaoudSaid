@@ -204,116 +204,87 @@ const FB_PAGE_URL = 'https://www.facebook.com/Association.Ecole.AmiHamou';
 
 const EDUCATION_SITES = [
     {
-        title: 'قناة المعرفة الجزائرية',
-        url: 'https://www.youtube.com/channel/UC9W9IXqClron-nyOVbiINwQ',
-        description: 'المنبر التعليمي الأول للتلاميذ - بث مباشر للدروس',
-        icon: '📺',
-        color: '#1a5276'
+        title: 'DzExams',
+        url: 'https://www.dzexams.com/',
+        description: 'الموقع الأول لتحضير الفروض والاختبارات في الجزائر لجميع الأطوار',
+        icon: '🌐',
+        color: '#1a5276',
+        tag: 'الموقع الرسمي'
     },
     {
-        title: 'المعلم إلياس شراد',
-        url: 'https://www.youtube.com/@LyesCherrad',
-        description: 'دروس تعليمية للمرحلة الابتدائية - اللغة العربية والرياضيات',
-        icon: '👨‍🏫',
-        color: '#27ae60'
+        title: 'التعليم الابتدائي',
+        url: 'https://www.dzexams.com/ar/ep',
+        description: 'دروس، فروض واختبارات لجميع أقسام التعليم الابتدائي (من التحضيري إلى الخامسة)',
+        icon: '📘',
+        color: '#27ae60',
+        tag: 'ابتدائي'
     },
     {
-        title: 'قناة الناجحون',
-        url: 'https://www.youtube.com/@channelynaghoune',
-        description: 'دروس وتمارين للمرحلة الابتدائية',
-        icon: '📚',
-        color: '#e67e22'
+        title: 'السنة الأولى ابتدائي',
+        url: 'https://www.dzexams.com/ar/1ap',
+        description: 'ملخصات وتمارين ونماذج فروض واختبارات بالسنة الأولى ابتدائي',
+        icon: '📖',
+        color: '#e67e22',
+        tag: 'السنة الأولى'
     },
     {
-        title: 'تعلّم بلس',
-        url: 'https://learn-plus.com/',
-        description: 'منصة تعليمية رائدة - دروس من الابتدائي حتى البكالوريا',
-        icon: '💻',
-        color: '#8e44ad'
+        title: 'السنة الثالثة ابتدائي',
+        url: 'https://www.dzexams.com/ar/3ap',
+        description: 'ملخصات وتمارين ونماذج فروض واختبارات بالسنة الثالثة ابتدائي',
+        icon: '📗',
+        color: '#8e44ad',
+        tag: 'السنة الثالثة'
     },
     {
-        title: 'نجمتي',
-        url: 'https://nedjmati.com/',
-        description: 'تطبيق تعليمي للأطفال - المنهج الجزائري',
-        icon: '⭐',
-        color: '#e74c3c'
-    },
-    {
-        title: 'قلم الجزائر',
-        url: 'https://www.dzpen.com/',
-        description: 'منصة اجتماعية للمحتوى التعليمي - جميع الأطوار',
-        icon: '📝',
-        color: '#3498db'
-    },
-    {
-        title: 'المنصة الوطنية للتعليم عن بُعد',
-        url: 'https://www.education.gov.dz/%d9%81%d8%b6%d8%a7%d8%a1%d8%a7%d8%aa-%d8%a5%d9%84%d9%83%d8%aa%d8%b1%d9%88%d9%86%d9%8a%d8%a9/%d8%a7%d9%84%d8%aa%d8%b9%d9%84%d9%8a%d9%85-%d8%b9%d9%86-%d8%a8%d8%b9%d8%af/',
-        description: 'منصة الوزارة للتعليم عن بُعد',
+        title: 'كتب التعليم الابتدائي الجيل الثاني',
+        url: 'https://www.education.gov.dz/',
+        description: 'الكتب المدرسية للمناهج الجديدة (الجيل الثاني) عبر بوابة وزارة التربية الوطنية',
         icon: '🏫',
-        color: '#1a5276'
+        color: '#e74c3c',
+        tag: 'الكتب المدرسية'
     }
 ];
 
-const EDUCATION_VIDEOS = [
+const EDUCATION_CHANNELS = [
     {
-        title: 'السنة الأولى ابتدائي - اللغة العربية',
-        channel: 'قناة المعرفة الجزائرية',
-        url: 'https://www.youtube.com/watch?v=EFgWmHfHZZ4',
-        thumbnail: 'https://img.youtube.com/vi/EFgWmHfHZZ4/mqdefault.jpg',
-        description: 'دروس الدعم للسنة الأولى ابتدائي - اللغة العربية',
-        cycle: 'الطور الأول',
-        level: 'السنة الأولى',
-        subject: 'اللغة العربية'
+        title: 'WEB_TV_ONEFD 23',
+        url: 'https://www.youtube.com/@WEB_TV_ONEFD23',
+        description: 'الدروس الحية للديوان الوطني للتعليم والتكوين عن بعد',
+        icon: '📺',
+        color: '#e74c3c',
+        tag: 'قناة رسمية'
     },
     {
-        title: 'السنة الأولى ابتدائي - الرياضيات',
-        channel: 'المعلم إلياس شراد',
-        url: 'https://www.youtube.com/watch?v=_VD0JJM5lic',
-        thumbnail: 'https://img.youtube.com/vi/_VD0JJM5lic/mqdefault.jpg',
-        description: 'أدعم وأقوم - المقطع 3 الصفحة 26 السنة الأولى ابتدائي',
-        cycle: 'الطور الأول',
-        level: 'السنة الأولى',
-        subject: 'الرياضيات'
+        title: 'Learn with Zakaria - تعلم مع زكريا',
+        url: 'https://www.youtube.com/@LearnWithZakaria',
+        description: 'تعليم الحروف والأرقام واللغة العربية للأطفال بأسلوب ممتع',
+        icon: '🎓',
+        color: '#f39c12',
+        tag: 'تعليمي'
     },
     {
-        title: 'السنة الثانية ابتدائي - اللغة العربية',
-        channel: 'قناة الناجحون',
-        url: 'https://www.youtube.com/watch?v=3L6is_5Qeuc',
-        thumbnail: 'https://img.youtube.com/vi/3L6is_5Qeuc/mqdefault.jpg',
-        description: 'تطبيقات الفصل الأول - السنة الثانية ابتدائي',
-        cycle: 'الطور الأول',
-        level: 'السنة الثانية',
-        subject: 'اللغة العربية'
+        title: 'Amine H Ayoub - أمين الحاج أيوب',
+        url: 'https://www.youtube.com/results?search_query=Amine+H+Ayoub+أمين+الحاج+أيوب',
+        description: 'دروس ومراجعات للمرحلة الابتدائية',
+        icon: '👨‍🏫',
+        color: '#3498db',
+        tag: 'تعليمي'
     },
     {
-        title: 'السنة الثالثة ابتدائي - اللغة العربية',
-        channel: 'المعلم إلياس شراد',
-        url: 'https://www.youtube.com/watch?v=kH5DhFW3TZY',
-        thumbnail: 'https://img.youtube.com/vi/kH5DhFW3TZY/mqdefault.jpg',
-        description: 'دروس الدعم لعطلة الشتاء - اللغة العربية',
-        cycle: 'الطور الثاني',
-        level: 'السنة الثالثة',
-        subject: 'اللغة العربية'
+        title: 'صدقة جارية',
+        url: 'https://www.youtube.com/results?search_query=صدقة+جارية+تعليمية',
+        description: 'قناة تربوية تعليمية نافعة',
+        icon: '🕌',
+        color: '#2ecc71',
+        tag: 'تربوي'
     },
     {
-        title: 'السنة الرابعة ابتدائي - اللغة العربية',
-        channel: 'المعلم إلياس شراد',
-        url: 'https://www.youtube.com/watch?v=mOFndrv1u_4',
-        thumbnail: 'https://img.youtube.com/vi/mOFndrv1u_4/mqdefault.jpg',
-        description: 'دعم ومراجعة شاملة لمشكلات الفصل الأول',
-        cycle: 'الطور الثاني',
-        level: 'السنة الرابعة',
-        subject: 'اللغة العربية'
-    },
-    {
-        title: 'السنة الخامسة ابتدائي - الرياضيات',
-        channel: 'المعلم إلياس شراد',
-        url: 'https://www.youtube.com/watch?v=swZAFTMVhn0',
-        thumbnail: 'https://img.youtube.com/vi/swZAFTMVhn0/mqdefault.jpg',
-        description: 'دروس الدعم - الأسنان',
-        cycle: 'الطور الثاني',
-        level: 'السنة الخامسة',
-        subject: 'الرياضيات'
+        title: 'درس أنواع الكلمات - الثالثة ابتدائي',
+        url: 'https://www.youtube.com/results?search_query=أنواع+الكلمات+الاسم+الفعل+الحرف+السنة+الثالثة+ابتدائي',
+        description: 'شرح درس أنواع الكلمات (الاسم - الفعل - الحرف) للسنة الثالثة ابتدائي',
+        icon: '✏️',
+        color: '#9b59b6',
+        tag: 'درس'
     }
 ];
 
