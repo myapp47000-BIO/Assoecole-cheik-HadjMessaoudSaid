@@ -818,6 +818,18 @@
                     <div class="calc-inputs">
                         <div class="calc-input-row">
                             <div class="calc-grade-info">
+                                <span class="calc-grade-dot" style="background: #3498db"></span>
+                                <span>الطور التحضيري</span>
+                            </div>
+                            <div class="calc-input-wrapper">
+                                <button class="calc-btn minus" onclick="updateCalc('preparatory', -1)">-</button>
+                                <input type="number" id="calc-preparatory" value="0" min="0" onchange="calculateTotal()">
+                                <button class="calc-btn plus" onclick="updateCalc('preparatory', 1)">+</button>
+                            </div>
+                        </div>
+
+                        <div class="calc-input-row">
+                            <div class="calc-grade-info">
                                 <span class="calc-grade-dot" style="background: #e74c3c"></span>
                                 <span>السنة الأولى ابتدائي</span>
                             </div>
