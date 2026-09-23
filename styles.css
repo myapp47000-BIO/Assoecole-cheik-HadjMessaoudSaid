@@ -2858,6 +2858,32 @@ select {
     border-bottom: 1px solid var(--border);
 }
 
+.calc-result-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background: var(--bg-dark);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+}
+
+.calc-result-grade {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.calc-result-nums {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+}
+
 .calc-grade-section {
     margin-bottom: 8px;
 }
