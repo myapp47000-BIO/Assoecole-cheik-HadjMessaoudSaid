@@ -90,6 +90,7 @@ function initApp() {
     try { renderEducationVideos(); } catch(e) { console.error(e); }
     try { renderSupplies(); } catch(e) { console.error(e); }
     try { renderBooksList(); } catch(e) { console.error(e); }
+    try { calculateTotal(); } catch(e) { console.error(e); }
     try { loadFacebookFeed(); } catch(e) { console.error(e); }
 
     var notifToggle = document.getElementById('notif-toggle');
@@ -1534,5 +1535,63 @@ function resetBooksCalculator() {
 }
 
 function printBooksCalculator() {
+    window.print();
+}
+
+// Supplies Calculator
+function updateCalc(grade, delta) {
+    var input = document.getElementById('calc-' + grade);
+    if (!input) return;
+    var val = parseInt(input.value) || 0;
+    val = Math.max(0, val + delta);
+    input.value = val;
+    calculateTotal();
+}
+
+function calculateTotal() {
+    var totalStudents = 0;
+    var totalNotebooks = 0;
+    var totalSupplies = 0;
+    var resultsHtml = '';
+    var grades = ['preparatory', 'grade1', 'grade2', 'grade3', 'grade4', 'grade5'];
+
+    grades.forEach(function(gradeKey) {
+        var input = document.getElementById('calc-' + gradeKey);
+        var count = input ? (parseInt(input.value) || 0) : 0;
+        var grade = GRADES_DATA[gradeKey];
+        if (!grade) return;
+        totalStudents += count;
+        var notebooks = count * (grade.notebookCount || 0);
+        var supplies = count * (grade.supplyCount || 0);
+        totalNotebooks += notebooks;
+        totalSupplies += supplies;
+        if (count > 0) {
+            resultsHtml += '<div class="calc-result-row">' +
+                '<span class="calc-result-grade"><span class="calc-grade-dot" style="background:' + grade.color + '"></span> ' + grade.name + ' (' + count + ' تلميذ)</span>' +
+                '<span class="calc-result-nums">' + notebooks + ' كراس - ' + supplies + ' أداة</span>' +
+            '</div>';
+        }
+    });
+
+    var studentsEl = document.getElementById('calc-total-students');
+    var notebooksEl = document.getElementById('calc-total-notebooks');
+    var suppliesEl = document.getElementById('calc-total-supplies');
+    var resultsEl = document.getElementById('calc-results');
+    if (studentsEl) studentsEl.textContent = totalStudents;
+    if (notebooksEl) notebooksEl.textContent = totalNotebooks;
+    if (suppliesEl) suppliesEl.textContent = totalSupplies;
+    if (resultsEl) resultsEl.innerHTML = resultsHtml || '<p class="calc-empty">أدخل عدد التلاميذ لكل مستوى لعرض النتائج</p>';
+}
+
+function resetCalculator() {
+    ['preparatory', 'grade1', 'grade2', 'grade3', 'grade4', 'grade5'].forEach(function(gradeKey) {
+        var input = document.getElementById('calc-' + gradeKey);
+        if (input) input.value = 0;
+    });
+    calculateTotal();
+    showToast('تم إعادة تعيين الحاسبة', 'normal');
+}
+
+function printCalculator() {
     window.print();
 }
