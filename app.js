@@ -87,7 +87,7 @@ function initApp() {
     try { renderAdminNotifs(); } catch(e) { console.error(e); }
     try { renderArchive(); } catch(e) { console.error(e); }
     try { renderEducationSites(); } catch(e) { console.error(e); }
-    try { renderEducationVideos(); } catch(e) { console.error(e); }
+    try { renderEducationChannels(); } catch(e) { console.error(e); }
     try { renderSupplies(); } catch(e) { console.error(e); }
     try { renderBooksList(); } catch(e) { console.error(e); }
     try { calculateTotal(); } catch(e) { console.error(e); }
@@ -1242,25 +1242,29 @@ function renderArchive() {
 }
 
 function renderEducationSites() {
-    var container = document.getElementById('education-sites-list');
+    var container = document.getElementById('edu-sites');
     if (!container) return;
     var html = '';
     EDUCATION_SITES.forEach(function(site) {
-        html += '<a href="' + site.url + '" target="_blank" class="edu-site-card" style="border-right: 4px solid ' + site.color + ';">' +
-            '<div class="edu-site-icon">' + site.icon + '</div>' +
-            '<div><h4>' + site.title + '</h4><p>' + site.description + '</p></div></a>';
+        html += '<a href="' + site.url + '" target="_blank" rel="noopener" class="edu-site-card" style="border-right: 4px solid ' + site.color + ';">' +
+            '<div class="edu-site-icon" style="background:' + site.color + '26">' + site.icon + '</div>' +
+            '<div class="edu-site-text"><h4>' + site.title + '</h4><p>' + site.description + '</p>' +
+            '<span class="edu-site-tag">' + site.tag + '</span></div></a>';
     });
     container.innerHTML = html;
 }
 
-function renderEducationVideos() {
-    var container = document.getElementById('education-videos-list');
+function renderEducationChannels() {
+    var container = document.getElementById('edu-channels');
     if (!container) return;
     var html = '';
-    EDUCATION_VIDEOS.forEach(function(vid) {
-        html += '<a href="' + vid.url + '" target="_blank" class="edu-video-card">' +
-            '<div class="edu-video-thumb"><img src="' + vid.thumbnail + '" alt="' + vid.title + '" loading="lazy"></div>' +
-            '<div><h4>' + vid.title + '</h4><p>' + vid.description + '</p><span class="edu-video-channel">' + vid.channel + '</span></div></a>';
+    EDUCATION_CHANNELS.forEach(function(ch) {
+        html += '<a href="' + ch.url + '" target="_blank" rel="noopener" class="edu-channel-card">' +
+            '<div class="edu-channel-icon" style="background:' + ch.color + '">' + ch.icon + '</div>' +
+            '<div class="edu-channel-info">' +
+                '<div class="edu-channel-head"><h4>' + ch.title + '</h4><span class="edu-channel-tag">' + ch.tag + '</span></div>' +
+                '<p>' + ch.description + '</p>' +
+            '</div></a>';
     });
     container.innerHTML = html;
 }
