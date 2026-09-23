@@ -2785,16 +2785,6 @@ select {
     border-color: rgba(52, 152, 219, 0.3);
 }
 
-.calc-total-item.small-nb {
-    background: rgba(241, 196, 15, 0.1);
-    border-color: rgba(241, 196, 15, 0.3);
-}
-
-.calc-total-item.drawing-nb {
-    background: rgba(155, 89, 182, 0.1);
-    border-color: rgba(155, 89, 182, 0.3);
-}
-
 .calc-total-item.supplies {
     background: rgba(231, 76, 60, 0.1);
     border-color: rgba(231, 76, 60, 0.3);
@@ -2813,16 +2803,6 @@ select {
 .calc-total-item.notebooks .calc-total-icon {
     background: rgba(52, 152, 219, 0.2);
     color: #3498db;
-}
-
-.calc-total-item.small-nb .calc-total-icon {
-    background: rgba(241, 196, 15, 0.2);
-    color: #f1c40f;
-}
-
-.calc-total-item.drawing-nb .calc-total-icon {
-    background: rgba(155, 89, 182, 0.2);
-    color: #9b59b6;
 }
 
 .calc-total-item.supplies .calc-total-icon {
