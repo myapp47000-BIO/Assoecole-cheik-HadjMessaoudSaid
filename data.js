@@ -17,10 +17,33 @@ const STUDENT_LEVELS = {
 
 // Books Data
 const GRADES_DATA = {
+    preparatory: {
+        name: 'الطور التحضيري',
+        icon: 'ت',
+        color: '#3498db',
+        notebookCount: 3,
+        supplyCount: 10,
+        supplies: [
+            { text: 'كراسان (2) للقسم والاختبارات', category: 'كراسات' },
+            { text: 'كراس واحد (1) للرسم', category: 'كراسات' },
+            { text: '3 أغلفة بلاستيكية للكراريس', category: 'أغلفة' },
+            { text: 'أغلفة بلاستيكية للكتب', category: 'أغلفة' },
+            { text: '1 لوحة + ممسحة', category: 'لوازم' },
+            { text: '2 سيالتان: زرقاء وخضراء', category: 'مقلمة' },
+            { text: 'قلم رصاص، مبراة، ممحاة', category: 'مقلمة' },
+            { text: '1 علبة لـ 6 أقلام ملونة', category: 'مقلمة' },
+            { text: '1 مسطرة', category: 'مقلمة' },
+            { text: 'قريصات وخشيبيات', category: 'مقلمة' },
+            { text: 'عجينة', category: 'مقلمة' },
+            { text: 'أوراق ملونة', category: 'مقلمة' }
+        ]
+    },
     grade1: {
         name: 'السنة الأولى ابتدائي',
         icon: '1',
         color: '#e74c3c',
+        notebookCount: 3,
+        supplyCount: 10,
         supplies: [
             { text: 'كراسان (2) 64 ص: القسم والاختبارات + المحاولة', category: 'كراسات' },
             { text: 'كراس واحد (1) للرسم', category: 'كراسات' },
@@ -40,6 +63,8 @@ const GRADES_DATA = {
         name: 'السنة الثانية ابتدائي',
         icon: '2',
         color: '#e67e22',
+        notebookCount: 3,
+        supplyCount: 10,
         supplies: [
             { text: 'كراسان (2) 64 ص: القسم والاختبارات + المحاولة', category: 'كراسات' },
             { text: 'كراس واحد (1) للرسم', category: 'كراسات' },
@@ -59,6 +84,8 @@ const GRADES_DATA = {
         name: 'السنة الثالثة ابتدائي',
         icon: '3',
         color: '#f1c40f',
+        notebookCount: 9,
+        supplyCount: 8,
         supplies: [
             { text: '7 كراريس 64 ص: القسم والاختبارات (ل.عربية + رياضيات)', category: 'كراسات' },
             { text: 'كراس القسم والاختبارات - لغة إنجليزية', category: 'كراسات' },
@@ -83,6 +110,8 @@ const GRADES_DATA = {
         name: 'السنة الرابعة ابتدائي',
         icon: '4',
         color: '#27ae60',
+        notebookCount: 13,
+        supplyCount: 10,
         supplies: [
             { text: '10 كراريس 64 ص: القسم والاختبارات (ل.عربية + رياضيات)', category: 'كراسات' },
             { text: 'كراس القسم والاختبارات - لغة أمازيغية', category: 'كراسات' },
@@ -113,6 +142,8 @@ const GRADES_DATA = {
         name: 'السنة الخامسة ابتدائي',
         icon: '5',
         color: '#9b59b6',
+        notebookCount: 13,
+        supplyCount: 10,
         supplies: [
             { text: '10 كراريس 64 ص: القسم والاختبارات (ل.عربية + رياضيات)', category: 'كراسات' },
             { text: 'كراس القسم والاختبارات - لغة أمازيغية', category: 'كراسات' },
