@@ -247,8 +247,8 @@ const EDUCATION_SITES = [
 
 const EDUCATION_CHANNELS = [
     {
-        title: 'WEB_TV_ONEFD 23',
-        url: 'https://www.youtube.com/@WEB_TV_ONEFD23',
+        title: 'WEB_TV_ONEFD01',
+        url: 'https://www.youtube.com/@web_tv_onefd0161',
         description: 'الدروس الحية للديوان الوطني للتعليم والتكوين عن بعد',
         icon: '📺',
         color: '#e74c3c',
