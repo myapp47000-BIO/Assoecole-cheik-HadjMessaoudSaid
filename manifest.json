@@ -4,7 +4,7 @@
     "description": "تطبيق جمعية أولياء التلاميذ إبتدائية الشيخ حاج مسعود سعيد - بلدية العطف - تجنينت - ولاية غرداية",
     "start_url": "./",
     "display": "standalone",
-    "background_color": "#0a1628",
+    "background_color": "#1a5276",
     "theme_color": "#1a5276",
     "orientation": "portrait-primary",
     "lang": "ar",
@@ -13,22 +13,28 @@
     "categories": ["education", "social"],
     "icons": [
         {
-            "src": "icons/icon.svg",
-            "sizes": "any",
-            "type": "image/svg+xml",
-            "purpose": "any"
-        },
-        {
             "src": "icons/icon-192.png",
             "sizes": "192x192",
             "type": "image/png",
-            "purpose": "any maskable"
+            "purpose": "any"
         },
         {
             "src": "icons/icon-512.png",
             "sizes": "512x512",
             "type": "image/png",
-            "purpose": "any maskable"
+            "purpose": "any"
+        },
+        {
+            "src": "icons/icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
         }
     ],
     "prefer_related_applications": false
